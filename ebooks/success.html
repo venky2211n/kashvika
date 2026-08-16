@@ -1,53 +1,3 @@
-<!-- 
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Details Page</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
-    iframe {
-      position: fixed;
-      top: 0;
-      left: 0;
-      border: none;
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
-</head>
-<body>
-
-<iframe id="myIframe" src=""></iframe>
-
-<script>
-  function getIdFromQuery() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("id");
-  }
-
-  window.onload = function() {
-    const id = getIdFromQuery();
-    if (!id) {
-      alert("Missing ID");
-      return;
-    }
-
-    const baseUrl = "https://script.google.com/macros/s/AKfycby-BLjBBUMnRC3c0AkNt6DmrP_TwRo7m2wOMi2mA9Oox1_sNogd4GeXae2QMjPBVYx4/exec";
-    const iframeUrl = `${baseUrl}?options=success&txnid=${encodeURIComponent(id)}`;
-    document.getElementById("myIframe").src = iframeUrl;
-  };
-</script> 
-
-</body>
-</html> -->
-
 
 
 <!DOCTYPE html>
@@ -105,7 +55,7 @@ if (!txnid) {
 } else {
 
   const APP_URL =
-    "https://script.google.com/macros/s/AKfycbw_1j8RZv5mDP8W2Sv0nfpugUZMR9ZaY-_4JEKZWFxAvHpMLi7y8Z9ATSo5zjF0zosTvQ/exec";
+    "https://script.google.com/macros/s/AKfycbypplP921gidFiHgYfk8SmPX4zGX6XkuGM0CRn2q3TA7ddavE5xjDlNTT-Ig0Nq16Y-rg/exec";
 
   const iframeUrl =
     APP_URL +
