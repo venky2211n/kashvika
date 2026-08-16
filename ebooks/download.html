@@ -33,7 +33,7 @@
 
   window.onload = function() {
     const id = getQueryParam("id");
-    const txnid = getQueryParam("receipt");
+    const txnid = getQueryParam("txnid");
 
     if (!id || !txnid) {
       alert("Missing ID or Receipt");
@@ -43,7 +43,7 @@
 
     const baseUrl = "https://script.google.com/macros/s/AKfycbyd2mCcU_epDDh-e48OB2Xafeh1rdm0TpiJ4jtfMJIq2mCHYFFbpitVAhVe8bx8LRm9/exec";
 
-    const iframeUrl = `${baseUrl}?options=download&id=${encodeURIComponent(id)}&txnid=${encodeURIComponent(receipt)}`;
+    const iframeUrl = `${baseUrl}?options=download&id=${encodeURIComponent(id)}&txnid=${encodeURIComponent(txnid)}`;
 
     document.getElementById("myIframe").src = iframeUrl;
   };
