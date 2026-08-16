@@ -1,7 +1,9 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Fixed Full-Screen Iframe</title>
+  <title>Details Page</title>
   <style>
     html, body {
       margin: 0;
@@ -10,7 +12,6 @@
       width: 100%;
       overflow: hidden;
     }
-
     iframe {
       position: fixed;
       top: 0;
@@ -18,21 +19,31 @@
       border: none;
       width: 100vw;
       height: 100vh;
-      z-index: 999;
     }
   </style>
 </head>
 <body>
 
-  <iframe 
+<iframe id="myIframe" src=""></iframe>
 
-  src="https://script.google.com/macros/s/AKfycbyd2mCcU_epDDh-e48OB2Xafeh1rdm0TpiJ4jtfMJIq2mCHYFFbpitVAhVe8bx8LRm9/exec?options=checkout" 
+<script>
+  function getIdFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("id");
+  }
 
-  width="100%" 
-  height="100%" 
-  style="position: fixed; top: 0; left: 0; border: none; margin: 0; padding: 0; overflow: hidden; z-index: 999999;">
-</iframe>
+  window.onload = function() {
+    const id = getIdFromQuery();
+    if (!id) {
+      alert("Missing ID");
+      return;
+    }
+
+    const baseUrl = "https://script.google.com/macros/s/AKfycbyd2mCcU_epDDh-e48OB2Xafeh1rdm0TpiJ4jtfMJIq2mCHYFFbpitVAhVe8bx8LRm9/exec";
+    const iframeUrl = `${baseUrl}?options=checkout&id=${encodeURIComponent(id)}`;
+    document.getElementById("myIframe").src = iframeUrl;
+  };
+</script> 
 
 </body>
 </html>
-
