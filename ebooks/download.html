@@ -33,9 +33,9 @@
 
   window.onload = function() {
     const id = getQueryParam("id");
-    const receipt = getQueryParam("receipt");
+    const txnid = getQueryParam("receipt");
 
-    if (!id || !receipt) {
+    if (!id || !txnid) {
       alert("Missing ID or Receipt");
       return;
     }
