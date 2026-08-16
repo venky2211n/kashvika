@@ -1,4 +1,4 @@
-
+<!-- 
 
 <!DOCTYPE html>
 <html>
@@ -46,4 +46,79 @@
 </script> 
 
 </body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>Payment Success</title>
+
+<style>
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#successFrame {
+  width: 100%;
+  height: 100vh;
+  border: none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<iframe
+  id="successFrame"
+  src="">
+</iframe>
+
+<script>
+
+const params =
+  new URLSearchParams(window.location.search);
+
+const txnid =
+  params.get("txnid");
+
+if (!txnid) {
+
+  document.body.innerHTML =
+    "<h2>Transaction ID missing</h2>";
+
+} else {
+
+  const APP_URL =
+    "https://script.google.com/macros/s/AKfycbyd2mCcU_epDDh-e48OB2Xafeh1rdm0TpiJ4jtfMJIq2mCHYFFBpitVAhVe8bx8LRm9/exec";
+
+  const iframeUrl =
+    APP_URL +
+    "?options=success&txnid=" +
+    encodeURIComponent(txnid);
+
+  document.getElementById("successFrame").src =
+    iframeUrl;
+
+}
+
+</script>
+
+</body>
+
 </html>
