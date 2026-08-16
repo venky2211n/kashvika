@@ -1,4 +1,4 @@
-
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,6 +47,79 @@
 
     document.getElementById("myIframe").src = iframeUrl;
   };
+</script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Download eBook</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #myIframe {
+      width: 100%;
+      height: 100vh;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<iframe id="myIframe"></iframe>
+
+<script>
+
+function getQueryParam(param) {
+  const params =
+    new URLSearchParams(window.location.search);
+
+  return params.get(param);
+}
+
+window.addEventListener("load", function() {
+
+  const id =
+    getQueryParam("id");
+
+  const txnid =
+    getQueryParam("txnid");
+
+  if (!id || !txnid) {
+
+    document.body.innerHTML =
+      "<h2>Missing Book ID or Transaction ID</h2>";
+
+    return;
+  }
+
+  const baseUrl =
+    "https://script.google.com/macros/s/AKfycbyd2mCcU_epDDh-e48OB2Xafeh1rdm0TpiJ4jtfMJIq2mCHYFFbpitVAhVe8bx8LRm9/exec";
+
+  const iframeUrl =
+    baseUrl +
+    "?options=download" +
+    "&id=" + encodeURIComponent(id) +
+    "&txnid=" + encodeURIComponent(txnid);
+
+  document.getElementById("myIframe").src =
+    iframeUrl;
+
+});
+
 </script>
 
 </body>
