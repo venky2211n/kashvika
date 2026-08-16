@@ -1,56 +1,4 @@
-<!-- 
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Receipt Details</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
-    iframe {
-      position: fixed;
-      top: 0;
-      left: 0;
-      border: none;
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
-</head>
-<body>
 
-<iframe id="myIframe" src=""></iframe>
-
-<script>
-  function getQueryParam(param) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(param);
-  }
-
-  window.onload = function() {
-    const id = getQueryParam("id");
-    const txnid = getQueryParam("txnid");
-
-    if (!id || !txnid) {
-      alert("Missing ID or Receipt");
-      return;
-    }
-
-
-    const baseUrl = "https://script.google.com/macros/s/AKfycbyd2mCcU_epDDh-e48OB2Xafeh1rdm0TpiJ4jtfMJIq2mCHYFFbpitVAhVe8bx8LRm9/exec";
-
-    const iframeUrl = `${baseUrl}?options=download&id=${encodeURIComponent(id)}&txnid=${encodeURIComponent(txnid)}`;
-
-    document.getElementById("myIframe").src = iframeUrl;
-  };
-</script>
-
-</body>
-</html> -->
 
 <!DOCTYPE html>
 <html>
@@ -107,7 +55,7 @@ window.addEventListener("load", function() {
   }
 
   const baseUrl =
-    "https://script.google.com/macros/s/AKfycbw_1j8RZv5mDP8W2Sv0nfpugUZMR9ZaY-_4JEKZWFxAvHpMLi7y8Z9ATSo5zjF0zosTvQ/exec";
+    "https://script.google.com/macros/s/AKfycbypplP921gidFiHgYfk8SmPX4zGX6XkuGM0CRn2q3TA7ddavE5xjDlNTT-Ig0Nq16Y-rg/exec";
 
   const iframeUrl =
     baseUrl +
