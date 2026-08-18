@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PayU doPost Test</title>
+</head>
+<body>
+
+<h3>PayU doPost Test</h3>
+
+<form
+  method="POST"
+  action="YOUR_APPS_SCRIPT_EXEC_URL"
+  target="_blank"
+>
+
+  <input type="hidden" name="txnid" value="TEST_SUCCESS_001">
+  <input type="hidden" name="status" value="success">
+  <input type="hidden" name="firstname" value="Test User">
+  <input type="hidden" name="email" value="test@example.com">
+  <input type="hidden" name="phone" value="9876543210">
+  <input type="hidden" name="amount" value="199">
+  <input type="hidden" name="productinfo" value="Digital Marketing Guide">
+
+  <button type="submit">
+    TEST SUCCESS
+  </button>
+
+</form>
+
+</body>
+</html>
