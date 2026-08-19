@@ -40,7 +40,7 @@
       return;
     }
 
-    const baseUrl = "hhttps://script.google.com/macros/s/AKfycbx_9SJVvr9S_qq2QskVQ0ZUxxAV5--WH-OZkOiHZ8PdZcIWgpUk5tGJb5gYZxVTKqMY6w/exec";
+    const baseUrl = "https://script.google.com/macros/s/AKfycbx_9SJVvr9S_qq2QskVQ0ZUxxAV5--WH-OZkOiHZ8PdZcIWgpUk5tGJb5gYZxVTKqMY6w/exec";
     const iframeUrl = `${baseUrl}?options=checkout&id=${encodeURIComponent(id)}`;
     document.getElementById("myIframe").src = iframeUrl;
   };
