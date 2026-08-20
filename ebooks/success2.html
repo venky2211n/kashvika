@@ -1,0 +1,547 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Payment Successful - Kashvika</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #222;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 35px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+    }
+
+    .success-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: #28a745;
+      color: white;
+      font-size: 42px;
+      line-height: 70px;
+      text-align: center;
+    }
+
+    h1 {
+      text-align: center;
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 15px;
+      border: 4px solid #ddd;
+      border-top: 4px solid #28a745;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .order-details {
+      display: none;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .value {
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #d4edda;
+      color: #155724;
+      font-weight: bold;
+    }
+
+    .error {
+      display: none;
+      text-align: center;
+      color: #721c24;
+      background: #f8d7da;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .buttons {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 22px;
+      margin: 5px;
+      border-radius: 6px;
+      text-decoration: none;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .home-btn {
+      background: #343a40;
+    }
+
+    @media (max-width: 500px) {
+
+      .container {
+        margin: 20px auto;
+      }
+
+      .card {
+        padding: 25px 18px;
+      }
+
+      .row {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .value {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="card">
+
+      <!-- LOADING -->
+      <div id="loading" class="loading">
+
+        <div class="spinner"></div>
+
+        <h3>Verifying Payment...</h3>
+
+        <p>Please wait while we retrieve your order details.</p>
+
+      </div>
+
+
+      <!-- ERROR -->
+      <div id="errorBox" class="error">
+
+        <h2>Unable to Retrieve Order</h2>
+
+        <p id="errorMessage"></p>
+
+      </div>
+
+
+      <!-- SUCCESS -->
+      <div id="successContent" class="order-details">
+
+        <div class="success-icon">
+          ✓
+        </div>
+
+        <h1>Payment Successful</h1>
+
+        <p class="subtitle">
+          Thank you for your purchase!
+        </p>
+
+
+        <!-- ORDER INFORMATION -->
+
+        <div class="row">
+
+          <div class="label">
+            Transaction ID
+          </div>
+
+          <div
+            class="value"
+            id="txnid"
+          ></div>
+
+        </div>
+
+
+        <div class="row">
+
+          <div class="label">
+            Product
+          </div>
+
+          <div
+            class="value"
+            id="product"
+          ></div>
+
+        </div>
+
+
+        <div class="row">
+
+          <div class="label">
+            Book ID
+          </div>
+
+          <div
+            class="value"
+            id="bookId"
+          ></div>
+
+        </div>
+
+
+        <div class="row">
+
+          <div class="label">
+            Amount
+          </div>
+
+          <div
+            class="value"
+            id="amount"
+          ></div>
+
+        </div>
+
+
+        <div class="row">
+
+          <div class="label">
+            Customer Name
+          </div>
+
+          <div
+            class="value"
+            id="name"
+          ></div>
+
+        </div>
+
+
+        <div class="row">
+
+          <div class="label">
+            Email
+          </div>
+
+          <div
+            class="value"
+            id="email"
+          ></div>
+
+        </div>
+
+
+        <div class="row">
+
+          <div class="label">
+            Phone
+          </div>
+
+          <div
+            class="value"
+            id="phone"
+          ></div>
+
+        </div>
+
+
+        <div class="row">
+
+          <div class="label">
+            Payment Status
+          </div>
+
+          <div class="value">
+
+            <span
+              class="status"
+              id="status"
+            ></span>
+
+          </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="buttons">
+
+          <a
+            href="https://kashvika.website/ebooks/"
+            class="btn home-btn"
+          >
+            Back to eBooks
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const txnid =
+  params.get("txnid");
+
+
+const APP_URL =
+  "https://script.google.com/macros/s/AKfycbyPEfF_3ATarc2O0oY2OndjYk7_7SCIFYxpd_pSWB5IjOLo-RmErpZbMmP1GhxEOCNK/exec";
+
+
+// =====================================================
+// NO TXNID
+// =====================================================
+
+if (!txnid) {
+
+  document.getElementById("loading").style.display =
+    "none";
+
+  document.getElementById("errorBox").style.display =
+    "block";
+
+  document.getElementById("errorMessage").textContent =
+    "Transaction ID is missing.";
+
+}
+
+
+// =====================================================
+// GET ORDER
+// =====================================================
+
+else {
+
+  const callbackName =
+    "payuCallback_" +
+    Date.now();
+
+
+  // -----------------------------------------------
+  // CREATE CALLBACK
+  // -----------------------------------------------
+
+  window[callbackName] = function(data) {
+
+    console.log(
+      "Order data:",
+      data
+    );
+
+
+    // ---------------------------------------------
+    // ERROR
+    // ---------------------------------------------
+
+    if (!data.success) {
+
+      document.getElementById("loading").style.display =
+        "none";
+
+      document.getElementById("errorBox").style.display =
+        "block";
+
+      document.getElementById("errorMessage").textContent =
+        data.message ||
+        "Transaction not found.";
+
+      cleanup();
+
+      return;
+    }
+
+
+    // ---------------------------------------------
+    // DISPLAY DATA
+    // ---------------------------------------------
+
+    document.getElementById("txnid").textContent =
+      data.txnid || txnid;
+
+
+    document.getElementById("product").textContent =
+      data.product || "-";
+
+
+    document.getElementById("bookId").textContent =
+      data.bookId || "-";
+
+
+    document.getElementById("amount").textContent =
+      data.amount
+        ? "₹" + data.amount
+        : "-";
+
+
+    document.getElementById("name").textContent =
+      data.name || "-";
+
+
+    document.getElementById("email").textContent =
+      data.email || "-";
+
+
+    document.getElementById("phone").textContent =
+      data.phone || "-";
+
+
+    document.getElementById("status").textContent =
+      data.status || "success";
+
+
+    // ---------------------------------------------
+    // SHOW SUCCESS
+    // ---------------------------------------------
+
+    document.getElementById("loading").style.display =
+      "none";
+
+    document.getElementById("successContent").style.display =
+      "block";
+
+
+    cleanup();
+  };
+
+
+  // =================================================
+  // CREATE SCRIPT TAG
+  // =================================================
+
+  const script =
+    document.createElement("script");
+
+
+  script.src =
+    APP_URL +
+    "?options=success" +
+    "&txnid=" +
+    encodeURIComponent(txnid) +
+    "&callback=" +
+    encodeURIComponent(callbackName);
+
+
+  script.onerror = function() {
+
+    console.error(
+      "Unable to load Apps Script"
+    );
+
+
+    document.getElementById("loading").style.display =
+      "none";
+
+    document.getElementById("errorBox").style.display =
+      "block";
+
+    document.getElementById("errorMessage").textContent =
+      "Unable to connect to the payment server.";
+
+    cleanup();
+  };
+
+
+  document.body.appendChild(script);
+
+
+  // =================================================
+  // CLEANUP
+  // =================================================
+
+  function cleanup() {
+
+    delete window[callbackName];
+
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+  }
+
+}
+
+</script>
+
+</body>
+</html>
