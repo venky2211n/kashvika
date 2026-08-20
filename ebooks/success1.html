@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <script>
+const params = new URLSearchParams(window.location.search);
+const txnid = params.get("txnid");
+
+if (!txnid) {
+
+  document.body.innerHTML =
+    "<h2>Transaction ID missing</h2>";
+
+} else {
+
+  const APP_URL =
+    "https://script.google.com/macros/s/AKfycbyQ1gIA1FmxiymJ4KQDuQVtqXlq8_Vhc2HEdqrdvxv9X_h39IC3cb24IQhLsntrVUB0/exec";
+
+  fetch(
+    APP_URL +
+    "?options=success&txnid=" +
+    encodeURIComponent(txnid)
+  )
+  .then(response => {
+
+    if (!response.ok) {
+      throw new Error("Server error: " + response.status);
+    }
+
+    return response.text();
+  })
+  .then(data => {
+
+    console.log("Apps Script response:", data);
+
+    document.body.innerHTML = `
+      <div style="text-align:center;padding:40px;">
+        <h2>Payment Successful</h2>
+        <p>Transaction ID: <strong>${txnid}</strong></p>
+        <p>${data}</p>
+      </div>
+    `;
+
+  })
+  .catch(error => {
+
+    console.error(error);
+
+    document.body.innerHTML = `
+      <div style="text-align:center;padding:40px;">
+        <h2>Payment Successful</h2>
+        <p>Transaction ID: <strong>${txnid}</strong></p>
+        <p>Unable to retrieve order details.</p>
+      </div>
+    `;
+
+  });
+
+}
+</script>
+  </body>
+</html>
