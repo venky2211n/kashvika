@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>70kcheckout Page</title>
+  <title>10kcheckout Page</title>
   <style>
     html, body {
       margin: 0;
@@ -40,7 +40,7 @@
       return;
     }
 
-    const baseUrl = "https://script.google.com/macros/s/AKfycbxyV0aqynNL3olDv1OTXvvlsnSLa37bkIrYLO4Uo4nuKG4K2FPG7-hWoRMTd5A96mqP/exec";
+    const baseUrl = "https://script.google.com/macros/s/AKfycbywec8TNMHHnXulkgpH5jc-GcWl6NybC0XUKxV6HAaivEeycptu1UjiSoNHoWgfbYM27Q/exec";
     const iframeUrl = `${baseUrl}?options=checkout&id=${encodeURIComponent(id)}`;
     document.getElementById("myIframe").src = iframeUrl;
   };
