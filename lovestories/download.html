@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -262,4 +262,242 @@ prepareDownload();
 
 </body>
 
+</html> -->
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Download eBook</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    button {
+      padding: 14px 25px;
+      font-size: 16px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>eBook Download</h2>
+
+<div id="message">
+  Verifying payment...
+</div>
+
+<div id="downloadArea"></div>
+
+
+<script>
+
+const API_URL =
+  'https://script.google.com/macros/s/AKfycbzW10ZSw2rt_3dWP6tBMJH0N6lKYn5VKougKCuC4c0OWP6y6Z0Vq52ZCi95CULHAHkoxw/exec';
+
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const bookId =
+  params.get('id');
+
+
+const txnid =
+  params.get('txnid');
+
+
+if (!bookId) {
+
+  showError(
+    'Book ID missing.'
+  );
+
+}
+
+else if (!txnid) {
+
+  showError(
+    'Transaction ID missing.'
+  );
+
+}
+
+else {
+
+  verifyPayment();
+
+}
+
+
+function verifyPayment() {
+
+  const callbackName =
+    'downloadCallback_' +
+    Date.now();
+
+
+  const script =
+    document.createElement(
+      'script'
+    );
+
+
+  window[callbackName] =
+    function(result) {
+
+      console.log(
+        'DOWNLOAD RESULT:',
+        result
+      );
+
+
+      delete window[
+        callbackName
+      ];
+
+      script.remove();
+
+
+      if (
+        !result ||
+        !result.success
+      ) {
+
+        showError(
+          result &&
+          result.error
+            ? result.error
+            : 'Payment is not confirmed.'
+        );
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        'message'
+      ).innerHTML =
+        '<div class="success">' +
+        '<h3>Payment Confirmed</h3>' +
+        '<p>' +
+        result.product +
+        '</p>' +
+        '</div>';
+
+
+      const button =
+        document.createElement(
+          'button'
+        );
+
+
+      button.textContent =
+        'Download eBook';
+
+
+      button.onclick =
+        function() {
+
+          window.location.href =
+            result.downloadUrl;
+
+        };
+
+
+      document.getElementById(
+        'downloadArea'
+      ).appendChild(
+        button
+      );
+
+    };
+
+
+  const url =
+    API_URL +
+    '?action=download' +
+    '&id=' +
+    encodeURIComponent(
+      bookId
+    ) +
+    '&txnid=' +
+    encodeURIComponent(
+      txnid
+    ) +
+    '&callback=' +
+    encodeURIComponent(
+      callbackName
+    );
+
+
+  script.src =
+    url;
+
+
+  script.onerror =
+    function() {
+
+      delete window[
+        callbackName
+      ];
+
+      script.remove();
+
+      showError(
+        'Unable to connect to payment server.'
+      );
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+function showError(message) {
+
+  document.getElementById(
+    'message'
+  ).innerHTML =
+    '<div class="error">' +
+    '<h3>Download unavailable</h3>' +
+    '<p>' +
+    message +
+    '</p>' +
+    '</div>';
+
+}
+
+</script>
+
+</body>
 </html>
