@@ -1,50 +1,834 @@
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>25kcheckout Page</title>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1">
+
+  <title>Checkout</title>
+
   <style>
-    html, body {
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
       margin: 0;
-      padding: 0;
-      height: 100%;
+      padding: 30px 15px;
+    }
+
+    .checkout {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow:
+        0 5px 25px rgba(0,0,0,.10);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .book {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .book-title {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .price {
+      font-size: 25px;
+      margin-top: 10px;
+    }
+
+    input {
       width: 100%;
-      overflow: hidden;
+      box-sizing: border-box;
+      padding: 13px;
+      margin-top: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
     }
-    iframe {
-      position: fixed;
-      top: 0;
-      left: 0;
-      border: none;
-      width: 100vw;
-      height: 100vh;
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
     }
+
+    #paypal-button-container {
+      margin-top: 25px;
+    }
+
+    #message {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .loading {
+      text-align: center;
+      margin: 20px;
+    }
+
   </style>
+
 </head>
+
+
 <body>
 
-<iframe id="myIframe" src=""></iframe>
+
+<div class="checkout">
+
+  <h1>Checkout</h1>
+
+
+  <div
+    id="loading"
+    class="loading">
+
+    Loading book...
+
+  </div>
+
+
+  <div
+    id="checkoutArea"
+    style="display:none;">
+
+
+    <div class="book">
+
+      <div
+        id="bookTitle"
+        class="book-title">
+      </div>
+
+      <div
+        id="bookPrice"
+        class="price">
+      </div>
+
+    </div>
+
+
+    <label>
+      Full Name
+    </label>
+
+    <input
+      id="name"
+      type="text"
+      placeholder="Full Name">
+
+
+    <label>
+      Email
+    </label>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Email">
+
+
+    <label>
+      Mobile Number
+    </label>
+
+    <input
+      id="phone"
+      type="tel"
+      placeholder="Mobile Number">
+
+
+    <div
+      id="paypal-button-container">
+    </div>
+
+
+    <div
+      id="message">
+    </div>
+
+
+  </div>
+
+</div>
+
 
 <script>
-  function getIdFromQuery() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("id");
+
+/******************************************************
+ * CONFIG
+ ******************************************************/
+
+const API_URL =
+  'https://script.google.com/macros/s/AKfycbwTxwemIt-TRmzIJ4_88MRZqmZ4Hb56f9JKT9Un41Yq5TMSapSucVkEcz_VNI7mJvz0QQ/exec';
+
+
+const PAYPAL_CLIENT_ID =
+  'AXo3MDuy224WwNfHDZusHjW9cenuT9qI7Vh4_h_BIMb_0Ah1p5MlTafo3ZwIV67CBlrYdKbHKOiH05yQ';
+
+
+const CURRENCY = 'USD';
+
+
+/******************************************************
+ * BOOK ID
+ ******************************************************/
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+
+const bookId =
+  params.get('id');
+
+
+
+
+
+
+if (!bookId) {
+
+  document.getElementById(
+    'loading'
+  ).innerText =
+    'Book ID missing.';
+
+  throw new Error(
+    'Book ID missing'
+  );
+}
+
+
+/******************************************************
+ * JSONP
+ ******************************************************/
+
+function jsonp(
+  url,
+  timeout = 20000
+) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      const callbackName =
+        'jsonp_' +
+        Date.now() +
+        '_' +
+        Math.floor(
+          Math.random() * 100000
+        );
+
+
+      const script =
+        document.createElement(
+          'script'
+        );
+
+
+      let timer;
+
+
+      window[callbackName] =
+        function(data) {
+
+          cleanup();
+
+          resolve(data);
+        };
+
+
+      function cleanup() {
+
+        clearTimeout(timer);
+
+        script.remove();
+
+        delete window[
+          callbackName
+        ];
+      }
+
+
+      timer =
+        setTimeout(
+          function() {
+
+            cleanup();
+
+            reject(
+              new Error(
+                'Server timeout.'
+              )
+            );
+
+          },
+          timeout
+        );
+
+
+      script.src =
+        url +
+        '&callback=' +
+        encodeURIComponent(
+          callbackName
+        );
+
+
+      script.onerror =
+        function() {
+
+          cleanup();
+
+          reject(
+            new Error(
+              'Unable to connect to payment server.'
+            )
+          );
+        };
+
+
+      document
+        .body
+        .appendChild(
+          script
+        );
+
+    }
+  );
+}
+
+
+/******************************************************
+ * LOAD BOOK
+ ******************************************************/
+
+
+
+
+function loadBook() {
+
+  const url =
+    API_URL +
+    '?action=checkbook' +
+    '&bookId=' +
+    encodeURIComponent(bookId);
+
+
+  jsonp(url)
+
+    .then(function(result) {
+
+      if (!result.success) {
+
+        throw new Error(
+          result.error ||
+          'Book not found.'
+        );
+      }
+
+
+      document.getElementById(
+        'loading'
+      ).style.display =
+        'none';
+
+
+      document.getElementById(
+        'checkoutArea'
+      ).style.display =
+        'block';
+
+
+      document.getElementById(
+        'bookTitle'
+      ).innerText =
+        result.product;
+
+
+      document.getElementById(
+        'bookPrice'
+      ).innerText =
+        result.currency +
+        ' ' +
+        result.amount;
+
+
+      loadPayPal();
+
+    })
+
+    .catch(function(err) {
+
+      document.getElementById(
+        'loading'
+      ).innerText =
+        err.message;
+
+    });
+}
+
+
+
+// function loadBook() {
+
+//   const url =
+//     API_URL +
+//     '?action=checkbook' +
+//     '&bookId=' +
+//     encodeURIComponent(bookId);
+
+
+//   /*
+//    * We don't actually need a separate
+//    * checkbook endpoint because createPayPal
+//    * will load the book.
+//    *
+//    * Therefore display a generic checkout
+//    * area and let createOrder return details.
+//    */
+
+
+//   document.getElementById(
+//     'loading'
+//   ).style.display =
+//     'none';
+
+
+//   document.getElementById(
+//     'checkoutArea'
+//   ).style.display =
+//     'block';
+
+
+//   document.getElementById(
+//     'bookTitle'
+//   ).innerText =
+//     'eBook #' + bookId;
+
+
+//   document.getElementById(
+//     'bookPrice'
+//   ).innerText =
+//     'Price will be verified at checkout.';
+
+
+//   loadPayPal();
+// } 
+
+
+/******************************************************
+ * LOAD PAYPAL SDK
+ ******************************************************/
+
+function loadPayPal() {
+
+  const script =
+    document.createElement(
+      'script'
+    );
+
+
+  script.src =
+    'https://www.paypal.com/sdk/js' +
+    '?client-id=' +
+    encodeURIComponent(
+      PAYPAL_CLIENT_ID
+    ) +
+    '&currency=' +
+    CURRENCY +
+    '&intent=capture';
+
+
+  script.onload =
+    function() {
+
+      renderPayPal();
+    };
+
+
+  script.onerror =
+    function() {
+
+      showMessage(
+        'Unable to load PayPal.'
+      );
+    };
+
+
+  document
+    .head
+    .appendChild(
+      script
+    );
+}
+
+
+/******************************************************
+ * VALIDATE CUSTOMER
+ ******************************************************/
+
+function getCustomer() {
+
+  const name =
+    document
+      .getElementById('name')
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById('email')
+      .value
+      .trim();
+
+
+  const phone =
+    document
+      .getElementById('phone')
+      .value
+      .trim();
+
+
+  if (!name) {
+
+    throw new Error(
+      'Please enter your name.'
+    );
   }
 
-  window.onload = function() {
-    const id = getIdFromQuery();
-    if (!id) {
-      alert("Missing ID");
-      return;
-    }
 
-    const baseUrl = "https://script.google.com/macros/s/AKfycbyouvvPpjbj6nHlDDcjcTe3OhJJVZb2gvTV30MQ_bvbGoBTMvd8Ifl1saiSdm_5esOYzA/exec";
-    const iframeUrl = `${baseUrl}?options=checkout&id=${encodeURIComponent(id)}`;
-    document.getElementById("myIframe").src = iframeUrl;
+  if (!email) {
+
+    throw new Error(
+      'Please enter your email.'
+    );
+  }
+
+
+  if (!email.includes('@')) {
+
+    throw new Error(
+      'Please enter a valid email.'
+    );
+  }
+
+
+  return {
+
+    name,
+    email,
+    phone
   };
-</script> 
+}
+
+
+/******************************************************
+ * RENDER PAYPAL
+ ******************************************************/
+
+function renderPayPal() {
+
+  paypal.Buttons({
+
+    style: {
+
+      layout: 'vertical',
+
+      shape: 'rect',
+
+      label: 'paypal'
+
+    },
+
+
+    /**************************************************
+     * CREATE ORDER
+     **************************************************/
+
+    createOrder:
+      function() {
+
+        let customer;
+
+        try {
+
+          customer =
+            getCustomer();
+
+        }
+
+        catch (err) {
+
+          showMessage(
+            err.message
+          );
+
+          return Promise.reject(
+            err
+          );
+        }
+
+
+        showMessage(
+          'Creating PayPal order...'
+        );
+
+
+        const url =
+          API_URL +
+
+          '?action=createpaypal' +
+
+          '&bookId=' +
+          encodeURIComponent(
+            bookId
+          ) +
+
+          '&name=' +
+          encodeURIComponent(
+            customer.name
+          ) +
+
+          '&email=' +
+          encodeURIComponent(
+            customer.email
+          ) +
+
+          '&phone=' +
+          encodeURIComponent(
+            customer.phone
+          );
+
+
+        return jsonp(url)
+          .then(
+            function(result) {
+
+              if (!result.success) {
+
+                throw new Error(
+                  result.error ||
+                  'Unable to create order.'
+                );
+              }
+
+
+              /****************************************
+               * SAVE TRANSACTION ID
+               ****************************************/
+
+              sessionStorage.setItem(
+                'paypal_txnid',
+                result.txnid
+              );
+
+
+              sessionStorage.setItem(
+                'paypal_order_id',
+                result.orderID
+              );
+
+
+              sessionStorage.setItem(
+                'paypal_book_id',
+                result.bookId
+              );
+
+
+              /****************************************
+               * DISPLAY REAL PRICE
+               ****************************************/
+
+              document.getElementById(
+                'bookTitle'
+              ).innerText =
+                result.product;
+
+
+              document.getElementById(
+                'bookPrice'
+              ).innerText =
+                result.currency +
+                ' ' +
+                result.amount;
+
+
+              return result.orderID;
+            }
+          );
+
+      },
+
+
+    /**************************************************
+     * APPROVED
+     **************************************************/
+
+    onApprove:
+      function(data) {
+
+        const txnid =
+          sessionStorage.getItem(
+            'paypal_txnid'
+          );
+
+
+        if (!txnid) {
+
+          showMessage(
+            'Transaction ID missing.'
+          );
+
+          return;
+        }
+
+
+        showMessage(
+          'Payment approved. Capturing payment...'
+        );
+
+
+        const url =
+          API_URL +
+
+          '?action=capturepaypal' +
+
+          '&txnid=' +
+          encodeURIComponent(
+            txnid
+          ) +
+
+          '&orderID=' +
+          encodeURIComponent(
+            data.orderID
+          );
+
+
+        return jsonp(url)
+          .then(
+            function(result) {
+
+              if (
+                !result.success ||
+                result.status !==
+                'SUCCESS'
+              ) {
+
+                throw new Error(
+                  result.error ||
+                  'Payment capture failed.'
+                );
+              }
+
+
+              showMessage(
+                'Payment successful. Redirecting...'
+              );
+
+
+              /****************************************
+               * SUCCESS PAGE
+               ****************************************/
+
+              window.location.href =
+                'success.html?txnid=' +
+                encodeURIComponent(
+                  txnid
+                );
+
+            }
+          )
+          .catch(
+            function(err) {
+
+              showMessage(
+                err.message
+              );
+
+            }
+          );
+
+      },
+
+
+    /**************************************************
+     * CANCEL
+     **************************************************/
+
+    onCancel:
+      function(data) {
+
+        showMessage(
+          'Payment cancelled.'
+        );
+
+      },
+
+
+    /**************************************************
+     * ERROR
+     **************************************************/
+
+    onError:
+      function(err) {
+
+        console.error(err);
+
+        showMessage(
+          'PayPal payment error.'
+        );
+
+      }
+
+  }).render(
+    '#paypal-button-container'
+  );
+}
+
+
+/******************************************************
+ * MESSAGE
+ ******************************************************/
+
+function showMessage(
+  message
+) {
+
+  document.getElementById(
+    'message'
+  ).innerText =
+    message;
+}
+
+
+/******************************************************
+ * START
+ ******************************************************/
+
+loadBook();
+
+</script>
+
 
 </body>
-</html>
 
+</html>
