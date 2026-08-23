@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>eBook Download</title>
+
+<style>
+
+body {
+  font-family: Arial;
+  text-align: center;
+  padding: 50px 20px;
+}
+
+button {
+  padding: 14px 25px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<h2>eBook Download</h2>
+
+<p id="status">
+Checking your payment...
+</p>
+
+<button
+  id="download"
+  style="display:none"
+  onclick="startDownload()"
+>
+Download eBook
+</button>
+
+
+<script>
+
+const API_URL =
+  'https://script.google.com/macros/s/XXXXXXXXXXXX/exec';
+
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const txnid =
+  params.get('txnid');
+
+
+const bookId =
+  params.get('id');
+
+
+function jsonp(url) {
+
+  return new Promise(function(resolve, reject) {
+
+    const callbackName =
+      'jsonp_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random() * 100000);
+
+
+    const script =
+      document.createElement('script');
+
+
+    const timeout =
+      setTimeout(function() {
+
+        cleanup();
+
+        reject(
+          new Error('Server timeout')
+        );
+
+      }, 20000);
+
+
+    function cleanup() {
+
+      clearTimeout(timeout);
+
+      delete window[callbackName];
+
+      script.remove();
+
+    }
+
+
+    window[callbackName] =
+      function(data) {
+
+        cleanup();
+
+        resolve(data);
+
+      };
+
+
+    script.onerror =
+      function() {
+
+        cleanup();
+
+        reject(
+          new Error('Unable to connect to server')
+        );
+
+      };
+
+
+    script.src =
+      url +
+      '&callback=' +
+      encodeURIComponent(callbackName);
+
+
+    document.body.appendChild(script);
+
+  });
+
+}
+
+
+async function check() {
+
+  if (!txnid || !bookId) {
+
+    document.getElementById(
+      'status'
+    ).innerText =
+      'Invalid download link.';
+
+    return;
+
+  }
+
+
+  try {
+
+    const result =
+      await jsonp(
+
+        API_URL +
+        '?options=checkpayment' +
+
+        '&txnid=' +
+        encodeURIComponent(txnid)
+
+      );
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error
+      );
+
+    }
+
+
+    if (
+      String(result.status).toUpperCase() !==
+      'SUCCESS'
+    ) {
+
+      throw new Error(
+        'Payment is not confirmed.'
+      );
+
+    }
+
+
+    if (
+      String(result.bookId) !==
+      String(bookId)
+    ) {
+
+      throw new Error(
+        'Book does not match this transaction.'
+      );
+
+    }
+
+
+    document.getElementById(
+      'status'
+    ).innerText =
+      'Payment confirmed. Your eBook is ready.';
+
+
+    document.getElementById(
+      'download'
+    ).style.display =
+      'inline-block';
+
+
+  } catch (err) {
+
+    document.getElementById(
+      'status'
+    ).innerText =
+      err.message;
+
+  }
+
+}
+
+
+function startDownload() {
+
+  window.location.href =
+    API_URL +
+
+    '?options=download' +
+
+    '&id=' +
+    encodeURIComponent(bookId) +
+
+    '&txnid=' +
+    encodeURIComponent(txnid);
+
+}
+
+
+check();
+
+</script>
+
+</body>
+
+</html>
