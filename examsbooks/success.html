@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>Payment Successful</title>
+
+<style>
+
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.box {
+  max-width: 550px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+}
+
+button {
+  padding: 14px 25px;
+  border: 0;
+  border-radius: 6px;
+  background: #222;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="box">
+
+<h1>Payment Successful</h1>
+
+<p id="status">
+Checking your order...
+</p>
+
+<div id="details"></div>
+
+<button
+  id="downloadButton"
+  style="display:none"
+  onclick="downloadBook()"
+>
+Download eBook
+</button>
+
+</div>
+
+
+<script>
+
+const API_URL =
+  'https://script.google.com/macros/s/XXXXXXXXXXXX/exec';
+
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const txnid =
+  params.get('txnid');
+
+
+let order = null;
+
+
+/************************************************
+ * JSONP
+ ************************************************/
+
+function jsonp(url) {
+
+  return new Promise(function(resolve, reject) {
+
+    const callbackName =
+      'jsonp_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random() * 100000);
+
+
+    const script =
+      document.createElement('script');
+
+
+    const timeout =
+      setTimeout(function() {
+
+        cleanup();
+
+        reject(
+          new Error('Server timeout')
+        );
+
+      }, 20000);
+
+
+    function cleanup() {
+
+      clearTimeout(timeout);
+
+      delete window[callbackName];
+
+      script.remove();
+
+    }
+
+
+    window[callbackName] =
+      function(data) {
+
+        cleanup();
+
+        resolve(data);
+
+      };
+
+
+    script.onerror =
+      function() {
+
+        cleanup();
+
+        reject(
+          new Error('Unable to contact server')
+        );
+
+      };
+
+
+    script.src =
+      url +
+      '&callback=' +
+      encodeURIComponent(callbackName);
+
+
+    document.body.appendChild(script);
+
+  });
+
+}
+
+
+/************************************************
+ * CHECK ORDER
+ ************************************************/
+
+async function checkOrder() {
+
+  if (!txnid) {
+
+    document.getElementById(
+      'status'
+    ).innerText =
+      'Transaction ID missing.';
+
+    return;
+
+  }
+
+
+  try {
+
+    const result =
+      await jsonp(
+
+        API_URL +
+        '?options=checkpayment&txnid=' +
+        encodeURIComponent(txnid)
+
+      );
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error ||
+        'Order not found'
+      );
+
+    }
+
+
+    order = result;
+
+
+    if (
+      String(result.status).toUpperCase() !==
+      'SUCCESS'
+    ) {
+
+      document.getElementById(
+        'status'
+      ).innerText =
+        'Payment is not confirmed.';
+
+      return;
+
+    }
+
+
+    document.getElementById(
+      'status'
+    ).innerHTML =
+      '<strong>Payment confirmed.</strong>';
+
+
+    document.getElementById(
+      'details'
+    ).innerHTML = `
+
+      <p>
+      Transaction ID:
+      <strong>
+      ${escapeHtml(result.txnid)}
+      </strong>
+      </p>
+
+      <p>
+      eBook:
+      <strong>
+      ${escapeHtml(result.product)}
+      </strong>
+      </p>
+
+      <p>
+      Amount:
+      <strong>
+      ₹${escapeHtml(result.amount)}
+      </strong>
+      </p>
+
+    `;
+
+
+    document.getElementById(
+      'downloadButton'
+    ).style.display =
+      'inline-block';
+
+
+  } catch (err) {
+
+    document.getElementById(
+      'status'
+    ).innerText =
+      err.message;
+
+  }
+
+}
+
+
+/************************************************
+ * DOWNLOAD
+ ************************************************/
+
+function downloadBook() {
+
+  if (!order) return;
+
+
+  window.location.href =
+    API_URL +
+    '?options=download' +
+
+    '&id=' +
+    encodeURIComponent(order.bookId) +
+
+    '&txnid=' +
+    encodeURIComponent(order.txnid);
+
+}
+
+
+/************************************************
+ * ESCAPE
+ ************************************************/
+
+function escapeHtml(value) {
+
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+}
+
+
+checkOrder();
+
+</script>
+
+</body>
+
+</html>
