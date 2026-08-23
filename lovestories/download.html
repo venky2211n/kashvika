@@ -439,21 +439,32 @@ function verifyPayment() {
     };
 
 
+
   const url =
-    API_URL +
-    '?action=download' +
-    '&id=' +
-    encodeURIComponent(
-      bookId
-    ) +
-    '&txnid=' +
-    encodeURIComponent(
-      txnid
-    ) +
-    '&callback=' +
-    encodeURIComponent(
-      callbackName
-    );
+  API_URL +
+  '?options=download' +
+  '&id=' +
+  encodeURIComponent(bookId) +
+  '&txnid=' +
+  encodeURIComponent(txnid) +
+  '&callback=' +
+  encodeURIComponent(callbackName);
+
+  // const url =
+  //   API_URL +
+  //   '?action=download' +
+  //   '&id=' +
+  //   encodeURIComponent(
+  //     bookId
+  //   ) +
+  //   '&txnid=' +
+  //   encodeURIComponent(
+  //     txnid
+  //   ) +
+  //   '&callback=' +
+  //   encodeURIComponent(
+  //     callbackName
+  //   );
 
 
   script.src =
