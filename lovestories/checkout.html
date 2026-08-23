@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,24 +24,29 @@
 
   <style>
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 30px 15px;
+    * {
+      box-sizing: border-box;
     }
 
-    .checkout {
-      max-width: 500px;
+    body {
+      margin: 0;
+      padding: 30px 15px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .checkout-container {
+      max-width: 650px;
       margin: auto;
       background: white;
       padding: 30px;
       border-radius: 12px;
-      box-shadow:
-        0 5px 25px rgba(0,0,0,.10);
+      box-shadow: 0 3px 15px rgba(0,0,0,.10);
     }
 
     h1 {
+      margin-top: 0;
       text-align: center;
     }
 
@@ -39,30 +55,44 @@
       margin-bottom: 25px;
     }
 
+    .book img {
+      max-width: 180px;
+      max-height: 240px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
     .book-title {
       font-size: 22px;
       font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .book-description {
+      margin-top: 10px;
+      color: #666;
+      line-height: 1.5;
     }
 
     .price {
-      font-size: 25px;
-      margin-top: 10px;
-    }
-
-    input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 13px;
-      margin-top: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
+      margin-top: 15px;
+      font-size: 24px;
+      font-weight: bold;
     }
 
     label {
       display: block;
-      margin-top: 12px;
+      margin-top: 15px;
+      margin-bottom: 6px;
       font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
     }
 
     #paypal-button-container {
@@ -77,7 +107,19 @@
 
     .loading {
       text-align: center;
-      margin: 20px;
+      padding: 30px;
+    }
+
+    .error {
+      color: #c62828;
+    }
+
+    .success {
+      color: #2e7d32;
+    }
+
+    .hidden {
+      display: none;
     }
 
   </style>
@@ -88,30 +130,36 @@
 <body>
 
 
-<div class="checkout">
+<div class="checkout-container">
 
   <h1>Checkout</h1>
 
 
-  <div
-    id="loading"
-    class="loading">
+  <!-- BOOK INFORMATION -->
 
+  <div id="loading" class="loading">
     Loading book...
-
   </div>
 
 
-  <div
-    id="checkoutArea"
-    style="display:none;">
+  <div id="checkoutContent" class="hidden">
 
 
     <div class="book">
 
+      <img
+        id="bookImage"
+        src=""
+        alt="Book">
+
       <div
         id="bookTitle"
         class="book-title">
+      </div>
+
+      <div
+        id="bookDescription"
+        class="book-description">
       </div>
 
       <div
@@ -122,44 +170,49 @@
     </div>
 
 
-    <label>
+    <!-- CUSTOMER DETAILS -->
+
+    <label for="name">
       Full Name
     </label>
 
     <input
       id="name"
       type="text"
-      placeholder="Full Name">
+      placeholder="Enter your full name"
+      autocomplete="name">
 
 
-    <label>
+    <label for="email">
       Email
     </label>
 
     <input
       id="email"
       type="email"
-      placeholder="Email">
+      placeholder="Enter your email"
+      autocomplete="email">
 
 
-    <label>
+    <label for="phone">
       Mobile Number
     </label>
 
     <input
       id="phone"
       type="tel"
-      placeholder="Mobile Number">
+      placeholder="Enter your mobile number"
+      autocomplete="tel">
 
+
+    <!-- PAYPAL -->
 
     <div
       id="paypal-button-container">
     </div>
 
 
-    <div
-      id="message">
-    </div>
+    <div id="message"></div>
 
 
   </div>
@@ -167,13 +220,26 @@
 </div>
 
 
+
 <script>
 
-/******************************************************
- * CONFIG
- ******************************************************/
 
-const API_URL =
+/****************************************************
+ * CONFIGURATION
+ ****************************************************/
+
+
+// // YOUR GOOGLE APPS SCRIPT WEB APP URL
+// const API_URL =
+//   'YOUR_APPS_SCRIPT_WEB_APP_URL';
+
+
+// // YOUR PAYPAL SANDBOX CLIENT ID
+// const PAYPAL_CLIENT_ID =
+//   'YOUR_PAYPAL_SANDBOX_CLIENT_ID';
+
+
+  const API_URL =
   'https://script.google.com/macros/s/AKfycbwTxwemIt-TRmzIJ4_88MRZqmZ4Hb56f9JKT9Un41Yq5TMSapSucVkEcz_VNI7mJvz0QQ/exec';
 
 
@@ -181,34 +247,29 @@ const PAYPAL_CLIENT_ID =
   'AXo3MDuy224WwNfHDZusHjW9cenuT9qI7Vh4_h_BIMb_0Ah1p5MlTafo3ZwIV67CBlrYdKbHKOiH05yQ';
 
 
-const CURRENCY = 'USD';
+
+/****************************************************
+ * GET BOOK ID FROM URL
+ *
+ * checkout.html?id=101
+ ****************************************************/
 
 
-/******************************************************
- * BOOK ID
- ******************************************************/
-
-const params =
+const urlParams =
   new URLSearchParams(
     window.location.search
   );
 
 
-
 const bookId =
-  params.get('id');
-
-
-
-
+  urlParams.get('id');
 
 
 if (!bookId) {
 
-  document.getElementById(
-    'loading'
-  ).innerText =
-    'Book ID missing.';
+  showError(
+    'Book ID missing.'
+  );
 
   throw new Error(
     'Book ID missing'
@@ -216,20 +277,577 @@ if (!bookId) {
 }
 
 
-/******************************************************
- * JSONP
- ******************************************************/
 
-function jsonp(
-  url,
-  timeout = 20000
+/****************************************************
+ * LOAD BOOK
+ ****************************************************/
+
+
+loadBook();
+
+
+
+async function loadBook() {
+
+  try {
+
+    showMessage(
+      'Loading book...'
+    );
+
+
+    const result =
+      await apiCall(
+        'checkbook',
+        {
+          bookId: bookId
+        }
+      );
+
+
+    console.log(
+      'BOOK RESULT:',
+      result
+    );
+
+
+    if (
+      !result ||
+      !result.success
+    ) {
+
+      throw new Error(
+        result &&
+        result.error
+          ? result.error
+          : 'Book not found.'
+      );
+
+    }
+
+
+    displayBook(
+      result
+    );
+
+
+    document
+      .getElementById(
+        'loading'
+      )
+      .classList
+      .add('hidden');
+
+
+    document
+      .getElementById(
+        'checkoutContent'
+      )
+      .classList
+      .remove('hidden');
+
+
+    loadPayPal();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      'BOOK ERROR:',
+      error
+    );
+
+
+    showError(
+      error.message
+    );
+
+  }
+
+}
+
+
+
+/****************************************************
+ * DISPLAY BOOK
+ ****************************************************/
+
+
+function displayBook(book) {
+
+
+  document.getElementById(
+    'bookTitle'
+  ).textContent =
+    book.product || '';
+
+
+  document.getElementById(
+    'bookDescription'
+  ).textContent =
+    book.description || '';
+
+
+  document.getElementById(
+    'bookPrice'
+  ).textContent =
+    book.currency +
+    ' ' +
+    book.amount;
+
+
+  const image =
+    document.getElementById(
+      'bookImage'
+    );
+
+
+  if (book.imageUrl) {
+
+    image.src =
+      book.imageUrl;
+
+    image.style.display =
+      'inline-block';
+
+  }
+
+  else {
+
+    image.style.display =
+      'none';
+
+  }
+
+}
+
+
+
+/****************************************************
+ * LOAD PAYPAL SDK
+ ****************************************************/
+
+
+function loadPayPal() {
+
+
+  if (
+    document.getElementById(
+      'paypal-sdk'
+    )
+  ) {
+
+    renderPayPal();
+
+    return;
+
+  }
+
+
+  const script =
+    document.createElement(
+      'script'
+    );
+
+
+  script.id =
+    'paypal-sdk';
+
+
+  script.src =
+    'https://www.paypal.com/sdk/js' +
+    '?client-id=' +
+    encodeURIComponent(
+      PAYPAL_CLIENT_ID
+    ) +
+    '&currency=USD' +
+    '&intent=capture';
+
+
+  script.onload =
+    function() {
+
+      console.log(
+        'PayPal SDK loaded'
+      );
+
+
+      renderPayPal();
+
+    };
+
+
+  script.onerror =
+    function() {
+
+      showError(
+        'Unable to load PayPal.'
+      );
+
+    };
+
+
+  document.head.appendChild(
+    script
+  );
+
+}
+
+
+
+/****************************************************
+ * PAYPAL BUTTONS
+ ****************************************************/
+
+
+function renderPayPal() {
+
+
+  paypal.Buttons({
+
+
+    /************************************************
+     * CREATE ORDER
+     ************************************************/
+
+    createOrder:
+      async function() {
+
+
+        const name =
+          document
+            .getElementById(
+              'name'
+            )
+            .value
+            .trim();
+
+
+        const email =
+          document
+            .getElementById(
+              'email'
+            )
+            .value
+            .trim();
+
+
+        const phone =
+          document
+            .getElementById(
+              'phone'
+            )
+            .value
+            .trim();
+
+
+        if (!name) {
+
+          showError(
+            'Please enter your name.'
+          );
+
+          throw new Error(
+            'Name required'
+          );
+
+        }
+
+
+        if (!email) {
+
+          showError(
+            'Please enter your email.'
+          );
+
+          throw new Error(
+            'Email required'
+          );
+
+        }
+
+
+        if (!isValidEmail(email)) {
+
+          showError(
+            'Please enter a valid email.'
+          );
+
+          throw new Error(
+            'Invalid email'
+          );
+
+        }
+
+
+        if (!phone) {
+
+          showError(
+            'Please enter your mobile number.'
+          );
+
+          throw new Error(
+            'Phone required'
+          );
+
+        }
+
+
+        showMessage(
+          'Creating PayPal order...'
+        );
+
+
+        const result =
+          await apiCall(
+            'createpaypal',
+            {
+
+              bookId:
+                bookId,
+
+              name:
+                name,
+
+              email:
+                email,
+
+              phone:
+                phone
+
+            }
+          );
+
+
+        console.log(
+          'CREATE PAYPAL RESULT:',
+          result
+        );
+
+
+        if (
+          !result ||
+          !result.success
+        ) {
+
+          throw new Error(
+            result &&
+            result.error
+              ? result.error
+              : 'Unable to create PayPal order.'
+          );
+
+        }
+
+
+        if (!result.orderID) {
+
+          throw new Error(
+            'PayPal order ID was not returned.'
+          );
+
+        }
+
+
+        /*
+         * Save transaction ID
+         */
+
+        sessionStorage.setItem(
+          'txnid',
+          result.txnid || ''
+        );
+
+
+        sessionStorage.setItem(
+          'paypalOrderID',
+          result.orderID
+        );
+
+
+        return result.orderID;
+
+      },
+
+
+    /************************************************
+     * PAYMENT APPROVED
+     ************************************************/
+
+    onApprove:
+      async function(
+        data,
+        actions
+      ) {
+
+
+        const txnid =
+          sessionStorage.getItem(
+            'txnid'
+          );
+
+
+        showMessage(
+          'Payment approved. Processing...'
+        );
+
+
+        try {
+
+
+          const result =
+            await apiCall(
+              'capturepaypal',
+              {
+
+                txnid:
+                  txnid,
+
+                orderID:
+                  data.orderID
+
+              }
+            );
+
+
+          console.log(
+            'CAPTURE RESULT:',
+            result
+          );
+
+
+          if (
+            !result ||
+            !result.success
+          ) {
+
+            throw new Error(
+              result &&
+              result.error
+                ? result.error
+                : 'Payment capture failed.'
+            );
+
+          }
+
+
+          /*
+           * Payment successful
+           */
+
+          showSuccess(
+            'Payment successful. Redirecting...'
+          );
+
+
+          /*
+           * GitHub success page
+           *
+           * Example:
+           * /lovestories/success.html?txnid=TXN123
+           */
+
+          window.location.href =
+            'success.html?txnid=' +
+            encodeURIComponent(
+              txnid
+            );
+
+        }
+
+        catch (error) {
+
+          console.error(
+            'CAPTURE ERROR:',
+            error
+          );
+
+
+          showError(
+            'Payment capture error: ' +
+            error.message
+          );
+
+        }
+
+      },
+
+
+    /************************************************
+     * CANCEL
+     ************************************************/
+
+    onCancel:
+      function(data) {
+
+        console.log(
+          'PayPal cancelled:',
+          data
+        );
+
+
+        showMessage(
+          'Payment cancelled.'
+        );
+
+      },
+
+
+    /************************************************
+     * PAYPAL ERROR
+     ************************************************/
+
+    onError:
+      function(error) {
+
+        console.error(
+          'PAYPAL ERROR:',
+          error
+        );
+
+
+        showError(
+          'PayPal payment error: ' +
+          (
+            error &&
+            error.message
+              ? error.message
+              : 'Unknown error'
+          )
+        );
+
+      }
+
+  }).render(
+    '#paypal-button-container'
+  );
+
+}
+
+
+
+/****************************************************
+ * JSONP API CALL
+ *
+ * GitHub Pages
+ *      ↓
+ * Google Apps Script
+ ****************************************************/
+
+
+function apiCall(
+  action,
+  params
 ) {
 
+
   return new Promise(
-    (resolve, reject) => {
+    function(resolve, reject) {
+
 
       const callbackName =
-        'jsonp_' +
+        'jsonpCallback_' +
         Date.now() +
         '_' +
         Math.floor(
@@ -243,592 +861,291 @@ function jsonp(
         );
 
 
-      let timer;
+      let finished =
+        false;
 
 
-      window[callbackName] =
-        function(data) {
+      /*
+       * Timeout
+       */
 
-          cleanup();
-
-          resolve(data);
-        };
-
-
-      function cleanup() {
-
-        clearTimeout(timer);
-
-        script.remove();
-
-        delete window[
-          callbackName
-        ];
-      }
-
-
-      timer =
+      const timer =
         setTimeout(
           function() {
 
-            cleanup();
+            if (finished)
+              return;
+
+
+            finished = true;
+
+
+            delete window[
+              callbackName
+            ];
+
+
+            script.remove();
+
 
             reject(
               new Error(
-                'Server timeout.'
+                'Apps Script request timed out.'
               )
             );
 
           },
-          timeout
+          30000
         );
+
+
+      /*
+       * JSONP callback
+       */
+
+      window[
+        callbackName
+      ] =
+        function(result) {
+
+
+          if (finished)
+            return;
+
+
+          finished = true;
+
+
+          clearTimeout(
+            timer
+          );
+
+
+          delete window[
+            callbackName
+          ];
+
+
+          script.remove();
+
+
+          resolve(
+            result
+          );
+
+        };
+
+
+      /*
+       * Build URL
+       */
+
+      const query =
+        new URLSearchParams();
+
+
+      query.set(
+        'action',
+        action
+      );
+
+
+      query.set(
+        'callback',
+        callbackName
+      );
+
+
+      Object.keys(
+        params || {}
+      ).forEach(
+        function(key) {
+
+          const value =
+            params[key];
+
+
+          if (
+            value !== undefined &&
+            value !== null
+          ) {
+
+            query.set(
+              key,
+              value
+            );
+
+          }
+
+        }
+      );
 
 
       script.src =
-        url +
-        '&callback=' +
-        encodeURIComponent(
-          callbackName
-        );
+        API_URL +
+        '?' +
+        query.toString();
 
 
       script.onerror =
         function() {
 
-          cleanup();
+
+          if (finished)
+            return;
+
+
+          finished = true;
+
+
+          clearTimeout(
+            timer
+          );
+
+
+          delete window[
+            callbackName
+          ];
+
+
+          script.remove();
+
 
           reject(
             new Error(
-              'Unable to connect to payment server.'
+              'Could not connect to Apps Script.'
             )
           );
+
         };
 
 
-      document
-        .body
-        .appendChild(
-          script
-        );
+      document.body.appendChild(
+        script
+      );
 
     }
   );
-}
 
-
-/******************************************************
- * LOAD BOOK
- ******************************************************/
-
-
-
-
-function loadBook() {
-
-  const url =
-    API_URL +
-    '?action=checkbook' +
-    '&bookId=' +
-    encodeURIComponent(bookId);
-
-
-  jsonp(url)
-
-    .then(function(result) {
-
-      if (!result.success) {
-
-        throw new Error(
-          result.error ||
-          'Book not found.'
-        );
-      }
-
-
-      document.getElementById(
-        'loading'
-      ).style.display =
-        'none';
-
-
-      document.getElementById(
-        'checkoutArea'
-      ).style.display =
-        'block';
-
-
-      document.getElementById(
-        'bookTitle'
-      ).innerText =
-        result.product;
-
-
-      document.getElementById(
-        'bookPrice'
-      ).innerText =
-        result.currency +
-        ' ' +
-        result.amount;
-
-
-      loadPayPal();
-
-    })
-
-    .catch(function(err) {
-
-      document.getElementById(
-        'loading'
-      ).innerText =
-        err.message;
-
-    });
 }
 
 
 
-// function loadBook() {
-
-//   const url =
-//     API_URL +
-//     '?action=checkbook' +
-//     '&bookId=' +
-//     encodeURIComponent(bookId);
+/****************************************************
+ * EMAIL VALIDATION
+ ****************************************************/
 
 
-//   /*
-//    * We don't actually need a separate
-//    * checkbook endpoint because createPayPal
-//    * will load the book.
-//    *
-//    * Therefore display a generic checkout
-//    * area and let createOrder return details.
-//    */
+function isValidEmail(
+  email
+) {
 
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(email);
 
-//   document.getElementById(
-//     'loading'
-//   ).style.display =
-//     'none';
-
-
-//   document.getElementById(
-//     'checkoutArea'
-//   ).style.display =
-//     'block';
-
-
-//   document.getElementById(
-//     'bookTitle'
-//   ).innerText =
-//     'eBook #' + bookId;
-
-
-//   document.getElementById(
-//     'bookPrice'
-//   ).innerText =
-//     'Price will be verified at checkout.';
-
-
-//   loadPayPal();
-// } 
-
-
-/******************************************************
- * LOAD PAYPAL SDK
- ******************************************************/
-
-function loadPayPal() {
-
-  const script =
-    document.createElement(
-      'script'
-    );
-
-
-  script.src =
-    'https://www.paypal.com/sdk/js' +
-    '?client-id=' +
-    encodeURIComponent(
-      PAYPAL_CLIENT_ID
-    ) +
-    '&currency=' +
-    CURRENCY +
-    '&intent=capture';
-
-
-  script.onload =
-    function() {
-
-      renderPayPal();
-    };
-
-
-  script.onerror =
-    function() {
-
-      showMessage(
-        'Unable to load PayPal.'
-      );
-    };
-
-
-  document
-    .head
-    .appendChild(
-      script
-    );
 }
 
 
-/******************************************************
- * VALIDATE CUSTOMER
- ******************************************************/
 
-function getCustomer() {
+/****************************************************
+ * MESSAGE FUNCTIONS
+ ****************************************************/
 
-  const name =
-    document
-      .getElementById('name')
-      .value
-      .trim();
-
-
-  const email =
-    document
-      .getElementById('email')
-      .value
-      .trim();
-
-
-  const phone =
-    document
-      .getElementById('phone')
-      .value
-      .trim();
-
-
-  if (!name) {
-
-    throw new Error(
-      'Please enter your name.'
-    );
-  }
-
-
-  if (!email) {
-
-    throw new Error(
-      'Please enter your email.'
-    );
-  }
-
-
-  if (!email.includes('@')) {
-
-    throw new Error(
-      'Please enter a valid email.'
-    );
-  }
-
-
-  return {
-
-    name,
-    email,
-    phone
-  };
-}
-
-
-/******************************************************
- * RENDER PAYPAL
- ******************************************************/
-
-function renderPayPal() {
-
-  paypal.Buttons({
-
-    style: {
-
-      layout: 'vertical',
-
-      shape: 'rect',
-
-      label: 'paypal'
-
-    },
-
-
-    /**************************************************
-     * CREATE ORDER
-     **************************************************/
-
-    createOrder:
-      function() {
-
-        let customer;
-
-        try {
-
-          customer =
-            getCustomer();
-
-        }
-
-        catch (err) {
-
-          showMessage(
-            err.message
-          );
-
-          return Promise.reject(
-            err
-          );
-        }
-
-
-        showMessage(
-          'Creating PayPal order...'
-        );
-
-
-        const url =
-          API_URL +
-
-          '?action=createpaypal' +
-
-          '&bookId=' +
-          encodeURIComponent(
-            bookId
-          ) +
-
-          '&name=' +
-          encodeURIComponent(
-            customer.name
-          ) +
-
-          '&email=' +
-          encodeURIComponent(
-            customer.email
-          ) +
-
-          '&phone=' +
-          encodeURIComponent(
-            customer.phone
-          );
-
-
-        return jsonp(url)
-          .then(
-            function(result) {
-
-              if (!result.success) {
-
-                throw new Error(
-                  result.error ||
-                  'Unable to create order.'
-                );
-              }
-
-
-              /****************************************
-               * SAVE TRANSACTION ID
-               ****************************************/
-
-              sessionStorage.setItem(
-                'paypal_txnid',
-                result.txnid
-              );
-
-
-              sessionStorage.setItem(
-                'paypal_order_id',
-                result.orderID
-              );
-
-
-              sessionStorage.setItem(
-                'paypal_book_id',
-                result.bookId
-              );
-
-
-              /****************************************
-               * DISPLAY REAL PRICE
-               ****************************************/
-
-              document.getElementById(
-                'bookTitle'
-              ).innerText =
-                result.product;
-
-
-              document.getElementById(
-                'bookPrice'
-              ).innerText =
-                result.currency +
-                ' ' +
-                result.amount;
-
-
-              return result.orderID;
-            }
-          );
-
-      },
-
-
-    /**************************************************
-     * APPROVED
-     **************************************************/
-
-    onApprove:
-      function(data) {
-
-        const txnid =
-          sessionStorage.getItem(
-            'paypal_txnid'
-          );
-
-
-        if (!txnid) {
-
-          showMessage(
-            'Transaction ID missing.'
-          );
-
-          return;
-        }
-
-
-        showMessage(
-          'Payment approved. Capturing payment...'
-        );
-
-
-        const url =
-          API_URL +
-
-          '?action=capturepaypal' +
-
-          '&txnid=' +
-          encodeURIComponent(
-            txnid
-          ) +
-
-          '&orderID=' +
-          encodeURIComponent(
-            data.orderID
-          );
-
-
-        return jsonp(url)
-          .then(
-            function(result) {
-
-              if (
-                !result.success ||
-                result.status !==
-                'SUCCESS'
-              ) {
-
-                throw new Error(
-                  result.error ||
-                  'Payment capture failed.'
-                );
-              }
-
-
-              showMessage(
-                'Payment successful. Redirecting...'
-              );
-
-
-              /****************************************
-               * SUCCESS PAGE
-               ****************************************/
-
-              window.location.href =
-                'success.html?txnid=' +
-                encodeURIComponent(
-                  txnid
-                );
-
-            }
-          )
-          .catch(
-            function(err) {
-
-              showMessage(
-                err.message
-              );
-
-            }
-          );
-
-      },
-
-
-    /**************************************************
-     * CANCEL
-     **************************************************/
-
-    onCancel:
-      function(data) {
-
-        showMessage(
-          'Payment cancelled.'
-        );
-
-      },
-
-
-    /**************************************************
-     * ERROR
-     **************************************************/
-
-    onError:
-      function(err) {
-
-        console.error(err);
-
-        showMessage(
-          'PayPal payment error.'
-        );
-
-      }
-
-  }).render(
-    '#paypal-button-container'
-  );
-}
-
-
-/******************************************************
- * MESSAGE
- ******************************************************/
 
 function showMessage(
   message
 ) {
 
-  document.getElementById(
-    'message'
-  ).innerText =
+  const element =
+    document.getElementById(
+      'message'
+    );
+
+
+  element.className =
+    '';
+
+
+  element.textContent =
     message;
+
 }
 
 
-/******************************************************
- * START
- ******************************************************/
 
-loadBook();
+function showSuccess(
+  message
+) {
+
+  const element =
+    document.getElementById(
+      'message'
+    );
+
+
+  element.className =
+    'success';
+
+
+  element.textContent =
+    message;
+
+}
+
+
+
+function showError(
+  message
+) {
+
+  const loading =
+    document.getElementById(
+      'loading'
+    );
+
+
+  if (loading) {
+
+    loading.classList
+      .add('hidden');
+
+  }
+
+
+  const content =
+    document.getElementById(
+      'checkoutContent'
+    );
+
+
+  if (content) {
+
+    content.classList
+      .remove('hidden');
+
+  }
+
+
+  const element =
+    document.getElementById(
+      'message'
+    );
+
+
+  if (element) {
+
+    element.className =
+      'error';
+
+
+    element.textContent =
+      message;
+
+  }
+
+}
 
 </script>
 
-
 </body>
-
 </html>
