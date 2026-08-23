@@ -323,35 +323,52 @@ const params =
   );
 
 
-const bookId =
-  params.get('id');
-
-
 const txnid =
   params.get('txnid');
 
-
-if (!bookId) {
-
-  showError(
-    'Book ID missing.'
-  );
-
-}
-
-else if (!txnid) {
+if (!txnid) {
 
   showError(
     'Transaction ID missing.'
   );
 
-}
-
-else {
+} else {
 
   verifyPayment();
 
 }
+
+
+  
+// const bookId =
+//   params.get('id');
+
+
+// const txnid =
+//   params.get('txnid');
+
+
+// if (!bookId) {
+
+//   showError(
+//     'Book ID missing.'
+//   );
+
+// }
+
+// else if (!txnid) {
+
+//   showError(
+//     'Transaction ID missing.'
+//   );
+
+// }
+
+// else {
+
+//   verifyPayment();
+
+// }
 
 
 function verifyPayment() {
