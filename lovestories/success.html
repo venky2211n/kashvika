@@ -1,8 +1,3 @@
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,196 +5,42 @@
 
   <meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1">
 
-  <title>70Payment Successful</title>
+  <title>Payment Successful</title>
 
   <style>
 
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      margin: 0;
-      padding: 20px;
       font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      color: #222;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: #ffffff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.10);
-    }
-
-    .success-icon {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 15px;
-      border-radius: 50%;
-      background: #22c55e;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      font-weight: bold;
-    }
-
-    h1 {
       text-align: center;
-      margin: 10px 0;
-      color: #16a34a;
+      padding: 60px 20px;
+      background: #f5f5f5;
     }
 
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 25px;
-    }
-
-    /* Loading */
-
-    #loading {
-      text-align: center;
-      padding: 30px 10px;
-    }
-
-    .spinner {
-      width: 35px;
-      height: 35px;
-      border: 4px solid #ddd;
-      border-top: 4px solid #16a34a;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 15px;
-    }
-
-    @keyframes spin {
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* Error */
-
-    #error {
-      display: none;
-      padding: 15px;
-      margin-top: 20px;
-      background: #fee2e2;
-      color: #b91c1c;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    /* Order */
-
-    #orderDetails {
-      display: none;
-    }
-
-    .order-box {
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 13px 15px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .row:last-child {
-      border-bottom: none;
-    }
-
-    .label {
-      color: #666;
-      font-weight: 500;
-    }
-
-    .value {
-      font-weight: 600;
-      text-align: right;
-      word-break: break-word;
-    }
-
-    .amount {
-      color: #16a34a;
-      font-size: 20px;
-    }
-
-    .status {
-      color: #16a34a;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-
-    .download-btn {
-      display: block;
-      width: 100%;
-      margin-top: 25px;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      background: #16a34a;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-    }
-
-    .download-btn:hover {
-      background: #15803d;
-    }
-
-    .home-btn {
-      display: block;
-      width: 100%;
-      margin-top: 10px;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+    .box {
+      max-width: 500px;
+      margin: auto;
       background: white;
-      color: #333;
-      font-size: 15px;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow:
+        0 5px 25px rgba(0,0,0,.1);
     }
 
-    @media (max-width: 500px) {
+    .success {
+      font-size: 50px;
+    }
 
-      body {
-        padding: 10px;
-      }
-
-      .container {
-        margin: 15px auto;
-        padding: 20px;
-      }
-
-      .row {
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .value {
-        text-align: left;
-      }
-
+    button {
+      padding: 13px 25px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
     }
 
   </style>
@@ -209,15 +50,9 @@
 
 <body>
 
+<div class="box">
 
-<div class="container">
-
-
-  <!-- ========================================= -->
-  <!-- SUCCESS HEADER -->
-  <!-- ========================================= -->
-
-  <div class="success-icon">
+  <div class="success">
     ✓
   </div>
 
@@ -225,514 +60,233 @@
     Payment Successful
   </h1>
 
-  <div class="subtitle">
-    Your payment has been received successfully.
-  </div>
+  <p>
+    Thank you for your purchase.
+  </p>
 
+  <p>
+    Transaction ID:
+  </p>
 
-  <!-- ========================================= -->
-  <!-- LOADING -->
-  <!-- ========================================= -->
+  <strong
+    id="txnid">
+  </strong>
 
-  <div id="loading">
 
-    <div class="spinner"></div>
+  <br>
 
-    <strong>
-      Retrieving your order...
-    </strong>
 
-  </div>
+  <button
+    id="downloadButton"
+    onclick="downloadBook()">
 
+    Download eBook
 
-  <!-- ========================================= -->
-  <!-- ERROR -->
-  <!-- ========================================= -->
+  </button>
 
-  <div id="error"></div>
 
-
-  <!-- ========================================= -->
-  <!-- ORDER DETAILS -->
-  <!-- ========================================= -->
-
-  <div id="orderDetails">
-
-    <div class="order-box">
-
-
-      <div class="row">
-
-        <div class="label">
-          Transaction ID
-        </div>
-
-        <div class="value"
-             id="txnid">
-        </div>
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="label">
-          Product
-        </div>
-
-        <div class="value"
-             id="product">
-        </div>
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="label">
-          Book ID
-        </div>
-
-        <div class="value"
-             id="bookId">
-        </div>
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="label">
-          Amount
-        </div>
-
-        <div class="value amount"
-             id="amount">
-        </div>
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="label">
-          Customer Name
-        </div>
-
-        <div class="value"
-             id="name">
-        </div>
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="label">
-          Email
-        </div>
-
-        <div class="value"
-             id="email">
-        </div>
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="label">
-          Phone
-        </div>
-
-        <div class="value"
-             id="phone">
-        </div>
-
-      </div>
-
-
-      <div class="row">
-
-        <div class="label">
-          Payment Status
-        </div>
-
-        <div class="value status"
-             id="status">
-        </div>
-
-      </div>
-
-
-    </div>
-
-
-    <!-- ========================================= -->
-    <!-- DOWNLOAD -->
-    <!-- ========================================= -->
-
-    <a id="downloadButton"
-       class="download-btn"
-       href="#"
-       style="display:none;">
-
-      Download eBook
-
-    </a>
-
-
-    <!-- ========================================= -->
-    <!-- HOME -->
-    <!-- ========================================= -->
-
-    <a
-      class="home-btn"
-      href="https://kashvika.website/ebooks/">
-
-      Back to eBooks
-
-    </a>
-
-  </div>
-
+  <p id="message"></p>
 
 </div>
 
 
-
 <script>
 
-
-// =====================================================
-// APPS SCRIPT API URL
-// =====================================================
-
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyouvvPpjbj6nHlDDcjcTe3OhJJVZb2gvTV30MQ_bvbGoBTMvd8Ifl1saiSdm_5esOYzA/exec";
+  'https://script.google.com/macros/s/AKfycbwTxwemIt-TRmzIJ4_88MRZqmZ4Hb56f9JKT9Un41Yq5TMSapSucVkEcz_VNI7mJvz0QQ/exec';
 
 
-// =====================================================
-// GET TXNID FROM URL
-// =====================================================
-
-const urlParams =
+const params =
   new URLSearchParams(
     window.location.search
   );
 
+
 const txnid =
-  urlParams.get("txnid");
+  params.get('txnid');
 
 
-// =====================================================
-// ELEMENTS
-// =====================================================
-
-const loading =
-  document.getElementById("loading");
-
-const errorBox =
-  document.getElementById("error");
-
-const orderDetails =
-  document.getElementById("orderDetails");
+document.getElementById(
+  'txnid'
+).innerText =
+  txnid || '';
 
 
-// =====================================================
-// START
-// =====================================================
+function jsonp(
+  url,
+  timeout = 20000
+) {
 
-if (!txnid) {
+  return new Promise(
+    (resolve, reject) => {
 
-  showError(
-    "Transaction ID is missing."
-  );
-
-} else {
-
-  loadOrder();
-
-}
-
-
-// =====================================================
-// LOAD ORDER
-// =====================================================
-
-function loadOrder() {
-
-
-  // -----------------------------------------
-  // JSONP CALLBACK NAME
-  // -----------------------------------------
-
-  const callbackName =
-    "paymentOrder_" +
-    Date.now();
-
-
-  // -----------------------------------------
-  // CALLBACK
-  // -----------------------------------------
-
-  window[callbackName] =
-    function(data) {
-
-      console.log(
-        "Payment Order:",
-        data
-      );
-
-
-      // Stop timeout
-
-      clearTimeout(timeout);
-
-
-      // Remove loading
-
-      loading.style.display =
-        "none";
-
-
-      // ---------------------------------------
-      // CHECK RESPONSE
-      // ---------------------------------------
-
-      if (
-        !data ||
-        data.success !== true
-      ) {
-
-        showError(
-          data && data.message
-            ? data.message
-            : "Unable to retrieve order."
+      const callbackName =
+        'jsonp_' +
+        Date.now() +
+        '_' +
+        Math.floor(
+          Math.random() * 100000
         );
 
-        cleanup();
 
-        return;
+      const script =
+        document.createElement(
+          'script'
+        );
+
+
+      let timer;
+
+
+      window[callbackName] =
+        function(data) {
+
+          cleanup();
+
+          resolve(data);
+
+        };
+
+
+      function cleanup() {
+
+        clearTimeout(timer);
+
+        script.remove();
+
+        delete window[
+          callbackName
+        ];
       }
 
 
-      // ---------------------------------------
-      // DISPLAY DATA
-      // ---------------------------------------
+      timer =
+        setTimeout(
+          function() {
 
-      document.getElementById("txnid")
-        .textContent =
-          data.txnid || txnid;
+            cleanup();
 
+            reject(
+              new Error(
+                'Server timeout.'
+              )
+            );
 
-      document.getElementById("product")
-        .textContent =
-          data.product || "";
-
-
-      document.getElementById("bookId")
-        .textContent =
-          data.bookId || "";
-
-
-      document.getElementById("amount")
-        .textContent =
-          "₹" +
-          Number(data.amount || 0)
-            .toLocaleString("en-IN");
-
-
-      document.getElementById("name")
-        .textContent =
-          data.name || "";
-
-
-      document.getElementById("email")
-        .textContent =
-          data.email || "";
-
-
-      document.getElementById("phone")
-        .textContent =
-          data.phone || "";
-
-
-      document.getElementById("status")
-        .textContent =
-          data.status || "SUCCESS";
-
-
-      // ---------------------------------------
-      // SHOW ORDER
-      // ---------------------------------------
-
-      orderDetails.style.display =
-        "block";
-
-
-      // ---------------------------------------
-      // DOWNLOAD BUTTON
-      // ---------------------------------------
-
-      const downloadButton =
-        document.getElementById(
-          "downloadButton"
+          },
+          timeout
         );
 
 
-      if (data.bookId) {
+      script.src =
+        url +
+        '&callback=' +
+        encodeURIComponent(
+          callbackName
+        );
 
-        downloadButton.href =
-          "https://kashvika.website/ebooks/download.html?id=" +
-          encodeURIComponent(
-            data.bookId
-          ) +
-          "&txnid=" +
-          encodeURIComponent(
-            data.txnid
+
+      script.onerror =
+        function() {
+
+          cleanup();
+
+          reject(
+            new Error(
+              'Unable to connect.'
+            )
           );
 
-        downloadButton.style.display =
-          "block";
-      }
+        };
 
 
-      // ---------------------------------------
-      // CLEANUP
-      // ---------------------------------------
-
-      cleanup();
-
-    };
-
-
-  // =================================================
-  // JSONP URL
-  // =================================================
-
-  const apiUrl =
-    API_URL +
-    "?txnid=" +
-    encodeURIComponent(txnid) +
-    "&callback=" +
-    encodeURIComponent(callbackName);
-
-
-  console.log(
-    "Calling API:",
-    apiUrl
-  );
-
-
-  // =================================================
-  // CREATE SCRIPT
-  // =================================================
-
-  const script =
-    document.createElement("script");
-
-
-  script.src =
-    apiUrl;
-
-
-  script.async =
-    true;
-
-
-  // =================================================
-  // ERROR
-  // =================================================
-
-  script.onerror =
-    function() {
-
-      clearTimeout(timeout);
-
-      loading.style.display =
-        "none";
-
-      showError(
-        "Unable to connect to the payment server."
-      );
-
-      cleanup();
-
-    };
-
-
-  // =================================================
-  // ADD SCRIPT
-  // =================================================
-
-  document.body.appendChild(
-    script
-  );
-
-
-  // =================================================
-  // 5 SECOND TIMEOUT
-  // =================================================
-
-  const timeout =
-    setTimeout(
-      function() {
-
-        loading.style.display =
-          "none";
-
-        showError(
-          "Payment server did not respond. Please refresh the page."
-        );
-
-        cleanup();
-
-      },
-      5000
-    );
-
-
-  // =================================================
-  // CLEANUP FUNCTION
-  // =================================================
-
-  function cleanup() {
-
-    delete window[callbackName];
-
-    if (
-      script &&
-      script.parentNode
-    ) {
-
-      script.parentNode.removeChild(
+      document.body.appendChild(
         script
       );
 
     }
-
-  }
-
+  );
 }
 
 
-// =====================================================
-// ERROR FUNCTION
-// =====================================================
+function downloadBook() {
 
-function showError(message) {
+  if (!txnid) {
 
-  errorBox.textContent =
-    message;
+    document.getElementById(
+      'message'
+    ).innerText =
+      'Transaction ID missing.';
 
-  errorBox.style.display =
-    "block";
+    return;
+  }
 
+
+  document.getElementById(
+    'message'
+  ).innerText =
+    'Checking payment...';
+
+
+  /*
+   * First check transaction.
+   */
+
+  jsonp(
+
+    API_URL +
+
+    '?action=checkpayment' +
+
+    '&txnid=' +
+    encodeURIComponent(
+      txnid
+    )
+
+  )
+
+  .then(function(order) {
+
+    if (
+      !order.success ||
+      order.status !== 'SUCCESS'
+    ) {
+
+      throw new Error(
+        'Payment is not confirmed.'
+      );
+    }
+
+
+    /*
+     * Redirect to download page.
+     */
+
+    window.location.href =
+      'download.html?id=' +
+
+      encodeURIComponent(
+        order.bookId
+      ) +
+
+      '&txnid=' +
+
+      encodeURIComponent(
+        txnid
+      );
+
+  })
+
+  .catch(function(err) {
+
+    document.getElementById(
+      'message'
+    ).innerText =
+      err.message;
+
+  });
 }
 
 </script>
-
 
 </body>
 
