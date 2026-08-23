@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>Checkout</title>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 550px;
+  margin: 30px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 15px rgba(0,0,0,.12);
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 8px 0 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 6px;
+  background: #222;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .6;
+}
+
+#message {
+  margin-top: 20px;
+  text-align: center;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+<h2>eBook Checkout</h2>
+
+<div id="bookInfo">
+Loading book...
+</div>
+
+
+<label>Full Name</label>
+
+<input
+  type="text"
+  id="name"
+  placeholder="Full Name"
+>
+
+
+<label>Email</label>
+
+<input
+  type="email"
+  id="email"
+  placeholder="Email Address"
+>
+
+
+<label>Mobile Number</label>
+
+<input
+  type="tel"
+  id="phone"
+  placeholder="Mobile Number"
+>
+
+
+<button
+  id="payButton"
+  onclick="startPayment()"
+>
+
+Proceed to Pay
+
+</button>
+
+
+<div id="message"></div>
+
+</div>
+
+
+<script>
+
+/************************************************
+ * CONFIG
+ ************************************************/
+
+const API_URL =
+  'https://script.google.com/macros/s/XXXXXXXXXXXX/exec';
+
+
+/************************************************
+ * BOOK ID
+ ************************************************/
+
+const params =
+  new URLSearchParams(window.location.search);
+
+const bookId =
+  params.get('id');
+
+
+let book = null;
+
+
+/************************************************
+ * JSONP HELPER
+ ************************************************/
+
+function jsonp(url) {
+
+  return new Promise(function(resolve, reject) {
+
+    const callbackName =
+      'jsonp_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random() * 100000);
+
+
+    const script =
+      document.createElement('script');
+
+
+    const timeout =
+      setTimeout(function() {
+
+        cleanup();
+
+        reject(
+          new Error('Server request timed out')
+        );
+
+      }, 20000);
+
+
+    function cleanup() {
+
+      clearTimeout(timeout);
+
+      delete window[callbackName];
+
+      script.remove();
+    }
+
+
+    window[callbackName] =
+      function(data) {
+
+        cleanup();
+
+        resolve(data);
+      };
+
+
+    script.onerror =
+      function() {
+
+        cleanup();
+
+        reject(
+          new Error('Unable to connect to server')
+        );
+
+      };
+
+
+    script.src =
+      url +
+      '&callback=' +
+      encodeURIComponent(callbackName);
+
+
+    document.body.appendChild(script);
+
+  });
+}
+
+
+/************************************************
+ * LOAD BOOK
+ ************************************************/
+
+async function loadBook() {
+
+  if (!bookId) {
+
+    document.getElementById('bookInfo').innerHTML =
+      '<p>Book ID missing.</p>';
+
+    return;
+  }
+
+
+  try {
+
+    const data =
+      await jsonp(
+        API_URL +
+        '?options=book&id=' +
+        encodeURIComponent(bookId)
+      );
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error || 'Book not found'
+      );
+    }
+
+
+    book =
+      data.book;
+
+
+    document.getElementById('bookInfo').innerHTML = `
+
+      <h3>${escapeHtml(book.title)}</h3>
+
+      <p>
+        ${escapeHtml(book.description || '')}
+      </p>
+
+      <h2>
+        ₹${Number(book.price).toFixed(2)}
+      </h2>
+
+    `;
+
+
+  } catch (err) {
+
+    document.getElementById('bookInfo').innerHTML =
+
+      '<p>Unable to load book.</p>';
+  }
+}
+
+
+/************************************************
+ * START PAYMENT
+ ************************************************/
+
+async function startPayment() {
+
+  const name =
+    document.getElementById('name')
+      .value.trim();
+
+  const email =
+    document.getElementById('email')
+      .value.trim();
+
+  const phone =
+    document.getElementById('phone')
+      .value.trim();
+
+
+  if (!name) {
+
+    alert('Please enter your name.');
+
+    return;
+  }
+
+
+  if (!email) {
+
+    alert('Please enter your email.');
+
+    return;
+  }
+
+
+  if (!phone) {
+
+    alert('Please enter your mobile number.');
+
+    return;
+  }
+
+
+  if (!book) {
+
+    alert('Book information is not loaded.');
+
+    return;
+  }
+
+
+  const button =
+    document.getElementById('payButton');
+
+
+  button.disabled = true;
+
+  button.innerText =
+    'Creating payment...';
+
+
+  try {
+
+    /******** CREATE RAZORPAY ORDER ********/
+
+    const url =
+      API_URL +
+      '?options=createorder' +
+      '&id=' +
+      encodeURIComponent(bookId) +
+      '&name=' +
+      encodeURIComponent(name) +
+      '&email=' +
+      encodeURIComponent(email) +
+      '&phone=' +
+      encodeURIComponent(phone);
+
+
+    const order =
+      await jsonp(url);
+
+
+    if (!order.success) {
+
+      throw new Error(
+        order.error ||
+        'Unable to create Razorpay order'
+      );
+    }
+
+
+    /******** OPEN RAZORPAY ********/
+
+    const options = {
+
+      key: order.key,
+
+      amount: order.amount,
+
+      currency: order.currency,
+
+      name: 'KASHVIKA',
+
+      description: order.name,
+
+      order_id: order.order_id,
+
+
+      prefill: {
+
+        name: name,
+
+        email: email,
+
+        contact: phone
+
+      },
+
+
+      notes: {
+
+        txnid: order.txnid,
+
+        book_id: bookId
+
+      },
+
+
+      theme: {
+
+        color: '#222222'
+
+      },
+
+
+      handler:
+        function(response) {
+
+          verifyPayment(
+
+            order.txnid,
+
+            response
+
+          );
+
+        },
+
+
+      modal: {
+
+        ondismiss:
+          function() {
+
+            button.disabled = false;
+
+            button.innerText =
+              'Proceed to Pay';
+
+            document.getElementById(
+              'message'
+            ).innerText =
+              'Payment window closed.';
+
+          }
+
+      }
+
+    };
+
+
+    const rzp =
+      new Razorpay(options);
+
+
+    rzp.on(
+      'payment.failed',
+      function(response) {
+
+        button.disabled = false;
+
+        button.innerText =
+          'Proceed to Pay';
+
+
+        document.getElementById(
+          'message'
+        ).innerHTML = `
+
+          <p style="color:red">
+          Payment failed.
+          </p>
+
+          <p>
+          ${escapeHtml(
+            response.error.description || ''
+          )}
+          </p>
+
+        `;
+
+      }
+    );
+
+
+    rzp.open();
+
+
+  } catch (err) {
+
+    button.disabled = false;
+
+    button.innerText =
+      'Proceed to Pay';
+
+
+    document.getElementById(
+      'message'
+    ).innerHTML =
+
+      '<p style="color:red">' +
+      escapeHtml(err.message) +
+      '</p>';
+
+  }
+
+}
+
+
+/************************************************
+ * VERIFY PAYMENT
+ ************************************************/
+
+async function verifyPayment(
+  txnid,
+  response
+) {
+
+  document.getElementById(
+    'message'
+  ).innerHTML =
+
+    '<p>Verifying payment...</p>';
+
+
+  try {
+
+    const url =
+      API_URL +
+      '?options=verify' +
+
+      '&txnid=' +
+      encodeURIComponent(txnid) +
+
+      '&razorpay_payment_id=' +
+      encodeURIComponent(
+        response.razorpay_payment_id
+      ) +
+
+      '&razorpay_order_id=' +
+      encodeURIComponent(
+        response.razorpay_order_id
+      ) +
+
+      '&razorpay_signature=' +
+      encodeURIComponent(
+        response.razorpay_signature
+      );
+
+
+    const result =
+      await jsonp(url);
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error ||
+        'Payment verification failed'
+      );
+    }
+
+
+    /******** PAYMENT SUCCESS ********/
+
+    document.getElementById(
+      'message'
+    ).innerHTML =
+
+      '<p style="color:green">' +
+      'Payment successful!' +
+      '</p>';
+
+
+    /******** REDIRECT ********/
+
+    setTimeout(function() {
+
+      window.location.href =
+        'success.html?txnid=' +
+        encodeURIComponent(txnid);
+
+    }, 500);
+
+
+  } catch (err) {
+
+    document.getElementById(
+      'message'
+    ).innerHTML =
+
+      '<p style="color:red">' +
+
+      escapeHtml(err.message) +
+
+      '</p>';
+
+  }
+
+}
+
+
+/************************************************
+ * ESCAPE HTML
+ ************************************************/
+
+function escapeHtml(value) {
+
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+}
+
+
+/************************************************
+ * START
+ ************************************************/
+
+loadBook();
+
+</script>
+
+</body>
+
+</html>
