@@ -54,13 +54,15 @@ Checking your order...
 
 <div id="details"></div>
 
-<button
+<!-- <button
   id="downloadButton"
   style="display:none"
   onclick="downloadBook()"
 >
 Download eBook
-</button>
+</button> -->
+
+       <a id="downloadBtn" href="#">Download eBook</a>
 
 </div>
 
@@ -77,8 +79,23 @@ const params =
   );
 
 
+      
+      
 const txnid =
   params.get('txnid');
+
+
+
+    
+
+
+const params = new URLSearchParams(window.location.search);
+const txnid = params.get("txnid");
+
+document.getElementById("downloadBtn").href =
+  "https://kashvika.website/examsbooks/download.html?txnid=" +
+  encodeURIComponent(txnid);
+
 
 
 let order = null;
