@@ -6,6 +6,12 @@
 
 
 
+  <!-- const API_URL =
+  'https://script.google.com/macros/s/AKfycbwTxwemIt-TRmzIJ4_88MRZqmZ4Hb56f9JKT9Un41Yq5TMSapSucVkEcz_VNI7mJvz0QQ/exec';
+
+
+const PAYPAL_CLIENT_ID =
+  'AXo3MDuy224WwNfHDZusHjW9cenuT9qI7Vh4_h_BIMb_0Ah1p5MlTafo3ZwIV67CBlrYdKbHKOiH05yQ'; -->
 
 
 
@@ -36,18 +42,20 @@
       color: #222;
     }
 
-    .checkout-container {
+    .container {
+      width: 100%;
       max-width: 650px;
       margin: auto;
-      background: white;
+      background: #fff;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.10);
+      box-shadow: 0 4px 20px rgba(0,0,0,.10);
     }
 
     h1 {
-      margin-top: 0;
       text-align: center;
+      margin-top: 0;
+      margin-bottom: 25px;
     }
 
     .book {
@@ -55,28 +63,28 @@
       margin-bottom: 25px;
     }
 
-    .book img {
-      max-width: 180px;
-      max-height: 240px;
-      border-radius: 8px;
+    #bookImage {
+      width: 180px;
+      max-height: 250px;
       object-fit: cover;
+      border-radius: 8px;
     }
 
-    .book-title {
+    #bookTitle {
+      margin-top: 15px;
       font-size: 22px;
       font-weight: bold;
-      margin-top: 15px;
     }
 
-    .book-description {
+    #bookDescription {
       margin-top: 10px;
       color: #666;
       line-height: 1.5;
     }
 
-    .price {
+    #bookPrice {
       margin-top: 15px;
-      font-size: 24px;
+      font-size: 25px;
       font-weight: bold;
     }
 
@@ -95,6 +103,11 @@
       font-size: 16px;
     }
 
+    input:focus {
+      outline: none;
+      border-color: #0070ba;
+    }
+
     #paypal-button-container {
       margin-top: 25px;
     }
@@ -103,6 +116,8 @@
       margin-top: 20px;
       text-align: center;
       font-weight: bold;
+      line-height: 1.5;
+      word-break: break-word;
     }
 
     .loading {
@@ -122,6 +137,13 @@
       display: none;
     }
 
+    .small {
+      font-size: 13px;
+      color: #777;
+      text-align: center;
+      margin-top: 20px;
+    }
+
   </style>
 
 </head>
@@ -130,41 +152,48 @@
 <body>
 
 
-<div class="checkout-container">
+<div class="container">
 
   <h1>Checkout</h1>
 
 
-  <!-- BOOK INFORMATION -->
+  <!-- LOADING -->
 
-  <div id="loading" class="loading">
+  <div
+    id="loading"
+    class="loading">
+
     Loading book...
+
   </div>
 
 
-  <div id="checkoutContent" class="hidden">
+  <!-- CHECKOUT -->
 
+  <div
+    id="checkoutContent"
+    class="hidden">
+
+
+    <!-- BOOK -->
 
     <div class="book">
 
       <img
         id="bookImage"
         src=""
-        alt="Book">
+        alt="Book cover">
 
       <div
-        id="bookTitle"
-        class="book-title">
+        id="bookTitle">
       </div>
 
       <div
-        id="bookDescription"
-        class="book-description">
+        id="bookDescription">
       </div>
 
       <div
-        id="bookPrice"
-        class="price">
+        id="bookPrice">
       </div>
 
     </div>
@@ -179,8 +208,8 @@
     <input
       id="name"
       type="text"
-      placeholder="Enter your full name"
-      autocomplete="name">
+      autocomplete="name"
+      placeholder="Enter your full name">
 
 
     <label for="email">
@@ -190,8 +219,8 @@
     <input
       id="email"
       type="email"
-      placeholder="Enter your email"
-      autocomplete="email">
+      autocomplete="email"
+      placeholder="Enter your email">
 
 
     <label for="phone">
@@ -201,8 +230,8 @@
     <input
       id="phone"
       type="tel"
-      placeholder="Enter your mobile number"
-      autocomplete="tel">
+      autocomplete="tel"
+      placeholder="Enter your mobile number">
 
 
     <!-- PAYPAL -->
@@ -212,7 +241,16 @@
     </div>
 
 
-    <div id="message"></div>
+    <!-- MESSAGE -->
+
+    <div
+      id="message">
+    </div>
+
+
+    <div class="small">
+      Secure payment powered by PayPal
+    </div>
 
 
   </div>
@@ -229,15 +267,31 @@
  ****************************************************/
 
 
-// // YOUR GOOGLE APPS SCRIPT WEB APP URL
+/*
+ * YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
+ *
+ * Example:
+ *
+ * https://script.google.com/macros/s/XXXXXXXX/exec
+ */
+
 // const API_URL =
 //   'YOUR_APPS_SCRIPT_WEB_APP_URL';
 
 
-// // YOUR PAYPAL SANDBOX CLIENT ID
+
+// /*
+//  * YOUR PAYPAL SANDBOX CLIENT ID
+//  *
+//  * IMPORTANT:
+//  *
+//  * Client ID can be placed here.
+//  *
+//  * Client Secret MUST NOT be placed here.
+//  */
+
 // const PAYPAL_CLIENT_ID =
 //   'YOUR_PAYPAL_SANDBOX_CLIENT_ID';
-
 
   const API_URL =
   'https://script.google.com/macros/s/AKfycbwTxwemIt-TRmzIJ4_88MRZqmZ4Hb56f9JKT9Un41Yq5TMSapSucVkEcz_VNI7mJvz0QQ/exec';
@@ -246,10 +300,10 @@
 const PAYPAL_CLIENT_ID =
   'AXo3MDuy224WwNfHDZusHjW9cenuT9qI7Vh4_h_BIMb_0Ah1p5MlTafo3ZwIV67CBlrYdKbHKOiH05yQ';
 
-
-
 /****************************************************
- * GET BOOK ID FROM URL
+ * GET BOOK ID
+ *
+ * GitHub URL:
  *
  * checkout.html?id=101
  ****************************************************/
@@ -265,6 +319,13 @@ const bookId =
   urlParams.get('id');
 
 
+console.log(
+  'Book ID:',
+  bookId
+);
+
+
+
 if (!bookId) {
 
   showError(
@@ -274,17 +335,23 @@ if (!bookId) {
   throw new Error(
     'Book ID missing'
   );
+
 }
+
+
+
+/****************************************************
+ * START
+ ****************************************************/
+
+
+loadBook();
 
 
 
 /****************************************************
  * LOAD BOOK
  ****************************************************/
-
-
-loadBook();
-
 
 
 async function loadBook() {
@@ -300,13 +367,16 @@ async function loadBook() {
       await apiCall(
         'checkbook',
         {
-          bookId: bookId
+
+          bookId:
+            bookId
+
         }
       );
 
 
     console.log(
-      'BOOK RESULT:',
+      'CHECKBOOK RESULT:',
       result
     );
 
@@ -317,35 +387,92 @@ async function loadBook() {
     ) {
 
       throw new Error(
+
         result &&
         result.error
+
           ? result.error
+
           : 'Book not found.'
+
       );
 
     }
 
 
-    displayBook(
-      result
+    /*
+     * Display book
+     */
+
+    document.getElementById(
+      'bookTitle'
+    ).textContent =
+      result.product || '';
+
+
+    document.getElementById(
+      'bookDescription'
+    ).textContent =
+      result.description || '';
+
+
+    document.getElementById(
+      'bookPrice'
+    ).textContent =
+      (result.currency || '') +
+      ' ' +
+      (result.amount || '');
+
+
+    /*
+     * Image
+     */
+
+    const image =
+      document.getElementById(
+        'bookImage'
+      );
+
+
+    if (result.imageUrl) {
+
+      image.src =
+        result.imageUrl;
+
+      image.style.display =
+        'inline-block';
+
+    }
+
+    else {
+
+      image.style.display =
+        'none';
+
+    }
+
+
+    /*
+     * Show checkout
+     */
+
+    document.getElementById(
+      'loading'
+    ).classList.add(
+      'hidden'
     );
 
 
-    document
-      .getElementById(
-        'loading'
-      )
-      .classList
-      .add('hidden');
+    document.getElementById(
+      'checkoutContent'
+    ).classList.remove(
+      'hidden'
+    );
 
 
-    document
-      .getElementById(
-        'checkoutContent'
-      )
-      .classList
-      .remove('hidden');
-
+    /*
+     * Load PayPal
+     */
 
     loadPayPal();
 
@@ -354,7 +481,7 @@ async function loadBook() {
   catch (error) {
 
     console.error(
-      'BOOK ERROR:',
+      'LOAD BOOK ERROR:',
       error
     );
 
@@ -370,67 +497,35 @@ async function loadBook() {
 
 
 /****************************************************
- * DISPLAY BOOK
- ****************************************************/
-
-
-function displayBook(book) {
-
-
-  document.getElementById(
-    'bookTitle'
-  ).textContent =
-    book.product || '';
-
-
-  document.getElementById(
-    'bookDescription'
-  ).textContent =
-    book.description || '';
-
-
-  document.getElementById(
-    'bookPrice'
-  ).textContent =
-    book.currency +
-    ' ' +
-    book.amount;
-
-
-  const image =
-    document.getElementById(
-      'bookImage'
-    );
-
-
-  if (book.imageUrl) {
-
-    image.src =
-      book.imageUrl;
-
-    image.style.display =
-      'inline-block';
-
-  }
-
-  else {
-
-    image.style.display =
-      'none';
-
-  }
-
-}
-
-
-
-/****************************************************
  * LOAD PAYPAL SDK
  ****************************************************/
 
 
 function loadPayPal() {
 
+
+  /*
+   * Validate Client ID
+   */
+
+  if (
+    !PAYPAL_CLIENT_ID ||
+    PAYPAL_CLIENT_ID ===
+    'YOUR_PAYPAL_SANDBOX_CLIENT_ID'
+  ) {
+
+    showError(
+      'PayPal Client ID is missing.'
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Prevent duplicate SDK
+   */
 
   if (
     document.getElementById(
@@ -457,11 +552,14 @@ function loadPayPal() {
 
   script.src =
     'https://www.paypal.com/sdk/js' +
+
     '?client-id=' +
     encodeURIComponent(
       PAYPAL_CLIENT_ID
     ) +
+
     '&currency=USD' +
+
     '&intent=capture';
 
 
@@ -469,7 +567,7 @@ function loadPayPal() {
     function() {
 
       console.log(
-        'PayPal SDK loaded'
+        'PayPal SDK loaded.'
       );
 
 
@@ -482,7 +580,7 @@ function loadPayPal() {
     function() {
 
       showError(
-        'Unable to load PayPal.'
+        'Unable to load PayPal SDK.'
       );
 
     };
@@ -497,176 +595,259 @@ function loadPayPal() {
 
 
 /****************************************************
- * PAYPAL BUTTONS
+ * RENDER PAYPAL
  ****************************************************/
 
 
 function renderPayPal() {
 
 
+  if (
+    typeof paypal ===
+    'undefined'
+  ) {
+
+    showError(
+      'PayPal SDK is not available.'
+    );
+
+    return;
+
+  }
+
+
   paypal.Buttons({
 
 
     /************************************************
-     * CREATE ORDER
+     * CREATE PAYPAL ORDER
      ************************************************/
 
     createOrder:
       async function() {
 
+        try {
 
-        const name =
-          document
-            .getElementById(
-              'name'
+
+          const name =
+            document
+              .getElementById(
+                'name'
+              )
+              .value
+              .trim();
+
+
+          const email =
+            document
+              .getElementById(
+                'email'
+              )
+              .value
+              .trim();
+
+
+          const phone =
+            document
+              .getElementById(
+                'phone'
+              )
+              .value
+              .trim();
+
+
+          /*
+           * Validate name
+           */
+
+          if (!name) {
+
+            showError(
+              'Please enter your full name.'
+            );
+
+            throw new Error(
+              'Name is required.'
+            );
+
+          }
+
+
+          /*
+           * Validate email
+           */
+
+          if (!email) {
+
+            showError(
+              'Please enter your email.'
+            );
+
+            throw new Error(
+              'Email is required.'
+            );
+
+          }
+
+
+          if (
+            !isValidEmail(
+              email
             )
-            .value
-            .trim();
+          ) {
+
+            showError(
+              'Please enter a valid email.'
+            );
+
+            throw new Error(
+              'Invalid email.'
+            );
+
+          }
 
 
-        const email =
-          document
-            .getElementById(
-              'email'
-            )
-            .value
-            .trim();
+          /*
+           * Validate phone
+           */
+
+          if (!phone) {
+
+            showError(
+              'Please enter your mobile number.'
+            );
+
+            throw new Error(
+              'Phone is required.'
+            );
+
+          }
 
 
-        const phone =
-          document
-            .getElementById(
-              'phone'
-            )
-            .value
-            .trim();
-
-
-        if (!name) {
-
-          showError(
-            'Please enter your name.'
+          showMessage(
+            'Creating PayPal order...'
           );
 
-          throw new Error(
-            'Name required'
+
+          /*
+           * Call Apps Script
+           */
+
+          const result =
+            await apiCall(
+              'createpaypal',
+              {
+
+                bookId:
+                  bookId,
+
+                name:
+                  name,
+
+                email:
+                  email,
+
+                phone:
+                  phone
+
+              }
+            );
+
+
+          console.log(
+            'CREATE PAYPAL RESULT:',
+            result
           );
+
+
+          /*
+           * Check result
+           */
+
+          if (
+            !result ||
+            !result.success
+          ) {
+
+            const errorMessage =
+              result &&
+              result.error
+
+                ? result.error
+
+                : 'PayPal create order failed.';
+
+
+            showError(
+              errorMessage
+            );
+
+
+            throw new Error(
+              errorMessage
+            );
+
+          }
+
+
+          /*
+           * PayPal order ID required
+           */
+
+          if (!result.orderID) {
+
+            showError(
+              'PayPal order ID was not returned.'
+            );
+
+
+            throw new Error(
+              'PayPal order ID missing.'
+            );
+
+          }
+
+
+          /*
+           * Save transaction
+           */
+
+          sessionStorage.setItem(
+            'txnid',
+            result.txnid || ''
+          );
+
+
+          sessionStorage.setItem(
+            'paypalOrderID',
+            result.orderID
+          );
+
+
+          /*
+           * Give order ID to PayPal
+           */
+
+          return result.orderID;
 
         }
 
+        catch (error) {
 
-        if (!email) {
-
-          showError(
-            'Please enter your email.'
+          console.error(
+            'CREATE ORDER ERROR:',
+            error
           );
 
-          throw new Error(
-            'Email required'
-          );
+
+          /*
+           * PayPal requires the
+           * Promise to reject.
+           */
+
+          throw error;
 
         }
-
-
-        if (!isValidEmail(email)) {
-
-          showError(
-            'Please enter a valid email.'
-          );
-
-          throw new Error(
-            'Invalid email'
-          );
-
-        }
-
-
-        if (!phone) {
-
-          showError(
-            'Please enter your mobile number.'
-          );
-
-          throw new Error(
-            'Phone required'
-          );
-
-        }
-
-
-        showMessage(
-          'Creating PayPal order...'
-        );
-
-
-        const result =
-          await apiCall(
-            'createpaypal',
-            {
-
-              bookId:
-                bookId,
-
-              name:
-                name,
-
-              email:
-                email,
-
-              phone:
-                phone
-
-            }
-          );
-
-
-        console.log(
-          'CREATE PAYPAL RESULT:',
-          result
-        );
-
-
-        if (
-          !result ||
-          !result.success
-        ) {
-
-          throw new Error(
-            result &&
-            result.error
-              ? result.error
-              : 'Unable to create PayPal order.'
-          );
-
-        }
-
-
-        if (!result.orderID) {
-
-          throw new Error(
-            'PayPal order ID was not returned.'
-          );
-
-        }
-
-
-        /*
-         * Save transaction ID
-         */
-
-        sessionStorage.setItem(
-          'txnid',
-          result.txnid || ''
-        );
-
-
-        sessionStorage.setItem(
-          'paypalOrderID',
-          result.orderID
-        );
-
-
-        return result.orderID;
 
       },
 
@@ -677,24 +858,35 @@ function renderPayPal() {
 
     onApprove:
       async function(
-        data,
-        actions
+        data
       ) {
-
-
-        const txnid =
-          sessionStorage.getItem(
-            'txnid'
-          );
-
-
-        showMessage(
-          'Payment approved. Processing...'
-        );
-
 
         try {
 
+
+          const txnid =
+            sessionStorage.getItem(
+              'txnid'
+            );
+
+
+          if (!txnid) {
+
+            throw new Error(
+              'Transaction ID missing.'
+            );
+
+          }
+
+
+          showMessage(
+            'Payment approved. Capturing payment...'
+          );
+
+
+          /*
+           * Capture through Apps Script
+           */
 
           const result =
             await apiCall(
@@ -717,23 +909,36 @@ function renderPayPal() {
           );
 
 
+          /*
+           * Check capture
+           */
+
           if (
             !result ||
             !result.success
           ) {
 
-            throw new Error(
+            const errorMessage =
               result &&
               result.error
+
                 ? result.error
-                : 'Payment capture failed.'
+
+                : 'PayPal capture failed.';
+
+
+            showError(
+              errorMessage
             );
+
+
+            return;
 
           }
 
 
           /*
-           * Payment successful
+           * Successful payment
            */
 
           showSuccess(
@@ -745,14 +950,23 @@ function renderPayPal() {
            * GitHub success page
            *
            * Example:
+           *
            * /lovestories/success.html?txnid=TXN123
            */
 
-          window.location.href =
-            'success.html?txnid=' +
-            encodeURIComponent(
-              txnid
-            );
+          setTimeout(
+            function() {
+
+              window.location.href =
+                'success.html?txnid=' +
+                encodeURIComponent(
+                  txnid
+                );
+
+            },
+            500
+          );
+
 
         }
 
@@ -782,7 +996,7 @@ function renderPayPal() {
       function(data) {
 
         console.log(
-          'PayPal cancelled:',
+          'PAYPAL CANCELLED:',
           data
         );
 
@@ -807,17 +1021,28 @@ function renderPayPal() {
         );
 
 
+        let message =
+          'PayPal payment error.';
+
+
+        if (
+          error &&
+          error.message
+        ) {
+
+          message +=
+            ' ' +
+            error.message;
+
+        }
+
+
         showError(
-          'PayPal payment error: ' +
-          (
-            error &&
-            error.message
-              ? error.message
-              : 'Unknown error'
-          )
+          message
         );
 
       }
+
 
   }).render(
     '#paypal-button-container'
@@ -832,7 +1057,7 @@ function renderPayPal() {
  *
  * GitHub Pages
  *      ↓
- * Google Apps Script
+ * Apps Script
  ****************************************************/
 
 
@@ -846,14 +1071,22 @@ function apiCall(
     function(resolve, reject) {
 
 
+      /*
+       * Unique callback name
+       */
+
       const callbackName =
-        'jsonpCallback_' +
+        'paypalCallback_' +
         Date.now() +
         '_' +
         Math.floor(
-          Math.random() * 100000
+          Math.random() * 1000000
         );
 
+
+      /*
+       * Script element
+       */
 
       const script =
         document.createElement(
@@ -869,15 +1102,17 @@ function apiCall(
        * Timeout
        */
 
-      const timer =
+      const timeout =
         setTimeout(
           function() {
+
 
             if (finished)
               return;
 
 
-            finished = true;
+            finished =
+              true;
 
 
             delete window[
@@ -894,13 +1129,14 @@ function apiCall(
               )
             );
 
+
           },
           30000
         );
 
 
       /*
-       * JSONP callback
+       * Callback
        */
 
       window[
@@ -913,11 +1149,12 @@ function apiCall(
             return;
 
 
-          finished = true;
+          finished =
+            true;
 
 
           clearTimeout(
-            timer
+            timeout
           );
 
 
@@ -961,6 +1198,7 @@ function apiCall(
       ).forEach(
         function(key) {
 
+
           const value =
             params[key];
 
@@ -981,11 +1219,19 @@ function apiCall(
       );
 
 
+      /*
+       * Apps Script URL
+       */
+
       script.src =
         API_URL +
         '?' +
         query.toString();
 
+
+      /*
+       * Network error
+       */
 
       script.onerror =
         function() {
@@ -995,11 +1241,12 @@ function apiCall(
             return;
 
 
-          finished = true;
+          finished =
+            true;
 
 
           clearTimeout(
-            timer
+            timeout
           );
 
 
@@ -1019,6 +1266,10 @@ function apiCall(
 
         };
 
+
+      /*
+       * Start request
+       */
 
       document.body.appendChild(
         script
@@ -1048,13 +1299,14 @@ function isValidEmail(
 
 
 /****************************************************
- * MESSAGE FUNCTIONS
+ * SHOW MESSAGE
  ****************************************************/
 
 
 function showMessage(
   message
 ) {
+
 
   const element =
     document.getElementById(
@@ -1073,9 +1325,15 @@ function showMessage(
 
 
 
+/****************************************************
+ * SHOW SUCCESS
+ ****************************************************/
+
+
 function showSuccess(
   message
 ) {
+
 
   const element =
     document.getElementById(
@@ -1094,9 +1352,15 @@ function showSuccess(
 
 
 
+/****************************************************
+ * SHOW ERROR
+ ****************************************************/
+
+
 function showError(
   message
 ) {
+
 
   const loading =
     document.getElementById(
@@ -1106,8 +1370,9 @@ function showError(
 
   if (loading) {
 
-    loading.classList
-      .add('hidden');
+    loading.classList.add(
+      'hidden'
+    );
 
   }
 
@@ -1120,8 +1385,9 @@ function showError(
 
   if (content) {
 
-    content.classList
-      .remove('hidden');
+    content.classList.remove(
+      'hidden'
+    );
 
   }
 
@@ -1145,7 +1411,13 @@ function showError(
 
 }
 
+
 </script>
 
+
 </body>
+
 </html>
+
+
+
