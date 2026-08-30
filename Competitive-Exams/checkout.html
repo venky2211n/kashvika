@@ -1,147 +1,33 @@
-<!-- <!DOCTYPE html>
+
+
+<!DOCTYPE html>
 <html>
 
 <head>
 
-  <title>eBook Checkout</title>
+<title>44Checkout</title>
 
-  <style>
+<style>
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    iframe {
-      position: fixed;
-      top: 0;
-      left: 0;
-      border: none;
-      width: 100vw;
-      height: 100vh;
-    }
-
-  </style>
-
-</head>
-
-
-<body>
-
-
-<iframe
-  id="myIframe"
-  src="">
-</iframe>
-
-
-<script>
-
-function getParameters() {
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  return {
-
-    id:
-      params.get("id"),
-
-    txnid:
-      params.get("txnid")
-
-  };
-
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
+iframe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  border: none;
+}
 
-window.onload = function() {
-
-  const data =
-    getParameters();
-
-
-  if (!data.id) {
-
-    alert("Missing Book ID");
-
-    return;
-
-  }
-
-
-  const baseUrl =
-    "https://script.google.com/macros/s/AKfycbz3DpdqLJkZ2b4_BuMsPl6dN5tfX3J_yZhs94Ht6aiqZV_M-DnGtssvK1vdD-tdKIWMnQ/exec";
-
-
-  /*
-   * Apps Script checkout page
-   */
-
-  const iframeUrl =
-
-    `${baseUrl}` +
-
-    `?options=checkout` +
-
-    `&id=${encodeURIComponent(data.id)}`;
-
-
-  document.getElementById(
-    "myIframe"
-  ).src = iframeUrl;
-
-};
-
-</script>
-
-
-</body>
-
-</html> -->
-
-<!-- 
-```html -->
-<!-- <!DOCTYPE html>
-<html>
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-  <title>1eBook Checkout</title>
-
-  <style>
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    iframe {
-      position: fixed;
-      top: 0;
-      left: 0;
-
-      width: 100vw;
-      height: 100vh;
-
-      border: none;
-    }
-
-  </style>
+</style>
 
 </head>
 
@@ -149,17 +35,10 @@ window.onload = function() {
 <body>
 
 
-<iframe
-  id="myIframe"
-  src="">
-</iframe>
+<iframe id="myIframe"></iframe>
 
 
 <script>
-
-/* ==========================================
-   READ ID FROM GITHUB URL
-   ========================================== */
 
 const params =
   new URLSearchParams(
@@ -171,31 +50,17 @@ const id =
   params.get("id");
 
 
-/* ==========================================
-   CHECK ID
-   ========================================== */
-
 if (!id) {
 
   document.body.innerHTML =
-    "<h2 style='text-align:center;margin-top:50px'>" +
-    "Book ID missing." +
-    "</h2>";
+    "<h2>Book ID missing.</h2>";
 
 } else {
 
 
-  /* ========================================
-     YOUR APPS SCRIPT DEPLOYMENT URL
-     ======================================== */
-
   const APP_URL =
-    "https://script.google.com/macros/s/AKfycby065bMYR3i62RrnUGQNR71zk-qYOcPGaCqWrzVJejOXFcY9HQv3GY8uTIg-om7b1hkww/exec";
+    "https://script.google.com/macros/s/AKfycbygdHlxLrw3NyxnVNMhiQN3TXpTF3O24qXgvYUKgPfYMl8asViEfjDtCKisYPJKCdM1jQ/exec";
 
-
-  /* ========================================
-     CREATE APPS SCRIPT URL
-     ======================================== */
 
   const iframeUrl =
 
@@ -208,118 +73,15 @@ if (!id) {
     encodeURIComponent(id);
 
 
-  /* ========================================
-     LOAD APPS SCRIPT INSIDE IFRAME
-     ======================================== */
-
   document.getElementById(
     "myIframe"
-  ).src = iframeUrl;
+  ).src =
+    iframeUrl;
 
 }
 
 </script>
 
-
-</body>
-
-</html> -->
-
-
-<!DOCTYPE html>
-<html>
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-  <title>Checkout</title>
-
-  <style>
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    iframe {
-      position: fixed;
-      top: 0;
-      left: 0;
-
-      width: 100vw;
-      height: 100vh;
-
-      border: none;
-    }
-
-  </style>
-
-</head>
-
-<body>
-
-<iframe id="myIframe"></iframe>
-
-
-<script>
-
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
-
-const id =
-    params.get("id");
-
-
-if (!id) {
-
-    document.body.innerHTML =
-        "<h2>Book ID missing</h2>";
-
-} else {
-
-    /*
-     * PUT YOUR REAL APPS SCRIPT URL HERE
-     */
-
-    const APP_URL =
-        "https://script.google.com/macros/s/AKfycby065bMYR3i62RrnUGQNR71zk-qYOcPGaCqWrzVJejOXFcY9HQv3GY8uTIg-om7b1hkww/exec";
-
-
-    const iframeUrl =
-        APP_URL +
-        "?options=checkout" +
-        "&id=" +
-        encodeURIComponent(id);
-
-
-    console.log(
-        "Book ID:",
-        id
-    );
-
-    console.log(
-        "Apps Script URL:",
-        iframeUrl
-    );
-
-
-    document.getElementById(
-        "myIframe"
-    ).src = iframeUrl;
-
-}
-
-</script>
 
 </body>
 
