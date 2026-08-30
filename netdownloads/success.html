@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Payment Successful</title>
+
+<style>
+
+body {
+  margin: 0;
+  padding: 30px 20px;
+  font-family: Arial, sans-serif;
+  background: #f4f5f7;
+}
+
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+}
+
+.card {
+  background: white;
+  padding: 35px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow:
+    0 5px 25px rgba(0,0,0,.10);
+}
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+  margin: auto;
+  border-radius: 50%;
+  background: #16a34a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.details {
+  margin-top: 25px;
+  padding: 20px;
+  background: #f7f7f7;
+  border-radius: 10px;
+  text-align: left;
+}
+
+button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 15px;
+  border: 0;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+#error {
+  color: red;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+<div class="card">
+
+
+<div class="success-icon">
+✓
+</div>
+
+
+<h1>
+Payment Successful
+</h1>
+
+
+<p id="status">
+Checking payment...
+</p>
+
+
+<div
+id="details"
+class="details"
+style="display:none">
+</div>
+
+
+<button
+id="downloadButton"
+style="display:none"
+onclick="goToDownload()">
+
+Download eBook
+
+</button>
+
+
+<p id="error"></p>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/************************************************
+ * APPS SCRIPT
+ ************************************************/
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbz1CePptVr99twHLeEN9-amL2y0UjcTNIayvNW998-HRiHUKVP2q_Bj4gI-fSlQvoFO6A/exec';
+
+
+/************************************************
+ * GET BOTH PARAMETERS
+ *
+ * success.html?id=101&txnid=TXN...
+ ************************************************/
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+
+const bookId =
+params.get('id');
+
+
+const txnid =
+params.get('txnid');
+
+
+let order = null;
+
+
+/************************************************
+ * JSONP
+ ************************************************/
+
+function jsonp(url) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      const callbackName =
+        'jsonp_' +
+        Date.now() +
+        '_' +
+        Math.floor(
+          Math.random() * 100000
+        );
+
+
+      const script =
+        document.createElement(
+          'script'
+        );
+
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            cleanup();
+
+            reject(
+              new Error(
+                'Server timeout'
+              )
+            );
+
+          },
+          20000
+        );
+
+
+      function cleanup() {
+
+        clearTimeout(timeout);
+
+        delete window[callbackName];
+
+        script.remove();
+
+      }
+
+
+      window[callbackName] =
+        function(data) {
+
+          cleanup();
+
+          resolve(data);
+
+        };
+
+
+      script.onerror =
+        function() {
+
+          cleanup();
+
+          reject(
+            new Error(
+              'Unable to connect to server'
+            )
+          );
+
+        };
+
+
+      script.src =
+        url +
+        '&callback=' +
+        encodeURIComponent(
+          callbackName
+        );
+
+
+      document.body.appendChild(
+        script
+      );
+
+    }
+  );
+
+}
+
+
+/************************************************
+ * CHECK PAYMENT
+ ************************************************/
+
+async function checkPayment() {
+
+  /******** CHECK URL ********/
+
+  if (!bookId) {
+
+    showError(
+      'Book ID is missing.'
+    );
+
+    return;
+
+  }
+
+
+  if (!txnid) {
+
+    showError(
+      'Transaction ID is missing.'
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    /********************************************
+     * SEND BOTH ID AND TXNID
+     ********************************************/
+
+    const checkUrl =
+
+      API_URL +
+
+      '?options=checkpayment' +
+
+      '&id=' +
+      encodeURIComponent(
+        bookId
+      ) +
+
+      '&txnid=' +
+      encodeURIComponent(
+        txnid
+      );
+
+
+    const result =
+      await jsonp(
+        checkUrl
+      );
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error ||
+        'Unable to find order'
+      );
+
+    }
+
+
+    /********************************************
+     * SERVER ALSO CHECKS BOOK ID
+     ********************************************/
+
+    if (
+      String(result.bookId) !==
+      String(bookId)
+    ) {
+
+      throw new Error(
+        'Book ID does not match transaction.'
+      );
+
+    }
+
+
+    /********************************************
+     * CHECK STATUS
+     ********************************************/
+
+    if (
+      String(result.status).toUpperCase() !==
+      'SUCCESS'
+    ) {
+
+      showError(
+        'Payment is not confirmed.'
+      );
+
+      return;
+
+    }
+
+
+    order =
+      result;
+
+
+    /********************************************
+     * SUCCESS
+     ********************************************/
+
+    document.getElementById(
+      'status'
+    ).innerHTML =
+
+      '<strong style="color:green">' +
+
+      'Your payment has been confirmed.' +
+
+      '</strong>';
+
+
+    document.getElementById(
+      'details'
+    ).style.display =
+      'block';
+
+
+    document.getElementById(
+      'details'
+    ).innerHTML = `
+
+      <p>
+        <strong>Transaction ID:</strong><br>
+        ${escapeHtml(result.txnid)}
+      </p>
+
+      <p>
+        <strong>Book ID:</strong><br>
+        ${escapeHtml(result.bookId)}
+      </p>
+
+      <p>
+        <strong>eBook:</strong><br>
+        ${escapeHtml(result.product)}
+      </p>
+
+      <p>
+        <strong>Amount:</strong><br>
+        ₹${escapeHtml(result.amount)}
+      </p>
+
+      <p>
+        <strong>Date:</strong><br>
+        ${escapeHtml(result.date)}
+      </p>
+
+    `;
+
+
+    document.getElementById(
+      'downloadButton'
+    ).style.display =
+      'block';
+
+
+  } catch (error) {
+
+    showError(
+      error.message
+    );
+
+  }
+
+}
+
+
+/************************************************
+ * DOWNLOAD
+ *
+ * KEEP BOTH PARAMETERS
+ ************************************************/
+
+function goToDownload() {
+
+  if (!order) {
+
+    return;
+
+  }
+
+
+  const downloadUrl =
+
+    'download.html' +
+
+    '?id=' +
+    encodeURIComponent(
+      bookId
+    ) +
+
+    '&txnid=' +
+    encodeURIComponent(
+      txnid
+    );
+
+
+  window.location.href =
+    downloadUrl;
+
+}
+
+
+/************************************************
+ * ERROR
+ ************************************************/
+
+function showError(message) {
+
+  document.getElementById(
+    'status'
+  ).innerText =
+    'Unable to confirm payment.';
+
+
+  document.getElementById(
+    'error'
+  ).innerText =
+    message;
+
+}
+
+
+/************************************************
+ * ESCAPE
+ ************************************************/
+
+function escapeHtml(value) {
+
+  return String(value || '')
+
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+
+    .replace(
+      /</g,
+      '&lt;'
+    )
+
+    .replace(
+      />/g,
+      '&gt;'
+    )
+
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+
+}
+
+
+/************************************************
+ * START
+ ************************************************/
+
+checkPayment();
+
+</script>
+
+</body>
+
+</html>
