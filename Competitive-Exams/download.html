@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>eBook Download</title>
+
+  <style>
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      border: none;
+      width: 100vw;
+      height: 100vh;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<iframe
+  id="myIframe"
+  src="">
+</iframe>
+
+
+<script>
+
+function getParameters() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  return {
+
+    id:
+      params.get("id"),
+
+    txnid:
+      params.get("txnid")
+
+  };
+
+}
+
+
+window.onload = function() {
+
+  const data =
+    getParameters();
+
+
+  if (!data.id) {
+
+    alert("Missing Book ID");
+
+    return;
+
+  }
+
+
+  if (!data.txnid) {
+
+    alert("Missing Transaction ID");
+
+    return;
+
+  }
+
+
+  const baseUrl =
+    "https://script.google.com/macros/s/AKfycbz3DpdqLJkZ2b4_BuMsPl6dN5tfX3J_yZhs94Ht6aiqZV_M-DnGtssvK1vdD-tdKIWMnQ/exec";
+
+
+  /*
+   * Apps Script download page
+   */
+
+  const iframeUrl =
+
+    `${baseUrl}` +
+
+    `?options=download` +
+
+    `&id=${encodeURIComponent(data.id)}` +
+
+    `&txnid=${encodeURIComponent(data.txnid)}`;
+
+
+  document.getElementById(
+    "myIframe"
+  ).src = iframeUrl;
+
+};
+
+</script>
+
+
+</body>
+
+</html>
