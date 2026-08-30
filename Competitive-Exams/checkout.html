@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 
 <head>
@@ -103,4 +103,126 @@ window.onload = function() {
 
 </body>
 
+</html> -->
+
+<!-- 
+```html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>1eBook Checkout</title>
+
+  <style>
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+
+      width: 100vw;
+      height: 100vh;
+
+      border: none;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<iframe
+  id="myIframe"
+  src="">
+</iframe>
+
+
+<script>
+
+/* ==========================================
+   READ ID FROM GITHUB URL
+   ========================================== */
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const id =
+  params.get("id");
+
+
+/* ==========================================
+   CHECK ID
+   ========================================== */
+
+if (!id) {
+
+  document.body.innerHTML =
+    "<h2 style='text-align:center;margin-top:50px'>" +
+    "Book ID missing." +
+    "</h2>";
+
+} else {
+
+
+  /* ========================================
+     YOUR APPS SCRIPT DEPLOYMENT URL
+     ======================================== */
+
+  const APP_URL =
+    "https://script.google.com/macros/s/AKfycbz3DpdqLJkZ2b4_BuMsPl6dN5tfX3J_yZhs94Ht6aiqZV_M-DnGtssvK1vdD-tdKIWMnQ/exec";
+
+
+  /* ========================================
+     CREATE APPS SCRIPT URL
+     ======================================== */
+
+  const iframeUrl =
+
+    APP_URL +
+
+    "?options=checkout" +
+
+    "&id=" +
+
+    encodeURIComponent(id);
+
+
+  /* ========================================
+     LOAD APPS SCRIPT INSIDE IFRAME
+     ======================================== */
+
+  document.getElementById(
+    "myIframe"
+  ).src = iframeUrl;
+
+}
+
+</script>
+
+
+</body>
+
 </html>
+```
+
