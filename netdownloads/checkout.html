@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Checkout - KASHVIKA eBooks</title>
+
+<script
+src="https://checkout.razorpay.com/v1/checkout.js">
+</script>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f5f7;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 25px;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow:
+    0 5px 25px rgba(0,0,0,.10);
+}
+
+h1 {
+  text-align: center;
+}
+
+.book {
+  padding: 20px;
+  margin-bottom: 25px;
+  background: #f7f7f7;
+  border-radius: 10px;
+}
+
+.book-title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.price {
+  margin-top: 10px;
+  font-size: 27px;
+  font-weight: bold;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font-size: 16px;
+}
+
+#payButton {
+  width: 100%;
+  padding: 15px;
+  margin-top: 25px;
+  border: 0;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+#payButton:disabled {
+  opacity: .6;
+}
+
+#message {
+  text-align: center;
+  margin-top: 20px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+<div class="card">
+
+
+<h1>
+eBook Checkout
+</h1>
+
+
+<div
+id="bookInfo"
+class="book">
+
+Loading book...
+
+</div>
+
+
+<label>
+Full Name
+</label>
+
+<input
+type="text"
+id="name"
+placeholder="Enter full name"
+autocomplete="name">
+
+
+<label>
+Email
+</label>
+
+<input
+type="email"
+id="email"
+placeholder="Enter email"
+autocomplete="email">
+
+
+<label>
+Mobile Number
+</label>
+
+<input
+type="tel"
+id="phone"
+placeholder="Enter mobile number"
+autocomplete="tel">
+
+
+<button
+id="payButton"
+onclick="startPayment()">
+
+Proceed to Pay
+
+</button>
+
+
+<div id="message"></div>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/************************************************
+ * GOOGLE APPS SCRIPT WEB APP URL
+ ************************************************/
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbz1CePptVr99twHLeEN9-amL2y0UjcTNIayvNW998-HRiHUKVP2q_Bj4gI-fSlQvoFO6A/exec';
+
+
+/************************************************
+ * READ ID FROM URL
+ *
+ * checkout.html?id=101
+ ************************************************/
+
+const urlParams =
+new URLSearchParams(
+window.location.search
+);
+
+
+const bookId =
+urlParams.get('id');
+
+
+let book = null;
+
+
+/************************************************
+ * JSONP
+ ************************************************/
+
+function jsonp(url) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      const callbackName =
+        'jsonp_' +
+        Date.now() +
+        '_' +
+        Math.floor(
+          Math.random() * 100000
+        );
+
+
+      const script =
+        document.createElement(
+          'script'
+        );
+
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            cleanup();
+
+            reject(
+              new Error(
+                'Server timeout'
+              )
+            );
+
+          },
+          20000
+        );
+
+
+      function cleanup() {
+
+        clearTimeout(timeout);
+
+        delete window[callbackName];
+
+        script.remove();
+
+      }
+
+
+      window[callbackName] =
+        function(data) {
+
+          cleanup();
+
+          resolve(data);
+
+        };
+
+
+      script.onerror =
+        function() {
+
+          cleanup();
+
+          reject(
+            new Error(
+              'Unable to connect to server'
+            )
+          );
+
+        };
+
+
+      script.src =
+        url +
+        '&callback=' +
+        encodeURIComponent(
+          callbackName
+        );
+
+
+      document.body.appendChild(
+        script
+      );
+
+    }
+  );
+
+}
+
+
+/************************************************
+ * LOAD BOOK
+ ************************************************/
+
+async function loadBook() {
+
+  if (!bookId) {
+
+    document.getElementById(
+      'bookInfo'
+    ).innerHTML =
+      '<p>Book ID is missing.</p>';
+
+    return;
+
+  }
+
+
+  try {
+
+    const result =
+      await jsonp(
+
+        API_URL +
+
+        '?options=book' +
+
+        '&id=' +
+        encodeURIComponent(
+          bookId
+        )
+
+      );
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error ||
+        'Book not found'
+      );
+
+    }
+
+
+    book =
+      result.book;
+
+
+    document.getElementById(
+      'bookInfo'
+    ).innerHTML = `
+
+      <div class="book-title">
+        ${escapeHtml(book.title)}
+      </div>
+
+      <div class="price">
+        ₹${Number(book.price).toFixed(2)}
+      </div>
+
+      <p>
+        ${escapeHtml(
+          book.description || ''
+        )}
+      </p>
+
+    `;
+
+
+  } catch (error) {
+
+    document.getElementById(
+      'bookInfo'
+    ).innerHTML =
+
+      '<p>Unable to load book.</p>';
+
+  }
+
+}
+
+
+/************************************************
+ * START PAYMENT
+ ************************************************/
+
+async function startPayment() {
+
+  const name =
+    document.getElementById(
+      'name'
+    ).value.trim();
+
+
+  const email =
+    document.getElementById(
+      'email'
+    ).value.trim();
+
+
+  const phone =
+    document.getElementById(
+      'phone'
+    ).value.trim();
+
+
+  if (!name) {
+
+    alert(
+      'Please enter your name.'
+    );
+
+    return;
+
+  }
+
+
+  if (!email) {
+
+    alert(
+      'Please enter your email.'
+    );
+
+    return;
+
+  }
+
+
+  if (!phone) {
+
+    alert(
+      'Please enter your mobile number.'
+    );
+
+    return;
+
+  }
+
+
+  if (!book) {
+
+    alert(
+      'Book information is not loaded.'
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      'payButton'
+    );
+
+
+  button.disabled =
+    true;
+
+  button.innerText =
+    'Creating Order...';
+
+
+  try {
+
+    /********************************************
+     * SEND BOOK ID
+     ********************************************/
+
+    const createOrderUrl =
+
+      API_URL +
+
+      '?options=createorder' +
+
+      '&id=' +
+      encodeURIComponent(
+        bookId
+      ) +
+
+      '&name=' +
+      encodeURIComponent(
+        name
+      ) +
+
+      '&email=' +
+      encodeURIComponent(
+        email
+      ) +
+
+      '&phone=' +
+      encodeURIComponent(
+        phone
+      );
+
+
+    const result =
+      await jsonp(
+        createOrderUrl
+      );
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error ||
+        'Unable to create order'
+      );
+
+    }
+
+
+    /********************************************
+     * RAZORPAY OPTIONS
+     ********************************************/
+
+    const options = {
+
+      key:
+        result.key,
+
+      amount:
+        result.amount,
+
+      currency:
+        result.currency,
+
+      name:
+        'KASHVIKA',
+
+      description:
+        result.name,
+
+      order_id:
+        result.order_id,
+
+
+      prefill: {
+
+        name:
+          name,
+
+        email:
+          email,
+
+        contact:
+          phone
+
+      },
+
+
+      notes: {
+
+        txnid:
+          result.txnid,
+
+        book_id:
+          bookId
+
+      },
+
+
+      theme: {
+
+        color:
+          '#111111'
+
+      },
+
+
+      /******************************************
+       * PAYMENT SUCCESS
+       ******************************************/
+
+      handler:
+        function(response) {
+
+          verifyPayment(
+
+            result.txnid,
+
+            bookId,
+
+            response
+
+          );
+
+        },
+
+
+      modal: {
+
+        ondismiss:
+          function() {
+
+            button.disabled =
+              false;
+
+            button.innerText =
+              'Proceed to Pay';
+
+          }
+
+      }
+
+    };
+
+
+    const razorpay =
+      new Razorpay(
+        options
+      );
+
+
+    /********************************************
+     * PAYMENT FAILED
+     ********************************************/
+
+    razorpay.on(
+      'payment.failed',
+      function(response) {
+
+        button.disabled =
+          false;
+
+        button.innerText =
+          'Proceed to Pay';
+
+
+        const description =
+          response.error &&
+          response.error.description
+            ? response.error.description
+            : 'Payment failed.';
+
+
+        document.getElementById(
+          'message'
+        ).innerHTML =
+
+          '<p style="color:red">' +
+
+          escapeHtml(
+            description
+          ) +
+
+          '</p>';
+
+      }
+    );
+
+
+    /********************************************
+     * OPEN RAZORPAY
+     ********************************************/
+
+    razorpay.open();
+
+  } catch (error) {
+
+    button.disabled =
+      false;
+
+    button.innerText =
+      'Proceed to Pay';
+
+
+    document.getElementById(
+      'message'
+    ).innerHTML =
+
+      '<p style="color:red">' +
+
+      escapeHtml(
+        error.message
+      ) +
+
+      '</p>';
+
+  }
+
+}
+
+
+/************************************************
+ * VERIFY PAYMENT
+ ************************************************/
+
+async function verifyPayment(
+  txnid,
+  bookId,
+  response
+) {
+
+  document.getElementById(
+    'message'
+  ).innerHTML =
+
+    '<p>Verifying payment...</p>';
+
+
+  try {
+
+    const verifyUrl =
+
+      API_URL +
+
+      '?options=verify' +
+
+      '&txnid=' +
+      encodeURIComponent(
+        txnid
+      ) +
+
+      '&razorpay_payment_id=' +
+      encodeURIComponent(
+        response.razorpay_payment_id
+      ) +
+
+      '&razorpay_order_id=' +
+      encodeURIComponent(
+        response.razorpay_order_id
+      ) +
+
+      '&razorpay_signature=' +
+      encodeURIComponent(
+        response.razorpay_signature
+      );
+
+
+    const result =
+      await jsonp(
+        verifyUrl
+      );
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error ||
+        'Payment verification failed'
+      );
+
+    }
+
+
+    /********************************************
+     * KEEP BOTH ID AND TXNID
+     ********************************************/
+
+    const successUrl =
+
+      'success.html' +
+
+      '?id=' +
+      encodeURIComponent(
+        bookId
+      ) +
+
+      '&txnid=' +
+      encodeURIComponent(
+        txnid
+      );
+
+
+    document.getElementById(
+      'message'
+    ).innerHTML =
+
+      '<p style="color:green">' +
+
+      'Payment successful. Redirecting...' +
+
+      '</p>';
+
+
+    setTimeout(
+      function() {
+
+        window.location.href =
+          successUrl;
+
+      },
+      700
+    );
+
+
+  } catch (error) {
+
+    document.getElementById(
+      'message'
+    ).innerHTML =
+
+      '<p style="color:red">' +
+
+      escapeHtml(
+        error.message
+      ) +
+
+      '</p>';
+
+  }
+
+}
+
+
+/************************************************
+ * ESCAPE HTML
+ ************************************************/
+
+function escapeHtml(value) {
+
+  return String(value || '')
+
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+
+    .replace(
+      /</g,
+      '&lt;'
+    )
+
+    .replace(
+      />/g,
+      '&gt;'
+    )
+
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+
+}
+
+
+/************************************************
+ * START
+ ************************************************/
+
+loadBook();
+
+</script>
+
+</body>
+
+</html>
