@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Download eBook</title>
+
+<style>
+
+body {
+  margin: 0;
+  padding: 30px 20px;
+  font-family: Arial, sans-serif;
+  background: #f4f5f7;
+}
+
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+}
+
+.card {
+  background: white;
+  padding: 35px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow:
+    0 5px 25px rgba(0,0,0,.10);
+}
+
+.icon {
+  font-size: 55px;
+}
+
+button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 15px;
+  border: 0;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+#error {
+  color: red;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+<div class="card">
+
+
+<div class="icon">
+📚
+</div>
+
+
+<h1>
+eBook Download
+</h1>
+
+
+<p id="status">
+Checking your payment...
+</p>
+
+
+<p id="error"></p>
+
+
+<button
+id="downloadButton"
+style="display:none"
+onclick="startDownload()">
+
+Download eBook
+
+</button>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/************************************************
+ * APPS SCRIPT
+ ************************************************/
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbz1CePptVr99twHLeEN9-amL2y0UjcTNIayvNW998-HRiHUKVP2q_Bj4gI-fSlQvoFO6A/exec';
+
+
+/************************************************
+ * GET BOTH PARAMETERS
+ *
+ * download.html?id=101&txnid=TXN...
+ ************************************************/
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+
+const bookId =
+params.get('id');
+
+
+const txnid =
+params.get('txnid');
+
+
+let authorized = false;
+
+
+/************************************************
+ * JSONP
+ ************************************************/
+
+function jsonp(url) {
+
+  return new Promise(
+    function(resolve, reject) {
+
+      const callbackName =
+        'jsonp_' +
+        Date.now() +
+        '_' +
+        Math.floor(
+          Math.random() * 100000
+        );
+
+
+      const script =
+        document.createElement(
+          'script'
+        );
+
+
+      const timeout =
+        setTimeout(
+          function() {
+
+            cleanup();
+
+            reject(
+              new Error(
+                'Server timeout'
+              )
+            );
+
+          },
+          20000
+        );
+
+
+      function cleanup() {
+
+        clearTimeout(timeout);
+
+        delete window[callbackName];
+
+        script.remove();
+
+      }
+
+
+      window[callbackName] =
+        function(data) {
+
+          cleanup();
+
+          resolve(data);
+
+        };
+
+
+      script.onerror =
+        function() {
+
+          cleanup();
+
+          reject(
+            new Error(
+              'Unable to connect to server'
+            )
+          );
+
+        };
+
+
+      script.src =
+        url +
+        '&callback=' +
+        encodeURIComponent(
+          callbackName
+        );
+
+
+      document.body.appendChild(
+        script
+      );
+
+    }
+  );
+
+}
+
+
+/************************************************
+ * CHECK ORDER
+ ************************************************/
+
+async function checkOrder() {
+
+  /******** VALIDATE URL ********/
+
+  if (!bookId) {
+
+    showError(
+      'Book ID is missing.'
+    );
+
+    return;
+
+  }
+
+
+  if (!txnid) {
+
+    showError(
+      'Transaction ID is missing.'
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    /********************************************
+     * SEND BOTH
+     ********************************************/
+
+    const url =
+
+      API_URL +
+
+      '?options=checkpayment' +
+
+      '&id=' +
+      encodeURIComponent(
+        bookId
+      ) +
+
+      '&txnid=' +
+      encodeURIComponent(
+        txnid
+      );
+
+
+    const result =
+      await jsonp(url);
+
+
+    if (!result.success) {
+
+      throw new Error(
+        result.error ||
+        'Order not found'
+      );
+
+    }
+
+
+    /********************************************
+     * BOOK ID CHECK
+     ********************************************/
+
+    if (
+      String(result.bookId) !==
+      String(bookId)
+    ) {
+
+      throw new Error(
+        'Book ID does not match transaction.'
+      );
+
+    }
+
+
+    /********************************************
+     * PAYMENT STATUS
+     ********************************************/
+
+    if (
+      String(result.status).toUpperCase() !==
+      'SUCCESS'
+    ) {
+
+      throw new Error(
+        'Payment is not confirmed.'
+      );
+
+    }
+
+
+    /********************************************
+     * AUTHORIZED
+     ********************************************/
+
+    authorized =
+      true;
+
+
+    document.getElementById(
+      'status'
+    ).innerHTML =
+
+      '<strong style="color:green">' +
+
+      'Payment confirmed.' +
+
+      '</strong>' +
+
+      '<br><br>' +
+
+      'Your eBook is ready.';
+
+
+    document.getElementById(
+      'downloadButton'
+    ).style.display =
+      'block';
+
+
+  } catch (error) {
+
+    showError(
+      error.message
+    );
+
+  }
+
+}
+
+
+/************************************************
+ * FINAL DOWNLOAD
+ ************************************************/
+
+function startDownload() {
+
+  if (!authorized) {
+
+    return;
+
+  }
+
+
+  /**********************************************
+   * KEEP BOTH ID AND TXNID
+   **********************************************/
+
+  const backendUrl =
+
+    API_URL +
+
+    '?options=download' +
+
+    '&id=' +
+    encodeURIComponent(
+      bookId
+    ) +
+
+    '&txnid=' +
+    encodeURIComponent(
+      txnid
+    );
+
+
+  /*
+   * Apps Script performs another server-side
+   * check before allowing the download.
+   */
+
+  window.location.href =
+    backendUrl;
+
+}
+
+
+/************************************************
+ * ERROR
+ ************************************************/
+
+function showError(message) {
+
+  document.getElementById(
+    'status'
+  ).innerText =
+    'Download unavailable.';
+
+
+  document.getElementById(
+    'error'
+  ).innerText =
+    message;
+
+}
+
+
+/************************************************
+ * START
+ ************************************************/
+
+checkOrder();
+
+</script>
+
+</body>
+
+</html>
