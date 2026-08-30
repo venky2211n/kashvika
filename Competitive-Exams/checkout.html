@@ -107,7 +107,7 @@ window.onload = function() {
 
 <!-- 
 ```html -->
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 
 <head>
@@ -190,7 +190,7 @@ if (!id) {
      ======================================== */
 
   const APP_URL =
-    "hhttps://script.google.com/macros/s/AKfycby065bMYR3i62RrnUGQNR71zk-qYOcPGaCqWrzVJejOXFcY9HQv3GY8uTIg-om7b1hkww/exec";
+    "https://script.google.com/macros/s/AKfycby065bMYR3i62RrnUGQNR71zk-qYOcPGaCqWrzVJejOXFcY9HQv3GY8uTIg-om7b1hkww/exec";
 
 
   /* ========================================
@@ -223,6 +223,108 @@ if (!id) {
 
 </body>
 
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Checkout</title>
+
+  <style>
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+
+      width: 100vw;
+      height: 100vh;
+
+      border: none;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<iframe id="myIframe"></iframe>
+
+
+<script>
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const id =
+    params.get("id");
+
+
+if (!id) {
+
+    document.body.innerHTML =
+        "<h2>Book ID missing</h2>";
+
+} else {
+
+    /*
+     * PUT YOUR REAL APPS SCRIPT URL HERE
+     */
+
+    const APP_URL =
+        "https://script.google.com/macros/s/AKfycby065bMYR3i62RrnUGQNR71zk-qYOcPGaCqWrzVJejOXFcY9HQv3GY8uTIg-om7b1hkww/exec";
+
+
+    const iframeUrl =
+        APP_URL +
+        "?options=checkout" +
+        "&id=" +
+        encodeURIComponent(id);
+
+
+    console.log(
+        "Book ID:",
+        id
+    );
+
+    console.log(
+        "Apps Script URL:",
+        iframeUrl
+    );
+
+
+    document.getElementById(
+        "myIframe"
+    ).src = iframeUrl;
+
+}
+
+</script>
+
+</body>
+
 </html>
-```
+
+
+
 
