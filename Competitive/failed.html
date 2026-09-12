@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
+
+<title>Payment Failed</title>
+
+<style>
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#fff5f5;
+}
+
+.container{
+  max-width:600px;
+  margin:70px auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:40px;
+  text-align:center;
+  border-radius:15px;
+  box-shadow:0 5px 25px rgba(0,0,0,.08);
+}
+
+.icon{
+  font-size:60px;
+}
+
+h1{
+  color:#dc2626;
+}
+
+a{
+  display:inline-block;
+  margin-top:25px;
+  background:#2563eb;
+  color:white;
+  padding:14px 25px;
+  border-radius:8px;
+  text-decoration:none;
+}
+
+.error{
+  margin-top:20px;
+  color:#555;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<div class="icon">
+✕
+</div>
+
+<h1>Payment Failed</h1>
+
+<p>
+Unfortunately, your payment was not successful.
+</p>
+
+<div
+ class="error"
+ id="error">
+</div>
+
+<a href="/Competitive/">
+Return to Store
+</a>
+
+</div>
+
+</div>
+
+
+<script>
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+
+const txnid =
+params.get("txnid");
+
+
+const error =
+params.get("error");
+
+
+document.getElementById("error")
+.innerText =
+txnid
+  ? "Transaction ID: " + txnid
+  : "";
+
+</script>
+
+</body>
+
+</html>
