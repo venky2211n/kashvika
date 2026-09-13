@@ -6,74 +6,144 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1"
+>
 
-<title>Payment Successful</title>
+<title>
+Payment Successful
+</title>
 
 <style>
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
-}
 
-.container {
-  max-width: 650px;
-  margin: 70px auto;
-  padding: 20px;
+  margin: 0;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  background:
+    #f5f7fb;
+
 }
 
 .card {
-  background: white;
-  padding: 35px;
-  border-radius: 16px;
-  text-align: center;
+
+  max-width:
+    650px;
+
+  margin:
+    60px auto;
+
+  padding:
+    30px;
+
+  background:
+    white;
+
+  border-radius:
+    15px;
+
   box-shadow:
-    0 10px 35px rgba(0,0,0,.08);
+    0 10px 35px
+    rgba(0,0,0,.08);
+
 }
 
-.icon {
-  font-size: 65px;
+.success {
+
+  font-size:
+    60px;
+
+  text-align:
+    center;
+
 }
 
 h1 {
-  color: #16803c;
-}
 
-.info {
-  text-align: left;
-  margin-top: 25px;
+  text-align:
+    center;
+
 }
 
 .row {
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
+
+  padding:
+    13px 0;
+
+  border-bottom:
+    1px solid #eee;
+
 }
 
-button {
-  width: 100%;
-  padding: 15px;
-  margin-top: 25px;
-  border: none;
-  border-radius: 8px;
-  background: #16803c;
-  color: white;
-  font-size: 17px;
-  cursor: pointer;
+.download {
+
+  display:
+    block;
+
+  margin-top:
+    25px;
+
+  padding:
+    14px;
+
+  background:
+    #1463ff;
+
+  color:
+    white;
+
+  text-align:
+    center;
+
+  text-decoration:
+    none;
+
+  border-radius:
+    8px;
+
 }
 
-button:disabled {
-  opacity: .5;
+.home {
+
+  display:
+    block;
+
+  margin-top:
+    12px;
+
+  padding:
+    14px;
+
+  background:
+    #eee;
+
+  color:
+    #222;
+
+  text-align:
+    center;
+
+  text-decoration:
+    none;
+
+  border-radius:
+    8px;
+
 }
 
-#loading {
-  color: #666;
-}
+#status {
 
-#error {
-  color: #c00;
+  text-align:
+    center;
+
+  margin-top:
+    20px;
+
 }
 
 </style>
@@ -82,78 +152,58 @@ button:disabled {
 
 <body>
 
-<div class="container">
 
 <div class="card">
 
-<div class="icon">
+
+<div class="success">
 ✓
 </div>
+
 
 <h1>
 Payment Successful
 </h1>
 
-<p id="loading">
-Verifying payment...
-</p>
 
-<div
-  id="content"
-  style="display:none">
-
-<div class="info">
-
-<div class="row">
-<strong>Transaction ID:</strong>
-<span id="txnid"></span>
-</div>
-
-<div class="row">
-<strong>Product:</strong>
-<span id="product"></span>
-</div>
-
-<div class="row">
-<strong>Amount:</strong>
-₹<span id="amount"></span>
-</div>
-
-<div class="row">
-<strong>Name:</strong>
-<span id="name"></span>
-</div>
-
-<div class="row">
-<strong>Email:</strong>
-<span id="email"></span>
-</div>
-
+<div id="details">
+Loading order...
 </div>
 
 
-<button
-  id="downloadButton"
-  onclick="downloadBook()">
-
-Download eBook
-
-</button>
-
+<div id="downloadArea">
 </div>
 
-<div id="error"></div>
 
+<div id="status">
 </div>
+
+
+<a
+  class="home"
+  href="/Competitive/"
+>
+Back to Store
+</a>
+
 
 </div>
 
 
 <script>
 
-const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxgH6uIkyWWL3oV9m-jLCUoAHeHZMRIHOpFSNSjY_LVqlY_rfP2Yqei6I_8R8c_6-XasA/exec";
 
+/****************************************************
+ * CONFIG
+ ****************************************************/
+
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbwAjXqT3Mced7SISiZwrauAWvo3wznfnL8bNdZvbfiYAzlLwRu0Aa6qbKMmu66EOKx1QQ/exec";
+
+
+/****************************************************
+ * PARAMETERS
+ ****************************************************/
 
 const params =
   new URLSearchParams(
@@ -165,208 +215,221 @@ const txnid =
   params.get("txnid");
 
 
-let orderData = null;
-
+/****************************************************
+ * LOAD ORDER
+ ****************************************************/
 
 if (!txnid) {
 
   document.getElementById(
-    "loading"
-  ).style.display = "none";
-
-  document.getElementById(
-    "error"
+    "details"
   ).textContent =
     "Transaction ID missing.";
 
 } else {
 
-  checkPayment();
+  loadOrder();
+
 }
 
 
-/*
- * Poll because PayU callback and
- * browser redirect can happen at
- * slightly different times.
- */
-function checkPayment() {
+/****************************************************
+ * JSONP STATUS
+ ****************************************************/
 
-  fetch(
+function loadOrder() {
+
+  const callback =
+    "statusCallback_" +
+    Date.now();
+
+
+  window[callback] =
+    function(result) {
+
+      try {
+
+        if (
+          !result.success ||
+          !result.order
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Order not found"
+          );
+
+        }
+
+
+        const order =
+          result.order;
+
+
+        document.getElementById(
+          "details"
+        ).innerHTML = `
+
+          <div class="row">
+            <b>Transaction ID:</b>
+            ${escapeHtml(order.txnid)}
+          </div>
+
+          <div class="row">
+            <b>Product:</b>
+            ${escapeHtml(order.product)}
+          </div>
+
+          <div class="row">
+            <b>Amount:</b>
+            ₹${Number(order.amount).toFixed(2)}
+          </div>
+
+          <div class="row">
+            <b>Name:</b>
+            ${escapeHtml(order.name)}
+          </div>
+
+          <div class="row">
+            <b>Email:</b>
+            ${escapeHtml(order.email)}
+          </div>
+
+          <div class="row">
+            <b>Status:</b>
+            ${escapeHtml(order.status)}
+          </div>
+
+        `;
+
+
+        /*
+         * Download only if SUCCESS
+         */
+        if (
+          order.status ===
+          "SUCCESS"
+        ) {
+
+          if (
+            order.fileId
+          ) {
+
+            const downloadUrl =
+              "https://drive.google.com/uc?" +
+              "export=download&id=" +
+              encodeURIComponent(
+                order.fileId
+              );
+
+
+            document.getElementById(
+              "downloadArea"
+            ).innerHTML = `
+
+              <a
+                class="download"
+                href="${downloadUrl}"
+                target="_blank"
+                rel="noopener"
+              >
+                Download eBook
+              </a>
+
+            `;
+
+          }
+
+        }
+
+
+      } catch (err) {
+
+        document.getElementById(
+          "details"
+        ).textContent =
+          err.message;
+
+      } finally {
+
+        delete window[callback];
+
+        script.remove();
+
+      }
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
     APPS_SCRIPT_URL +
-    "?options=payment-status&txnid=" +
-    encodeURIComponent(txnid)
-  )
-
-  .then(function(response) {
-
-    return response.json();
-
-  })
-
-  .then(function(data) {
-
-    if (!data.success) {
-
-      retry();
-
-      return;
-    }
+    "?options=payment-status" +
+    "&txnid=" +
+    encodeURIComponent(txnid) +
+    "&callback=" +
+    encodeURIComponent(callback);
 
 
-    if (
-      String(data.status)
-        .toUpperCase() ===
-      "SUCCESS"
-    ) {
+  script.onerror =
+    function() {
 
-      orderData = data;
+      document.getElementById(
+        "status"
+      ).textContent =
+        "Unable to load payment details.";
 
-      showSuccess();
+      delete window[callback];
 
-      return;
-    }
+      script.remove();
 
-
-    if (
-      String(data.status)
-        .toUpperCase() ===
-      "FAILED"
-    ) {
-
-      window.location.href =
-        "./failed.html?txnid=" +
-        encodeURIComponent(txnid);
-
-      return;
-    }
+    };
 
 
-    retry();
-
-  })
-
-  .catch(function() {
-
-    retry();
-
-  });
-
-}
-
-
-function retry() {
-
-  setTimeout(
-    checkPayment,
-    2500
+  document.body.appendChild(
+    script
   );
 
 }
 
 
-function showSuccess() {
+/****************************************************
+ * ESCAPE
+ ****************************************************/
 
-  document.getElementById(
-    "loading"
-  ).style.display = "none";
+function escapeHtml(value) {
 
+  return String(value)
 
-  document.getElementById(
-    "content"
-  ).style.display = "block";
+    .replace(
+      /&/g,
+      "&amp;"
+    )
 
+    .replace(
+      /</g,
+      "&lt;"
+    )
 
-  document.getElementById(
-    "txnid"
-  ).textContent =
-    orderData.txnid;
+    .replace(
+      />/g,
+      "&gt;"
+    )
 
+    .replace(
+      /"/g,
+      "&quot;"
+    )
 
-  document.getElementById(
-    "product"
-  ).textContent =
-    orderData.product;
-
-
-  document.getElementById(
-    "amount"
-  ).textContent =
-    Number(orderData.amount)
-      .toFixed(2);
-
-
-  document.getElementById(
-    "name"
-  ).textContent =
-    orderData.name;
-
-
-  document.getElementById(
-    "email"
-  ).textContent =
-    orderData.email;
-
-}
-
-
-function downloadBook() {
-
-  const button =
-    document.getElementById(
-      "downloadButton"
+    .replace(
+      /'/g,
+      "&#039;"
     );
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Preparing Download...";
-
-
-  fetch(
-    APPS_SCRIPT_URL +
-    "?options=download&txnid=" +
-    encodeURIComponent(txnid)
-  )
-
-  .then(function(response) {
-
-    return response.json();
-
-  })
-
-  .then(function(data) {
-
-    if (!data.success) {
-
-      throw new Error(
-        data.message ||
-        "Download unavailable"
-      );
-
-    }
-
-
-    window.location.href =
-      data.url;
-
-  })
-
-  .catch(function(error) {
-
-    document.getElementById(
-      "error"
-    ).textContent =
-      error.message;
-
-
-    button.disabled = false;
-
-    button.textContent =
-      "Download eBook";
-
-  });
 
 }
 
