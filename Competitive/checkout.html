@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +20,10 @@ body {
   color: #222;
 }
 
+/* =====================================================
+   MAIN
+===================================================== */
+
 .container {
   max-width: 850px;
   margin: 40px auto;
@@ -37,6 +41,11 @@ h1 {
   text-align: center;
   margin-bottom: 30px;
 }
+
+
+/* =====================================================
+   BOOK
+===================================================== */
 
 .book-section {
   display: flex;
@@ -86,6 +95,11 @@ h1 {
   color: #198754;
 }
 
+
+/* =====================================================
+   FORM
+===================================================== */
+
 .form-group {
   margin-bottom: 18px;
 }
@@ -109,6 +123,11 @@ input:focus {
   border-color: #3949ab;
 }
 
+
+/* =====================================================
+   PAY BUTTON
+===================================================== */
+
 #payButton {
   width: 100%;
   padding: 15px;
@@ -130,13 +149,18 @@ input:focus {
   cursor: not-allowed;
 }
 
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
 #message {
   text-align: center;
   margin-top: 20px;
   min-height: 25px;
 }
 
-.loading {
+.loading-text {
   color: #555;
 }
 
@@ -148,6 +172,11 @@ input:focus {
   color: #dc3545;
 }
 
+
+/* =====================================================
+   BACK
+===================================================== */
+
 .back {
   display: block;
   text-align: center;
@@ -155,6 +184,101 @@ input:focus {
   text-decoration: none;
   color: #3949ab;
 }
+
+
+/* =====================================================
+   LOADING OVERLAY
+===================================================== */
+
+#loadingOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,.92);
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+}
+
+.loading-box {
+  text-align: center;
+  background: #fff;
+
+  padding: 35px 45px;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.15);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+
+  margin: 0 auto 20px;
+
+  border: 5px solid #ddd;
+
+  border-top-color: #198754;
+
+  border-radius: 50%;
+
+  animation:
+    spin .8s linear infinite;
+}
+
+.loading-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.loading-subtitle {
+  color: #666;
+  font-size: 14px;
+}
+
+@keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+
+/* =====================================================
+   BOOK LOADING
+===================================================== */
+
+.book-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+}
+
+.small-spinner {
+  width: 20px;
+  height: 20px;
+
+  border: 3px solid #ddd;
+  border-top-color: #3949ab;
+
+  border-radius: 50%;
+
+  animation:
+    spin .8s linear infinite;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media(max-width:650px) {
 
@@ -185,11 +309,48 @@ input:focus {
 
 <body>
 
+
+<!-- =====================================================
+     LOADING OVERLAY
+===================================================== -->
+
+<div id="loadingOverlay">
+
+  <div class="loading-box">
+
+    <div class="spinner"></div>
+
+    <div
+      id="loadingTitle"
+      class="loading-title">
+
+      Preparing Payment...
+
+    </div>
+
+    <div
+      id="loadingSubtitle"
+      class="loading-subtitle">
+
+      Please wait...
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
 <div class="container">
 
   <div class="checkout-box">
 
     <h1>Checkout</h1>
+
 
     <!-- BOOK -->
 
@@ -201,30 +362,45 @@ input:focus {
         src=""
         alt="Book">
 
+
       <div class="book-info">
 
         <div
           id="bookTitle"
           class="book-title">
-          Loading book...
+
+          <span class="book-loading">
+            <span class="small-spinner"></span>
+            Loading book...
+          </span>
+
         </div>
+
 
         <div
           id="bookCategory"
           class="category">
+
           Loading...
+
         </div>
+
 
         <div
           id="bookDescription"
           class="book-description">
+
           Please wait...
+
         </div>
+
 
         <div
           id="bookPrice"
           class="price">
+
           ₹0.00
+
         </div>
 
       </div>
@@ -236,6 +412,7 @@ input:focus {
 
     <form id="checkoutForm">
 
+
       <div class="form-group">
 
         <label for="name">
@@ -246,6 +423,7 @@ input:focus {
           type="text"
           id="name"
           required
+          autocomplete="name"
           placeholder="Enter your name">
 
       </div>
@@ -261,6 +439,7 @@ input:focus {
           type="email"
           id="email"
           required
+          autocomplete="email"
           placeholder="Enter your email">
 
       </div>
@@ -276,6 +455,7 @@ input:focus {
           type="tel"
           id="phone"
           required
+          autocomplete="tel"
           placeholder="Enter your phone number">
 
       </div>
@@ -307,24 +487,59 @@ input:focus {
   </div>
 
 </div>
-  ```html
+
+
 <script>
 
 /* =====================================================
-   PAYMENT CONFIG
+   CONFIG
 ===================================================== */
 
-const PAYMENT_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+const APPS_SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbzAkSJIKHHUt1fUE762fdrKeRArwRlrVuyn7Qyz1Nls_SC9dBANG6Fp5JK_9ZNXeH4b9g/exec";
 
-const POPUP_CHECK_MS = 1000;               // check popup every 1 sec
 
-const FINAL_STATUS_CHECKS = 10;            // 10 extra checks
+const CUSTOM_DOMAIN =
+"https://kashvika.website/Competitive";
 
-const FINAL_STATUS_INTERVAL = 3000;        // every 3 sec
+
+/*
+   PayU payment maximum waiting time.
+
+   10 minutes.
+*/
+
+const PAYMENT_TIMEOUT =
+10 * 60 * 1000;
+
+
+/*
+   Poll every 3 seconds.
+*/
+
+const POLL_INTERVAL =
+3000;
+
+
+/*
+   Check popup every second.
+*/
+
+const POPUP_CHECK_INTERVAL =
+1000;
+
+
+/*
+   After popup closes, allow PayU callback
+   approximately 30 seconds to arrive.
+*/
+
+const POPUP_FINAL_CHECKS =
+10;
 
 
 /* =====================================================
-   PAYMENT VARIABLES
+   VARIABLES
 ===================================================== */
 
 let currentBook = null;
@@ -333,9 +548,11 @@ let paymentWindow = null;
 
 let pollingTimer = null;
 
-let popupCheckTimer = null;
+let popupTimer = null;
 
-let paymentTimeoutTimer = null;
+let timeoutTimer = null;
+
+let finalCheckTimer = null;
 
 let pollingStarted = false;
 
@@ -343,9 +560,367 @@ let paymentStarted = false;
 
 let paymentFinished = false;
 
-let popupClosedByUser = false;
+let activeTxnid = null;
 
-let finalStatusChecks = 0;
+let popupWasClosed = false;
+
+let finalChecks = 0;
+
+
+/* =====================================================
+   URL
+===================================================== */
+
+const urlParams =
+new URLSearchParams(
+  window.location.search
+);
+
+const bookId =
+urlParams.get("id");
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const bookImage =
+document.getElementById("bookImage");
+
+const bookTitle =
+document.getElementById("bookTitle");
+
+const bookCategory =
+document.getElementById("bookCategory");
+
+const bookDescription =
+document.getElementById("bookDescription");
+
+const bookPrice =
+document.getElementById("bookPrice");
+
+const checkoutForm =
+document.getElementById("checkoutForm");
+
+const payButton =
+document.getElementById("payButton");
+
+const message =
+document.getElementById("message");
+
+const loadingOverlay =
+document.getElementById("loadingOverlay");
+
+const loadingTitle =
+document.getElementById("loadingTitle");
+
+const loadingSubtitle =
+document.getElementById("loadingSubtitle");
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(
+  text,
+  type = ""
+) {
+
+  message.textContent =
+    text;
+
+  message.className =
+    type;
+
+}
+
+
+/* =====================================================
+   SHOW LOADING
+===================================================== */
+
+function showLoading(
+  title,
+  subtitle
+) {
+
+  loadingTitle.textContent =
+    title || "Please wait...";
+
+  loadingSubtitle.textContent =
+    subtitle || "";
+
+  loadingOverlay.style.display =
+    "flex";
+
+}
+
+
+/* =====================================================
+   HIDE LOADING
+===================================================== */
+
+function hideLoading() {
+
+  loadingOverlay.style.display =
+    "none";
+
+}
+
+
+/* =====================================================
+   JSONP
+===================================================== */
+
+function callAppsScript(
+  params,
+  callback
+) {
+
+  const callbackName =
+    "jsonp_" +
+    Date.now() +
+    "_" +
+    Math.floor(
+      Math.random() * 100000
+    );
+
+
+  params.callback =
+    callbackName;
+
+
+  const script =
+    document.createElement("script");
+
+
+  const query =
+    new URLSearchParams(
+      params
+    ).toString();
+
+
+  let completed = false;
+
+
+  function cleanup() {
+
+    if (completed) {
+      return;
+    }
+
+    completed = true;
+
+
+    try {
+
+      delete window[
+        callbackName
+      ];
+
+    } catch (e) {
+    }
+
+
+    if (script.parentNode) {
+
+      script.parentNode
+        .removeChild(script);
+
+    }
+
+  }
+
+
+  window[callbackName] =
+    function(data) {
+
+      cleanup();
+
+      callback(data);
+
+    };
+
+
+  script.onerror =
+    function() {
+
+      cleanup();
+
+      callback({
+        success: false,
+        error:
+          "Unable to connect to Apps Script."
+      });
+
+    };
+
+
+  script.src =
+    APPS_SCRIPT_URL +
+    "?" +
+    query;
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+/* =====================================================
+   LOAD BOOK
+===================================================== */
+
+function loadBook() {
+
+  if (!bookId) {
+
+    bookTitle.textContent =
+      "Book ID missing";
+
+    payButton.disabled =
+      true;
+
+    payButton.textContent =
+      "Book Not Found";
+
+    showMessage(
+      "Book ID is missing.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  showMessage(
+    "Loading book...",
+    "loading-text"
+  );
+
+
+  callAppsScript(
+    {
+      options:
+        "book-data",
+
+      id:
+        bookId
+
+    },
+
+    function(result) {
+
+      console.log(
+        "BOOK RESPONSE:",
+        result
+      );
+
+
+      if (
+        !result ||
+        !result.success ||
+        !result.book
+      ) {
+
+        bookTitle.textContent =
+          "Book not found";
+
+        payButton.disabled =
+          true;
+
+        payButton.textContent =
+          "Unable to Continue";
+
+
+        showMessage(
+          result?.error ||
+          "Unable to load book.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      currentBook =
+        result.book;
+
+
+      bookTitle.textContent =
+        currentBook.title ||
+        "eBook";
+
+
+      bookCategory.textContent =
+        currentBook.category ||
+        "eBook";
+
+
+      bookDescription.textContent =
+        currentBook.description ||
+        "";
+
+
+      const amount =
+        Number(
+          currentBook.price || 0
+        );
+
+
+      bookPrice.textContent =
+        "₹" +
+        amount.toFixed(2);
+
+
+      if (
+        currentBook.imageUrl
+      ) {
+
+        bookImage.src =
+          currentBook.imageUrl;
+
+      }
+
+
+      /*
+         ENABLE BUTTON
+      */
+
+      payButton.disabled =
+        false;
+
+
+      payButton.textContent =
+        "Proceed to Pay ₹" +
+        amount.toFixed(2);
+
+
+      showMessage("");
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+checkoutForm.addEventListener(
+  "submit",
+  function(event) {
+
+    event.preventDefault();
+
+    startPayment();
+
+  }
+);
 
 
 /* =====================================================
@@ -357,6 +932,7 @@ function startPayment() {
   if (paymentStarted) {
     return;
   }
+
 
   if (!currentBook) {
 
@@ -375,11 +951,13 @@ function startPayment() {
       .value
       .trim();
 
+
   const email =
     document
       .getElementById("email")
       .value
       .trim();
+
 
   const phone =
     document
@@ -388,7 +966,9 @@ function startPayment() {
       .trim();
 
 
-  if (!name || !email || !phone) {
+  if (!name ||
+      !email ||
+      !phone) {
 
     showMessage(
       "Please enter all customer details.",
@@ -399,30 +979,34 @@ function startPayment() {
   }
 
 
-  paymentStarted = true;
+  paymentStarted =
+    true;
 
-  paymentFinished = false;
+  paymentFinished =
+    false;
 
-  popupClosedByUser = false;
+  popupWasClosed =
+    false;
 
-  finalStatusChecks = 0;
 
-
-  payButton.disabled = true;
+  payButton.disabled =
+    true;
 
   payButton.textContent =
     "Preparing Payment...";
 
 
   showMessage(
-    "Opening PayU payment window...",
-    "loading"
+    "Preparing payment...",
+    "loading-text"
   );
 
 
   /*
-     OPEN POPUP IMMEDIATELY
-     FROM USER CLICK
+     OPEN POPUP IMMEDIATELY.
+
+     Must happen directly from the
+     submit/click event.
   */
 
   paymentWindow =
@@ -435,7 +1019,7 @@ function startPayment() {
 
   if (!paymentWindow) {
 
-    resetPaymentUI();
+    resetPayment();
 
     showMessage(
       "Popup blocked. Please allow popups for this website.",
@@ -447,7 +1031,7 @@ function startPayment() {
 
 
   /*
-     TEMPORARY POPUP PAGE
+     Temporary popup loading page.
   */
 
   try {
@@ -456,24 +1040,55 @@ function startPayment() {
 
     paymentWindow.document.write(`
       <!DOCTYPE html>
+
       <html>
+
       <head>
+
         <title>PayU Payment</title>
+
+        <style>
+
+          body {
+            font-family: Arial;
+            text-align: center;
+            padding: 50px;
+          }
+
+          .spinner {
+            width: 45px;
+            height: 45px;
+
+            border: 5px solid #ddd;
+            border-top-color: #198754;
+
+            border-radius: 50%;
+
+            animation: spin .8s linear infinite;
+
+            margin: 0 auto 20px;
+          }
+
+          @keyframes spin {
+            to {
+              transform: rotate(360deg);
+            }
+          }
+
+        </style>
+
       </head>
 
-      <body style="
-        font-family:Arial;
-        text-align:center;
-        padding:50px;
-      ">
+      <body>
+
+        <div class="spinner"></div>
 
         <h2>Preparing Payment...</h2>
 
-        <p>
-          Please wait while we connect to PayU.
-        </p>
+        <p>Please wait...</p>
 
       </body>
+
       </html>
     `);
 
@@ -487,29 +1102,39 @@ function startPayment() {
 
 
   /*
-     START WATCHING POPUP
+     Monitor popup.
   */
 
   startPopupMonitor();
 
 
   /*
-     CREATE PAYMENT
+     CREATE PAYMENT.
   */
 
   callAppsScript(
     {
-      options: "create-payment",
-      id: currentBook.bookId,
-      name: name,
-      email: email,
-      phone: phone
+      options:
+        "create-payment",
+
+      id:
+        currentBook.bookId,
+
+      name:
+        name,
+
+      email:
+        email,
+
+      phone:
+        phone
+
     },
 
     function(result) {
 
       console.log(
-        "CREATE PAYMENT:",
+        "CREATE PAYMENT RESPONSE:",
         result
       );
 
@@ -521,7 +1146,7 @@ function startPayment() {
 
         closePaymentWindow();
 
-        resetPaymentUI();
+        resetPayment();
 
         showMessage(
           result?.error ||
@@ -541,10 +1166,10 @@ function startPayment() {
 
         closePaymentWindow();
 
-        resetPaymentUI();
+        resetPayment();
 
         showMessage(
-          "Invalid payment response from server.",
+          "Invalid payment response.",
           "error"
         );
 
@@ -552,8 +1177,12 @@ function startPayment() {
       }
 
 
+      activeTxnid =
+        result.txnid;
+
+
       /*
-         SUBMIT PAYU FORM
+         Submit PayU.
       */
 
       submitPayU(
@@ -563,7 +1192,7 @@ function startPayment() {
 
 
       /*
-         START PAYMENT POLLING
+         Start polling.
       */
 
       startPolling(
@@ -572,12 +1201,10 @@ function startPayment() {
 
 
       /*
-         START HARD TIMEOUT
+         Start timeout.
       */
 
-      startPaymentTimeout(
-        result.txnid
-      );
+      startPaymentTimeout();
 
     }
   );
@@ -612,11 +1239,16 @@ function submitPayU(
         .createElement("form");
 
 
-    form.method = "POST";
+    form.method =
+      "POST";
 
-    form.action = paymentUrl;
 
-    form.style.display = "none";
+    form.action =
+      paymentUrl;
+
+
+    form.style.display =
+      "none";
 
 
     Object.keys(
@@ -629,9 +1261,13 @@ function submitPayU(
             .createElement("input");
 
 
-        input.type = "hidden";
+        input.type =
+          "hidden";
 
-        input.name = key;
+
+        input.name =
+          key;
+
 
         input.value =
           paymentData[key];
@@ -662,7 +1298,8 @@ function submitPayU(
 
     closePaymentWindow();
 
-    resetPaymentUI();
+    resetPayment();
+
 
     showMessage(
       "Unable to open PayU payment page.",
@@ -683,13 +1320,9 @@ function startPopupMonitor() {
   stopPopupMonitor();
 
 
-  popupCheckTimer =
+  popupTimer =
     setInterval(
       function() {
-
-        /*
-           Payment already finished.
-        */
 
         if (paymentFinished) {
 
@@ -699,17 +1332,13 @@ function startPopupMonitor() {
         }
 
 
-        /*
-           Popup manually closed.
-        */
-
         if (
           paymentWindow &&
           paymentWindow.closed
         ) {
 
           console.log(
-            "PAYU POPUP CLOSED"
+            "PayU popup closed"
           );
 
 
@@ -721,28 +1350,8 @@ function startPopupMonitor() {
         }
 
       },
-      POPUP_CHECK_MS
+      POPUP_CHECK_INTERVAL
     );
-
-}
-
-
-/* =====================================================
-   STOP POPUP MONITOR
-===================================================== */
-
-function stopPopupMonitor() {
-
-  if (popupCheckTimer) {
-
-    clearInterval(
-      popupCheckTimer
-    );
-
-  }
-
-
-  popupCheckTimer = null;
 
 }
 
@@ -758,149 +1367,82 @@ function handlePopupClosed() {
   }
 
 
-  popupClosedByUser = true;
-
-
-  /*
-     IMPORTANT:
-
-     Do NOT immediately mark payment FAILED.
-
-     PayU may have already received payment
-     but Apps Script callback may arrive a little
-     later.
-
-     Continue checking payment status.
-  */
-
-  showMessage(
-    "Payment window closed. Checking payment status...",
-    "loading"
-  );
-
-
-  /*
-     If polling has not started yet,
-     there is nothing more we can safely do.
-  */
-
-  if (!pollingStarted) {
-
-    stopPaymentProcess();
-
-
-    showMessage(
-      "Payment window was closed before payment could be verified.",
-      "error"
-    );
-
+  if (popupWasClosed) {
     return;
   }
 
 
+  popupWasClosed =
+    true;
+
+
+  showMessage(
+    "Payment window closed. Checking payment status...",
+    "loading-text"
+  );
+
+
   /*
-     Give PayU callback some time.
+     DO NOT immediately mark FAILED.
+
+     PayU callback may still be arriving.
   */
 
-  finalStatusChecks = 0;
+  finalChecks = 0;
 
 
-  runFinalStatusCheck();
+  runFinalChecks();
 
 }
 
 
 /* =====================================================
-   FINAL STATUS CHECK
+   FINAL CHECK AFTER POPUP CLOSE
 ===================================================== */
 
-function runFinalStatusCheck() {
+function runFinalChecks() {
 
   if (paymentFinished) {
     return;
   }
 
 
-  /*
-     We need the txnid.
+  if (!activeTxnid) {
 
-     It is stored on the polling object.
-  */
-
-  if (!window.activeTxnid) {
-
-    stopPaymentProcess();
-
-    showMessage(
-      "Payment window was closed.",
-      "error"
-    );
+    finishPopupClosed();
 
     return;
   }
 
 
-  finalStatusChecks++;
+  finalChecks++;
 
 
   checkPaymentStatus(
-    window.activeTxnid
+    activeTxnid
   );
 
 
-  /*
-     Continue checking for a short period.
-
-     Normal polling is still running.
-  */
-
   if (
-    finalStatusChecks <
-    FINAL_STATUS_CHECKS
+    finalChecks <
+    POPUP_FINAL_CHECKS
   ) {
 
-    setTimeout(
-      runFinalStatusCheck,
-      FINAL_STATUS_INTERVAL
-    );
+    finalCheckTimer =
+      setTimeout(
+        runFinalChecks,
+        3000
+      );
 
   } else {
 
-    /*
-       After approximately 30 seconds,
-       if no SUCCESS/FAILED arrived,
-       consider popup closure abandoned.
-    */
+    finalCheckTimer =
+      null;
+
 
     if (!paymentFinished) {
 
-      stopPaymentProcess();
-
-
-      closePaymentWindow();
-
-
-      showMessage(
-        "Payment window was closed before payment was confirmed.",
-        "error"
-      );
-
-
-      /*
-         Go to failed page only after
-         verification window expires.
-      */
-
-      setTimeout(
-        function() {
-
-          window.location.href =
-            CUSTOM_DOMAIN +
-            "/failed.html?reason=popup_closed";
-
-        },
-        1200
-      );
+      finishPopupClosed();
 
     }
 
@@ -910,7 +1452,39 @@ function runFinalStatusCheck() {
 
 
 /* =====================================================
-   START POLLING
+   POPUP CLOSED FINAL RESULT
+===================================================== */
+
+function finishPopupClosed() {
+
+  stopPaymentProcess();
+
+
+  hideLoading();
+
+
+  showMessage(
+    "Payment window was closed before payment was confirmed.",
+    "error"
+  );
+
+
+  setTimeout(
+    function() {
+
+      window.location.href =
+        CUSTOM_DOMAIN +
+        "/failed.html?reason=popup_closed";
+
+    },
+    1200
+  );
+
+}
+
+
+/* =====================================================
+   POLLING
 ===================================================== */
 
 function startPolling(
@@ -920,23 +1494,22 @@ function startPolling(
   stopPolling();
 
 
-  window.activeTxnid =
+  activeTxnid =
     txnid;
 
 
-  pollingStarted = true;
+  pollingStarted =
+    true;
 
-  paymentFinished = false;
 
-
-  showMessage(
-    "Waiting for payment confirmation...",
-    "loading"
+  showLoading(
+    "Waiting for Payment",
+    "Please complete the payment in the PayU window."
   );
 
 
   /*
-     Immediate check
+     Immediate check.
   */
 
   checkPaymentStatus(
@@ -945,7 +1518,7 @@ function startPolling(
 
 
   /*
-     Poll every 3 seconds
+     Every 3 seconds.
   */
 
   pollingTimer =
@@ -962,14 +1535,14 @@ function startPolling(
         );
 
       },
-      3000
+      POLL_INTERVAL
     );
 
 }
 
 
 /* =====================================================
-   CHECK PAYMENT STATUS
+   CHECK STATUS
 ===================================================== */
 
 function checkPaymentStatus(
@@ -978,8 +1551,12 @@ function checkPaymentStatus(
 
   callAppsScript(
     {
-      options: "payment-status",
-      txnid: txnid
+      options:
+        "payment-status",
+
+      txnid:
+        txnid
+
     },
 
     function(result) {
@@ -1056,20 +1633,14 @@ function checkPaymentStatus(
 
       /*
          PENDING
-
-         Continue polling.
       */
 
-      if (!paymentFinished) {
-
-        showMessage(
-          popupClosedByUser
-            ? "Checking payment status..."
-            : "Payment processing...",
-          "loading"
-        );
-
-      }
+      showMessage(
+        popupWasClosed
+          ? "Checking payment status..."
+          : "Payment processing...",
+        "loading-text"
+      );
 
     }
   );
@@ -1078,111 +1649,7 @@ function checkPaymentStatus(
 
 
 /* =====================================================
-   PAYMENT TIMEOUT
-===================================================== */
-
-function startPaymentTimeout(
-  txnid
-) {
-
-  stopPaymentTimeout();
-
-
-  paymentTimeoutTimer =
-    setTimeout(
-      function() {
-
-        if (paymentFinished) {
-          return;
-        }
-
-
-        console.log(
-          "PAYMENT TIMEOUT:",
-          txnid
-        );
-
-
-        /*
-           Stop normal polling temporarily.
-        */
-
-        stopPolling();
-
-
-        showMessage(
-          "Payment verification timed out. Please check your payment status.",
-          "error"
-        );
-
-
-        /*
-           Close PayU popup.
-        */
-
-        closePaymentWindow();
-
-
-        /*
-           Give the server one final status check
-           before sending the customer away.
-        */
-
-        checkPaymentStatus(
-          txnid
-        );
-
-
-        setTimeout(
-          function() {
-
-            if (paymentFinished) {
-              return;
-            }
-
-
-            stopPaymentProcess();
-
-
-            window.location.href =
-              CUSTOM_DOMAIN +
-              "/failed.html?reason=timeout";
-
-          },
-          3000
-        );
-
-
-      },
-      PAYMENT_TIMEOUT_MS
-    );
-
-}
-
-
-/* =====================================================
-   STOP PAYMENT TIMEOUT
-===================================================== */
-
-function stopPaymentTimeout() {
-
-  if (paymentTimeoutTimer) {
-
-    clearTimeout(
-      paymentTimeoutTimer
-    );
-
-  }
-
-
-  paymentTimeoutTimer =
-    null;
-
-}
-
-
-/* =====================================================
-   PAYMENT SUCCESS
+   SUCCESS
 ===================================================== */
 
 function paymentSuccess(
@@ -1194,11 +1661,12 @@ function paymentSuccess(
   }
 
 
-  paymentFinished = true;
+  paymentFinished =
+    true;
 
 
   console.log(
-    "PAYMENT SUCCESS:",
+    "PAYMENT SUCCESS",
     txnid
   );
 
@@ -1206,21 +1674,21 @@ function paymentSuccess(
   stopPaymentProcess();
 
 
-  showMessage(
-    "Payment successful. Closing PayU...",
-    "success"
+  showLoading(
+    "Payment Successful",
+    "Closing PayU and opening your download page..."
   );
 
 
   /*
-     CLOSE POPUP
+     CLOSE PAYU POPUP
   */
 
   closePaymentWindow();
 
 
   /*
-     Redirect parent page only.
+     Redirect parent checkout page.
   */
 
   setTimeout(
@@ -1234,14 +1702,14 @@ function paymentSuccess(
         );
 
     },
-    800
+    1000
   );
 
 }
 
 
 /* =====================================================
-   PAYMENT FAILED
+   FAILED
 ===================================================== */
 
 function paymentFailed(
@@ -1253,11 +1721,12 @@ function paymentFailed(
   }
 
 
-  paymentFinished = true;
+  paymentFinished =
+    true;
 
 
   console.log(
-    "PAYMENT FAILED:",
+    "PAYMENT FAILED",
     txnid
   );
 
@@ -1265,9 +1734,9 @@ function paymentFailed(
   stopPaymentProcess();
 
 
-  showMessage(
-    "Payment failed. Closing PayU...",
-    "error"
+  showLoading(
+    "Payment Failed",
+    "Closing PayU payment window..."
   );
 
 
@@ -1279,7 +1748,7 @@ function paymentFailed(
 
 
   /*
-     Redirect parent page.
+     Redirect.
   */
 
   setTimeout(
@@ -1293,14 +1762,225 @@ function paymentFailed(
         );
 
     },
-    800
+    1000
   );
 
 }
 
 
 /* =====================================================
-   CLOSE PAYMENT WINDOW
+   PAYMENT TIMEOUT
+===================================================== */
+
+function startPaymentTimeout() {
+
+  stopPaymentTimeout();
+
+
+  timeoutTimer =
+    setTimeout(
+      function() {
+
+        if (paymentFinished) {
+          return;
+        }
+
+
+        console.log(
+          "PAYMENT TIMEOUT"
+        );
+
+
+        showLoading(
+          "Payment Verification Timeout",
+          "Checking the final payment status..."
+        );
+
+
+        /*
+           Stop normal polling.
+        */
+
+        stopPolling();
+
+
+        /*
+           Close PayU popup.
+        */
+
+        closePaymentWindow();
+
+
+        /*
+           One final server check.
+        */
+
+        if (activeTxnid) {
+
+          checkPaymentStatus(
+            activeTxnid
+          );
+
+        }
+
+
+        /*
+           Wait 3 seconds for final response.
+        */
+
+        setTimeout(
+          function() {
+
+            if (paymentFinished) {
+              return;
+            }
+
+
+            paymentFinished =
+              true;
+
+
+            stopPaymentProcess();
+
+
+            hideLoading();
+
+
+            showMessage(
+              "Payment could not be verified within the allowed time.",
+              "error"
+            );
+
+
+            setTimeout(
+              function() {
+
+                window.location.href =
+                  CUSTOM_DOMAIN +
+                  "/failed.html?reason=timeout";
+
+              },
+              1000
+            );
+
+          },
+          3000
+        );
+
+      },
+      PAYMENT_TIMEOUT
+    );
+
+}
+
+
+/* =====================================================
+   STOP TIMEOUT
+===================================================== */
+
+function stopPaymentTimeout() {
+
+  if (timeoutTimer) {
+
+    clearTimeout(
+      timeoutTimer
+    );
+
+  }
+
+
+  timeoutTimer =
+    null;
+
+}
+
+
+/* =====================================================
+   STOP POLLING
+===================================================== */
+
+function stopPolling() {
+
+  if (pollingTimer) {
+
+    clearInterval(
+      pollingTimer
+    );
+
+  }
+
+
+  pollingTimer =
+    null;
+
+
+  pollingStarted =
+    false;
+
+}
+
+
+/* =====================================================
+   STOP POPUP MONITOR
+===================================================== */
+
+function stopPopupMonitor() {
+
+  if (popupTimer) {
+
+    clearInterval(
+      popupTimer
+    );
+
+  }
+
+
+  popupTimer =
+    null;
+
+}
+
+
+/* =====================================================
+   STOP FINAL CHECK
+===================================================== */
+
+function stopFinalChecks() {
+
+  if (finalCheckTimer) {
+
+    clearTimeout(
+      finalCheckTimer
+    );
+
+  }
+
+
+  finalCheckTimer =
+    null;
+
+}
+
+
+/* =====================================================
+   STOP EVERYTHING
+===================================================== */
+
+function stopPaymentProcess() {
+
+  stopPolling();
+
+  stopPopupMonitor();
+
+  stopPaymentTimeout();
+
+  stopFinalChecks();
+
+}
+
+
+/* =====================================================
+   CLOSE POPUP
 ===================================================== */
 
 function closePaymentWindow() {
@@ -1336,55 +2016,10 @@ function closePaymentWindow() {
 
 
 /* =====================================================
-   STOP POLLING
+   RESET PAYMENT
 ===================================================== */
 
-function stopPolling() {
-
-  if (pollingTimer) {
-
-    clearInterval(
-      pollingTimer
-    );
-
-  }
-
-
-  pollingTimer = null;
-
-  pollingStarted = false;
-
-}
-
-
-/* =====================================================
-   STOP EVERYTHING
-===================================================== */
-
-function stopPaymentProcess() {
-
-  stopPolling();
-
-  stopPopupMonitor();
-
-  stopPaymentTimeout();
-
-
-  window.activeTxnid =
-    null;
-
-
-  paymentStarted =
-    false;
-
-}
-
-
-/* =====================================================
-   RESET BUTTON
-===================================================== */
-
-function resetPaymentUI() {
+function resetPayment() {
 
   stopPaymentProcess();
 
@@ -1392,16 +2027,26 @@ function resetPaymentUI() {
   paymentStarted =
     false;
 
-
   paymentFinished =
     false;
 
+  activeTxnid =
+    null;
 
-  popupClosedByUser =
+  popupWasClosed =
     false;
 
 
+  hideLoading();
+
+
   if (currentBook) {
+
+    const amount =
+      Number(
+        currentBook.price || 0
+      );
+
 
     payButton.disabled =
       false;
@@ -1409,9 +2054,7 @@ function resetPaymentUI() {
 
     payButton.textContent =
       "Proceed to Pay ₹" +
-      Number(
-        currentBook.price
-      ).toFixed(2);
+      amount.toFixed(2);
 
   } else {
 
@@ -1427,24 +2070,44 @@ function resetPaymentUI() {
 
 
 /* =====================================================
-   PAGE EXIT
+   PAGE LOAD
+===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    console.log(
+      "Checkout loaded"
+    );
+
+
+    console.log(
+      "Book ID:",
+      bookId
+    );
+
+
+    loadBook();
+
+  }
+);
+
+
+/* =====================================================
+   PAGE CLOSE
 ===================================================== */
 
 window.addEventListener(
   "beforeunload",
   function() {
 
-    stopPopupMonitor();
-
-    stopPaymentTimeout();
-
-    stopPolling();
+    stopPaymentProcess();
 
   }
 );
 
 </script>
-
 
 </body>
 </html>
