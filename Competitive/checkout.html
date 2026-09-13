@@ -1,12 +1,15 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1"
+>
 
 <title>Checkout</title>
 
@@ -17,78 +20,174 @@
 }
 
 body {
+
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  background:
+    #f5f7fb;
+
+  color:
+    #222;
+
 }
 
 .container {
-  max-width: 650px;
-  margin: 50px auto;
-  padding: 20px;
-}
 
-.card {
-  background: #fff;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  max-width:
+    600px;
+
+  margin:
+    50px auto;
+
+  padding:
+    25px;
+
+  background:
+    white;
+
+  border-radius:
+    15px;
+
+  box-shadow:
+    0 10px 35px
+    rgba(0,0,0,.08);
+
 }
 
 h1 {
-  margin-top: 0;
+
+  margin-top:
+    0;
+
+}
+
+.book {
+
+  padding:
+    15px;
+
+  margin-bottom:
+    20px;
+
+  background:
+    #f7f8fa;
+
+  border-radius:
+    10px;
+
 }
 
 .book-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
+
+  font-size:
+    20px;
+
+  font-weight:
+    bold;
+
 }
 
 .price {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 25px;
+
+  margin-top:
+    8px;
+
+  font-size:
+    24px;
+
+  font-weight:
+    bold;
+
 }
 
 label {
-  display: block;
-  margin-top: 15px;
-  font-weight: bold;
+
+  display:
+    block;
+
+  margin-top:
+    15px;
+
+  margin-bottom:
+    6px;
+
+  font-weight:
+    bold;
+
 }
 
 input {
-  width: 100%;
-  padding: 13px;
-  margin-top: 7px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
+
+  width:
+    100%;
+
+  padding:
+    13px;
+
+  border:
+    1px solid #ddd;
+
+  border-radius:
+    8px;
+
+  font-size:
+    15px;
+
 }
 
 button {
-  width: 100%;
-  padding: 15px;
-  margin-top: 25px;
-  border: 0;
-  border-radius: 8px;
-  background: #111827;
-  color: white;
-  font-size: 17px;
-  cursor: pointer;
+
+  width:
+    100%;
+
+  margin-top:
+    22px;
+
+  padding:
+    14px;
+
+  border:
+    0;
+
+  border-radius:
+    8px;
+
+  background:
+    #1463ff;
+
+  color:
+    white;
+
+  font-size:
+    16px;
+
+  cursor:
+    pointer;
+
 }
 
 button:disabled {
-  opacity: .6;
+
+  opacity:
+    .6;
+
+  cursor:
+    not-allowed;
+
 }
 
-#error {
-  color: #d00000;
-  margin-top: 15px;
-}
+#message {
 
-#loading {
-  color: #666;
+  margin-top:
+    15px;
+
+  text-align:
+    center;
+
 }
 
 </style>
@@ -97,52 +196,36 @@ button:disabled {
 
 <body>
 
+
 <div class="container">
 
-<div class="card">
+<h1>
+Checkout
+</h1>
 
-<div id="loading">
+
+<div
+  id="bookInfo"
+  class="book"
+>
 Loading book...
-</div>
-
-<div id="checkout" style="display:none">
-
-<div class="book-title"
-     id="bookTitle">
-</div>
-
-<div class="price">
-₹<span id="bookPrice"></span>
 </div>
 
 
 <form
-  id="paymentForm"
-  method="POST"
-  action="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec">
-
-<input
-  type="hidden"
-  name="options"
-  value="create-payment">
-
-
-<input
-  type="hidden"
-  name="bookId"
-  id="bookId">
+  id="checkoutForm"
+>
 
 
 <label>
-Full Name
+Name
 </label>
 
 <input
-  type="text"
-  name="name"
   id="name"
   required
-  placeholder="Enter your full name">
+  autocomplete="name"
+>
 
 
 <label>
@@ -150,11 +233,11 @@ Email
 </label>
 
 <input
-  type="email"
-  name="email"
   id="email"
+  type="email"
   required
-  placeholder="Enter your email">
+  autocomplete="email"
+>
 
 
 <label>
@@ -162,184 +245,634 @@ Phone
 </label>
 
 <input
-  type="tel"
-  name="phone"
   id="phone"
-  maxlength="10"
-  pattern="[0-9]{10}"
+  type="tel"
   required
-  placeholder="10 digit mobile number">
+  autocomplete="tel"
+>
 
 
 <button
+  id="payButton"
   type="submit"
-  id="payButton">
-
+>
 Proceed to Pay
-
 </button>
+
 
 </form>
 
-<div id="error"></div>
 
-</div>
+<div
+  id="message"
+></div>
 
-</div>
 
 </div>
 
 
 <script>
 
+
+/****************************************************
+ * CONFIG
+ ****************************************************/
+
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbwAjXqT3Mced7SISiZwrauAWvo3wznfnL8bNdZvbfiYAzlLwRu0Aa6qbKMmu66EOKx1QQ/exec";
+
+
 /*
- * Get book ID from:
+ * Example:
  *
- * checkout.html?id=102
+ * const APPS_SCRIPT_URL =
+ * "https://script.google.com/macros/s/XXXXX/exec";
  */
+
+
+/****************************************************
+ * BOOK ID
+ ****************************************************/
 
 const params =
   new URLSearchParams(
     window.location.search
   );
 
+
 const bookId =
   params.get("id");
 
 
-/*
- * IMPORTANT:
- *
- * Put your Apps Script deployment URL here.
- */
-const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxgH6uIkyWWL3oV9m-jLCUoAHeHZMRIHOpFSNSjY_LVqlY_rfP2Yqei6I_8R8c_6-XasA/exec";
-
-
-/*
- * --------------------------------------------------
- * BOOK DATA
- *
- * Put your books here.
- *
- * This removes the cross-origin fetch completely.
- * --------------------------------------------------
- */
-
-const books = {
-
-  "101": {
-    title: "Digital Marketing Guide",
-    price: 199
-  },
-
-  "102": {
-    title: "Personal Finance Mastery",
-    price: 299
-  }
-
-};
-
-
-/*
- * Check ID
- */
-
 if (!bookId) {
 
-  showError(
-    "Book ID is missing."
-  );
-
-} else if (!books[bookId]) {
-
-  showError(
-    "Book not found."
-  );
-
-} else {
-
-  const book =
-    books[bookId];
-
-
   document.getElementById(
-    "bookTitle"
+    "bookInfo"
   ).textContent =
-    book.title;
+    "Book ID missing.";
 
-
-  document.getElementById(
-    "bookPrice"
-  ).textContent =
-    Number(book.price).toFixed(2);
-
-
-  document.getElementById(
-    "bookId"
-  ).value =
-    bookId;
-
-
-  /*
-   * Change form action dynamically.
-   */
-  document.getElementById(
-    "paymentForm"
-  ).action =
-    APPS_SCRIPT_URL;
-
-
-  document.getElementById(
-    "loading"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "checkout"
-  ).style.display =
-    "block";
 }
 
 
-/*
- * Form submit
- */
+/****************************************************
+ * LOAD BOOK USING JSONP
+ ****************************************************/
 
-document.getElementById(
-  "paymentForm"
-).addEventListener(
-  "submit",
-  function() {
+if (bookId) {
 
-    const button =
+  loadBook();
+
+}
+
+
+function loadBook() {
+
+  const callback =
+    "bookCallback_" +
+    Date.now();
+
+
+  window[callback] =
+    function(result) {
+
+      try {
+
+        if (
+          !result.success
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Book not found"
+          );
+
+        }
+
+
+        const book =
+          result.book;
+
+
+        document.getElementById(
+          "bookInfo"
+        ).innerHTML = `
+
+          <div class="book-title">
+            ${escapeHtml(book.title)}
+          </div>
+
+          <div class="price">
+            ₹${Number(book.price).toFixed(2)}
+          </div>
+
+        `;
+
+
+      } finally {
+
+        delete window[callback];
+
+        script.remove();
+
+      }
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    APPS_SCRIPT_URL +
+    "?options=book-data" +
+    "&id=" +
+    encodeURIComponent(bookId) +
+    "&callback=" +
+    encodeURIComponent(callback);
+
+
+  script.onerror =
+    function() {
+
       document.getElementById(
-        "payButton"
-      );
+        "bookInfo"
+      ).textContent =
+        "Unable to load book.";
+
+      delete window[callback];
+
+      script.remove();
+
+    };
 
 
-    button.disabled = true;
+  document.body.appendChild(
+    script
+  );
 
-    button.textContent =
-      "Preparing Payment...";
+}
+
+
+/****************************************************
+ * START CHECKOUT
+ ****************************************************/
+
+document
+  .getElementById(
+    "checkoutForm"
+  )
+  .addEventListener(
+    "submit",
+    startPayment
+  );
+
+
+function startPayment(e) {
+
+  e.preventDefault();
+
+
+  const button =
+    document.getElementById(
+      "payButton"
+    );
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  const name =
+    document.getElementById(
+      "name"
+    ).value.trim();
+
+
+  const email =
+    document.getElementById(
+      "email"
+    ).value.trim();
+
+
+  const phone =
+    document.getElementById(
+      "phone"
+    ).value.trim();
+
+
+  if (
+    !name ||
+    !email ||
+    !phone
+  ) {
+
+    message.textContent =
+      "Please enter all details.";
+
+    return;
 
   }
-);
 
 
-function showError(message) {
+  /*
+   * IMPORTANT:
+   *
+   * Open popup NOW, synchronously
+   * from the user's click.
+   */
+  const paymentWindow =
+    window.open(
+      "",
+      "PayUPaymentWindow",
+      "width=520," +
+      "height=760," +
+      "left=200," +
+      "top=50," +
+      "scrollbars=yes," +
+      "resizable=yes"
+    );
 
-  document.getElementById(
-    "loading"
-  ).style.display =
-    "none";
+
+  if (!paymentWindow) {
+
+    message.textContent =
+      "Popup blocked. Please allow popups for this website.";
+
+    return;
+
+  }
 
 
-  document.getElementById(
-    "error"
-  ).textContent =
-    message;
+  /*
+   * Temporary popup content
+   */
+  paymentWindow.document.open();
+
+  paymentWindow.document.write(`
+
+    <!DOCTYPE html>
+
+    <html>
+
+    <head>
+
+    <title>
+      Preparing Payment
+    </title>
+
+    <style>
+
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    </style>
+
+    </head>
+
+    <body>
+
+    <h2>
+      Preparing Payment...
+    </h2>
+
+    <p>
+      Please wait.
+    </p>
+
+    </body>
+
+    </html>
+
+  `);
+
+  paymentWindow.document.close();
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Preparing Payment...";
+
+
+  message.textContent =
+    "Opening PayU payment window...";
+
+
+  /*
+   * Apps Script JSONP
+   */
+  createPayment(
+    paymentWindow,
+    name,
+    email,
+    phone,
+    button,
+    message
+  );
+
+}
+
+
+/****************************************************
+ * CREATE PAYMENT
+ ****************************************************/
+
+function createPayment(
+  paymentWindow,
+  name,
+  email,
+  phone,
+  button,
+  message
+) {
+
+  const callback =
+    "paymentCallback_" +
+    Date.now();
+
+
+  window[callback] =
+    function(result) {
+
+      try {
+
+        if (
+          !result.success
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Unable to create payment"
+          );
+
+        }
+
+
+        /*
+         * We now have:
+         *
+         * result.paymentUrl
+         * result.paymentData
+         */
+        submitToPayU(
+          paymentWindow,
+          result.paymentUrl,
+          result.paymentData
+        );
+
+
+        button.textContent =
+          "Payment Window Opened";
+
+
+        message.textContent =
+          "Complete the payment in the PayU window.";
+
+
+      } catch (err) {
+
+        if (
+          paymentWindow &&
+          !paymentWindow.closed
+        ) {
+
+          paymentWindow.close();
+
+        }
+
+
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          "Proceed to Pay";
+
+
+        message.textContent =
+          err.message;
+
+
+      } finally {
+
+        delete window[callback];
+
+        script.remove();
+
+      }
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+    APPS_SCRIPT_URL +
+    "?options=create-payment" +
+    "&id=" +
+    encodeURIComponent(bookId) +
+    "&name=" +
+    encodeURIComponent(name) +
+    "&email=" +
+    encodeURIComponent(email) +
+    "&phone=" +
+    encodeURIComponent(phone) +
+    "&callback=" +
+    encodeURIComponent(callback);
+
+
+  script.onerror =
+    function() {
+
+      if (
+        paymentWindow &&
+        !paymentWindow.closed
+      ) {
+
+        paymentWindow.close();
+
+      }
+
+
+      button.disabled =
+        false;
+
+
+      button.textContent =
+        "Proceed to Pay";
+
+
+      message.textContent =
+        "Unable to contact payment server.";
+
+
+      delete window[callback];
+
+      script.remove();
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+
+/****************************************************
+ * SUBMIT TO PAYU
+ ****************************************************/
+
+function submitToPayU(
+  paymentWindow,
+  paymentUrl,
+  paymentData
+) {
+
+  const doc =
+    paymentWindow.document;
+
+
+  /*
+   * Clear popup
+   */
+  doc.open();
+
+
+  doc.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>PayU Payment</title>
+    </head>
+    <body>
+      <p style="
+        font-family:Arial;
+        text-align:center;
+        margin-top:80px;
+      ">
+        Redirecting to PayU...
+      </p>
+    </body>
+    </html>
+  `);
+
+
+  doc.close();
+
+
+  /*
+   * Create PayU form
+   */
+  const form =
+    doc.createElement(
+      "form"
+    );
+
+
+  form.method =
+    "POST";
+
+
+  form.action =
+    paymentUrl;
+
+
+  form.target =
+    "_self";
+
+
+  Object.keys(
+    paymentData
+  ).forEach(
+    function(key) {
+
+      const input =
+        doc.createElement(
+          "input"
+        );
+
+
+      input.type =
+        "hidden";
+
+
+      input.name =
+        key;
+
+
+      input.value =
+        paymentData[key];
+
+
+      form.appendChild(
+        input
+      );
+
+    }
+  );
+
+
+  doc.body.appendChild(
+    form
+  );
+
+
+  /*
+   * Send customer to PayU
+   */
+  form.submit();
+
+}
+
+
+/****************************************************
+ * ESCAPE HTML
+ ****************************************************/
+
+function escapeHtml(value) {
+
+  return String(value)
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
 }
 
 </script>
