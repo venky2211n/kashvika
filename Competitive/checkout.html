@@ -8,7 +8,7 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0">
 
-<title>4Checkout - Ebook Store</title>
+<title>5Checkout - Ebook Store</title>
 
 <style>
 
@@ -178,6 +178,331 @@ Proceed to Pay
 
 <script>
 
+
+    
+<script>
+
+// ============================================
+// CONFIG
+// ============================================
+
+const APPS_SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbyRyStnq5DC16u4coWEPeGPOOBk8lJvmUctwxawDr9ZJIHPcmZ1132rrCsMO9l79A4x_A/exec";
+
+const CUSTOM_PAY_URL =
+"https://kashvika.website/Competitive/pay";
+
+
+// ============================================
+// BOOK ID
+// ============================================
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const bookId =
+  params.get("id");
+
+
+if (!bookId) {
+
+  document.getElementById("bookInfo")
+    .innerHTML =
+      "<p>Book ID is missing.</p>";
+
+  document.getElementById("payButton")
+    .disabled = true;
+
+}
+
+
+// ============================================
+// LOAD BOOK
+// ============================================
+
+function loadBook() {
+
+  if (!bookId) return;
+
+  const callbackName =
+    "bookCallback_" +
+    Date.now();
+
+  window[callbackName] =
+    function(response) {
+
+      try {
+
+        if (!response.success) {
+
+          throw new Error(
+            response.message ||
+            "Book not found"
+          );
+
+        }
+
+
+        const book =
+          response.book;
+
+
+        document.getElementById("bookInfo")
+          .innerHTML = `
+
+<div class="book-info">
+
+  <img
+    src="${escapeHtml(book.imageUrl)}"
+    alt="${escapeHtml(book.title)}"
+  >
+
+  <div>
+
+    <h2>
+      ${escapeHtml(book.title)}
+    </h2>
+
+    <div class="price">
+      ₹${Number(book.price).toFixed(2)}
+    </div>
+
+    <p>
+      ${escapeHtml(book.category || "")}
+    </p>
+
+  </div>
+
+</div>
+
+`;
+
+
+      } catch (error) {
+
+        document.getElementById("bookInfo")
+          .innerHTML =
+            "<p>" +
+            escapeHtml(error.message) +
+            "</p>";
+
+        document.getElementById("payButton")
+          .disabled = true;
+
+      }
+
+
+      delete window[callbackName];
+
+      document
+        .getElementById(callbackName)
+        ?.remove();
+
+    };
+
+
+  const script =
+    document.createElement("script");
+
+
+  script.id =
+    callbackName;
+
+
+  script.src =
+    APPS_SCRIPT_URL +
+    "?action=book" +
+    "&id=" +
+    encodeURIComponent(bookId) +
+    "&callback=" +
+    callbackName;
+
+
+  document.body.appendChild(script);
+
+}
+
+
+// Load book immediately
+loadBook();
+
+
+// ============================================
+// SUBMIT PAYMENT
+// ============================================
+
+document
+  .getElementById("checkoutForm")
+  .addEventListener(
+    "submit",
+    function(e) {
+
+      e.preventDefault();
+
+
+      // ----------------------------------------
+      // CUSTOMER DETAILS
+      // ----------------------------------------
+
+      const name =
+        document
+          .getElementById("name")
+          .value
+          .trim();
+
+
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+
+      const phone =
+        document
+          .getElementById("phone")
+          .value
+          .trim();
+
+
+      // ----------------------------------------
+      // VALIDATION
+      // ----------------------------------------
+
+      if (!name) {
+
+        alert("Please enter your name.");
+        return;
+
+      }
+
+
+      if (!email) {
+
+        alert("Please enter your email.");
+        return;
+
+      }
+
+
+      if (!phone) {
+
+        alert("Please enter your phone number.");
+        return;
+
+      }
+
+
+      if (!bookId) {
+
+        alert("Book ID is missing.");
+        return;
+
+      }
+
+
+      // ----------------------------------------
+      // BUTTON
+      // ----------------------------------------
+
+      const button =
+        document
+          .getElementById("payButton");
+
+
+      const message =
+        document
+          .getElementById("message");
+
+
+      button.disabled = true;
+
+      button.innerText =
+        "Opening Payment...";
+
+
+      message.innerText =
+        "Please wait...";
+
+
+      // ========================================
+      // CUSTOM DOMAIN PAYMENT URL
+      // ========================================
+      //
+      // Example:
+      //
+      // https://kashvika.website/Competitive/pay
+      //      ?id=102
+      //      &name=Venkataramana
+      //      &email=test@gmail.com
+      //      &phone=9876543210
+      //
+      // ========================================
+
+      const payUrl =
+        CUSTOM_PAY_URL +
+        "?id=" +
+        encodeURIComponent(bookId) +
+        "&name=" +
+        encodeURIComponent(name) +
+        "&email=" +
+        encodeURIComponent(email) +
+        "&phone=" +
+        encodeURIComponent(phone);
+
+
+      // ----------------------------------------
+      // OPEN CUSTOM DOMAIN PAYMENT PAGE
+      // ----------------------------------------
+
+      window.location.href =
+        payUrl;
+
+    }
+  );
+
+
+// ============================================
+// ESCAPE HTML
+// ============================================
+
+function escapeHtml(value) {
+
+  return String(value || "")
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+</script>
+
+
+<!-- 
 // ============================================
 // CONFIG
 // ============================================
@@ -480,7 +805,7 @@ function escapeHtml(value){
     .replace(/'/g,"&#039;");
 }
 
-</script>
+</script> -->
 
 </body>
 
