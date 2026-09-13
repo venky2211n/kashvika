@@ -1,305 +1,164 @@
+```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0">
+<meta
+  name="viewport"
+  content="width=device-width,
+           initial-scale=1.0"
+>
 
-<title>4Payment Successful</title>
+<title>
+Payment Successful
+</title>
+
 
 <style>
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f3f7f4;
+body {
+
+  margin: 0;
+
+  min-height: 100vh;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-family: Arial;
+
+  background: #f5f5f5;
 }
 
-.container{
-  max-width:650px;
-  margin:60px auto;
-  padding:20px;
+
+.box {
+
+  background: white;
+
+  width: 90%;
+
+  max-width: 500px;
+
+  padding: 40px;
+
+  border-radius: 16px;
+
+  text-align: center;
+
+  box-shadow:
+    0 10px 30px
+    rgba(0,0,0,.08);
 }
 
-.card{
-  background:white;
-  border-radius:15px;
-  padding:35px;
-  text-align:center;
-  box-shadow:0 5px 25px rgba(0,0,0,.08);
+
+.icon {
+
+  font-size: 60px;
+
+  margin-bottom: 15px;
 }
 
-.success{
-  font-size:60px;
+
+.txnid {
+
+  margin-top: 20px;
+
+  padding: 12px;
+
+  background: #f5f5f5;
+
+  border-radius: 8px;
+
+  word-break: break-all;
 }
 
-h1{
-  color:#15803d;
-}
 
-.info{
-  text-align:left;
-  margin-top:25px;
-}
+a {
 
-.row{
-  display:flex;
-  justify-content:space-between;
-  padding:12px 0;
-  border-bottom:1px solid #eee;
-}
+  display: inline-block;
 
-button,
-a{
-  display:inline-block;
-  margin-top:25px;
-  padding:14px 25px;
-  border-radius:8px;
-  text-decoration:none;
-  border:0;
-  cursor:pointer;
-}
+  margin-top: 20px;
 
-.download{
-  background:#15803d;
-  color:white;
-}
+  padding: 13px 22px;
 
-.home{
-  background:#2563eb;
-  color:white;
+  background: #111;
+
+  color: white;
+
+  text-decoration: none;
+
+  border-radius: 8px;
 }
 
 </style>
 
 </head>
 
+
 <body>
 
-<div class="container">
 
-<div class="card">
+<div class="box">
 
-<div class="success">
-✓
+<div class="icon">
+  ✓
 </div>
 
-<h1>Payment Successful</h1>
+
+<h1>
+Payment Successful
+</h1>
+
 
 <p>
-Thank you for your purchase.
+Your payment has been successfully verified.
 </p>
 
-<div id="order">
-Loading order...
-</div>
 
-</div>
+<div
+  id="txn"
+  class="txnid"
+></div>
+
+
+<a href="index.html">
+Back to Store
+</a>
+
 
 </div>
 
 
 <script>
 
-const APPS_SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbyUfPEqa_av-Rz7VqI3Q7f9B8yt26IfKOAXTDhzRdPZMeMVsbZYx091UX7mbuaKZqf1Dw/exec";
-
-
 const params =
-new URLSearchParams(
-window.location.search
-);
+  new URLSearchParams(
+    window.location.search
+  );
 
 
 const txnid =
-params.get("txnid");
+  params.get("txnid");
 
 
-
-
-
-
-
-      
-
-if (!txnid){
-
-  document.getElementById("order")
-    .innerHTML =
-      "<p>Transaction ID missing.</p>";
-
-}else{
-
-  loadOrder();
-}
-
-
-function loadOrder(){
-
-  const callbackName =
-    "orderCallback_" +
-    Date.now();
-
-
-  window[callbackName] =
-  function(response){
-
-    try{
-
-      if (!response.success){
-
-        throw new Error(
-          response.message ||
-          "Order not found"
-        );
-      }
-
-
-      const order =
-        response.order;
-
-
-      if (
-        order.status !==
-        "SUCCESS"
-      ){
-
-        document.getElementById("order")
-          .innerHTML =
-            "<p>Payment is still being verified.</p>";
-
-        return;
-      }
-
-
-      /*
-       * Download URL
-       *
-       * Apps Script has already stored
-       * the Drive File ID in column K.
-       */
-
-
-      const downloadUrl =
-        "https://drive.google.com/uc?export=download&id=" +
-        encodeURIComponent(order.fileId);
-
-
-      document.getElementById("order")
-        .innerHTML = `
-
-<div class="info">
-
-<div class="row">
-<span>Transaction</span>
-<strong>
-${escapeHtml(order.txnid)}
-</strong>
-</div>
-
-<div class="row">
-<span>Product</span>
-<strong>
-${escapeHtml(order.product)}
-</strong>
-</div>
-
-<div class="row">
-<span>Amount</span>
-<strong>
-₹${Number(order.amount).toFixed(2)}
-</strong>
-</div>
-
-<div class="row">
-<span>Name</span>
-<strong>
-${escapeHtml(order.name)}
-</strong>
-</div>
-
-<div class="row">
-<span>Email</span>
-<strong>
-${escapeHtml(order.email)}
-</strong>
-</div>
-
-</div>
-
-<a
- class="download"
- href="${downloadUrl}"
- target="_blank"
->
-Download eBook
-</a>
-
-<br>
-
-<a
- class="home"
- href="/Competitive-Exams/"
->
-Back to Store
-</a>
-
-`;
-
-    }catch(error){
-
-      document.getElementById("order")
-        .innerHTML =
-          "<p>" +
-          escapeHtml(error.message) +
-          "</p>";
-    }
-
-
-    delete window[callbackName];
-
-    document
-      .getElementById(callbackName)
-      ?.remove();
-  };
-
-
-  const script =
-    document.createElement("script");
-
-
-  script.id =
-    callbackName;
-
-
-  script.src =
-    APPS_SCRIPT_URL +
-    "?action=order" +
-    "&txnid=" +
-    encodeURIComponent(txnid) +
-    "&callback=" +
-    callbackName;
-
-
-  document.body.appendChild(script);
-}
-
-
-function escapeHtml(value){
-
-  return String(value || "")
-
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
-}
+document
+  .getElementById("txn")
+  .textContent =
+    txnid
+      ? "Transaction ID: " + txnid
+      : "";
 
 </script>
 
+
 </body>
+
 </html>
+```
