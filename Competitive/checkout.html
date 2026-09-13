@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 
 <head>
@@ -13,41 +12,83 @@
 
 <style>
 
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial;
+  margin: 0;
+  font-family: Arial, sans-serif;
   background: #f5f7fb;
 }
 
 .container {
-  max-width: 600px;
+  max-width: 650px;
   margin: 50px auto;
   padding: 20px;
 }
 
 .card {
-  background: white;
+  background: #fff;
   padding: 30px;
-  border-radius: 15px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+h1 {
+  margin-top: 0;
+}
+
+.book-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
 }
 
 input {
   width: 100%;
   padding: 13px;
-  margin: 8px 0 15px;
-  box-sizing: border-box;
+  margin-top: 7px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
 }
 
 button {
   width: 100%;
-  padding: 14px;
-  background: #111827;
-  color: white;
+  padding: 15px;
+  margin-top: 25px;
   border: 0;
   border-radius: 8px;
+  background: #111827;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .6;
 }
 
 #error {
-  color: red;
+  color: #d00000;
+  margin-top: 15px;
+}
+
+#loading {
+  color: #666;
 }
 
 </style>
@@ -60,37 +101,89 @@ button {
 
 <div class="card">
 
-<h2 id="title">
+<div id="loading">
 Loading book...
-</h2>
+</div>
 
-<p>
-₹<span id="price"></span>
-</p>
+<div id="checkout" style="display:none">
 
-<div id="error"></div>
+<div class="book-title"
+     id="bookTitle">
+</div>
+
+<div class="price">
+₹<span id="bookPrice"></span>
+</div>
+
+
+<form
+  id="paymentForm"
+  method="POST"
+  action="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec">
 
 <input
+  type="hidden"
+  name="options"
+  value="create-payment">
+
+
+<input
+  type="hidden"
+  name="bookId"
+  id="bookId">
+
+
+<label>
+Full Name
+</label>
+
+<input
+  type="text"
+  name="name"
   id="name"
-  placeholder="Full Name">
+  required
+  placeholder="Enter your full name">
+
+
+<label>
+Email
+</label>
 
 <input
-  id="email"
   type="email"
-  placeholder="Email">
+  name="email"
+  id="email"
+  required
+  placeholder="Enter your email">
+
+
+<label>
+Phone
+</label>
 
 <input
+  type="tel"
+  name="phone"
   id="phone"
   maxlength="10"
-  placeholder="Phone">
+  pattern="[0-9]{10}"
+  required
+  placeholder="10 digit mobile number">
+
 
 <button
-  onclick="pay()"
+  type="submit"
   id="payButton">
 
 Proceed to Pay
 
 </button>
+
+</form>
+
+<div id="error"></div>
+
+</div>
 
 </div>
 
@@ -99,322 +192,154 @@ Proceed to Pay
 
 <script>
 
-const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxgH6uIkyWWL3oV9m-jLCUoAHeHZMRIHOpFSNSjY_LVqlY_rfP2Yqei6I_8R8c_6-XasA/exec";
-
+/*
+ * Get book ID from:
+ *
+ * checkout.html?id=102
+ */
 
 const params =
   new URLSearchParams(
     window.location.search
   );
 
-
 const bookId =
   params.get("id");
 
 
-let book = null;
+/*
+ * IMPORTANT:
+ *
+ * Put your Apps Script deployment URL here.
+ */
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxgH6uIkyWWL3oV9m-jLCUoAHeHZMRIHOpFSNSjY_LVqlY_rfP2Yqei6I_8R8c_6-XasA/exec";
 
 
 /*
- * Load book
+ * --------------------------------------------------
+ * BOOK DATA
+ *
+ * Put your books here.
+ *
+ * This removes the cross-origin fetch completely.
+ * --------------------------------------------------
  */
-fetch(
-  APPS_SCRIPT_URL +
-  "?options=book-json&id=" +
-  encodeURIComponent(bookId)
-)
 
-.then(function(response) {
+const books = {
 
-  return response.json();
+  "101": {
+    title: "Digital Marketing Guide",
+    price: 199
+  },
 
-})
-
-.then(function(data) {
-
-  if (!data.success) {
-
-    throw new Error(
-      "Book not found"
-    );
+  "102": {
+    title: "Personal Finance Mastery",
+    price: 299
   }
 
+};
 
-  book = data;
+
+/*
+ * Check ID
+ */
+
+if (!bookId) {
+
+  showError(
+    "Book ID is missing."
+  );
+
+} else if (!books[bookId]) {
+
+  showError(
+    "Book not found."
+  );
+
+} else {
+
+  const book =
+    books[bookId];
 
 
   document.getElementById(
-    "title"
+    "bookTitle"
   ).textContent =
     book.title;
 
 
   document.getElementById(
-    "price"
+    "bookPrice"
   ).textContent =
-    Number(book.price)
-      .toFixed(2);
+    Number(book.price).toFixed(2);
 
-})
 
-.catch(function(error) {
+  document.getElementById(
+    "bookId"
+  ).value =
+    bookId;
+
+
+  /*
+   * Change form action dynamically.
+   */
+  document.getElementById(
+    "paymentForm"
+  ).action =
+    APPS_SCRIPT_URL;
+
+
+  document.getElementById(
+    "loading"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "checkout"
+  ).style.display =
+    "block";
+}
+
+
+/*
+ * Form submit
+ */
+
+document.getElementById(
+  "paymentForm"
+).addEventListener(
+  "submit",
+  function() {
+
+    const button =
+      document.getElementById(
+        "payButton"
+      );
+
+
+    button.disabled = true;
+
+    button.textContent =
+      "Preparing Payment...";
+
+  }
+);
+
+
+function showError(message) {
+
+  document.getElementById(
+    "loading"
+  ).style.display =
+    "none";
+
 
   document.getElementById(
     "error"
   ).textContent =
-    error.message;
-
-});
-
-
-function pay() {
-
-  const name =
-    document.getElementById(
-      "name"
-    ).value.trim();
-
-
-  const email =
-    document.getElementById(
-      "email"
-    ).value.trim();
-
-
-  const phone =
-    document.getElementById(
-      "phone"
-    ).value.trim();
-
-
-  const error =
-    document.getElementById(
-      "error"
-    );
-
-
-  if (!name) {
-
-    error.textContent =
-      "Enter your name.";
-
-    return;
-  }
-
-
-  if (!email) {
-
-    error.textContent =
-      "Enter your email.";
-
-    return;
-  }
-
-
-  if (!/^[0-9]{10}$/.test(phone)) {
-
-    error.textContent =
-      "Enter a valid 10 digit phone.";
-
-    return;
-  }
-
-
-  const button =
-    document.getElementById(
-      "payButton"
-    );
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Preparing Payment...";
-
-
-  /*
-   * IMPORTANT
-   *
-   * The secret PayU salt remains
-   * inside Apps Script.
-   */
-  fetch(
-    APPS_SCRIPT_URL +
-    "?options=create-payment",
-    {
-
-      method: "POST",
-
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
-
-      body: JSON.stringify({
-
-        bookId: bookId,
-
-        name: name,
-
-        email: email,
-
-        phone: phone
-
-      })
-
-    }
-  )
-
-  .then(function(response) {
-
-    return response.json();
-
-  })
-
-  .then(function(result) {
-
-    if (!result.success) {
-
-      throw new Error(
-        result.message ||
-        "Payment creation failed"
-      );
-
-    }
-
-
-    /*
-     * Create PayU form.
-     */
-    const form =
-      document.createElement(
-        "form"
-      );
-
-
-    form.method = "POST";
-
-    form.action =
-      result.payuUrl;
-
-
-    add(
-      form,
-      "key",
-      result.key
-    );
-
-
-    add(
-      form,
-      "txnid",
-      result.txnid
-    );
-
-
-    add(
-      form,
-      "amount",
-      result.amount
-    );
-
-
-    add(
-      form,
-      "productinfo",
-      result.productinfo
-    );
-
-
-    add(
-      form,
-      "firstname",
-      result.firstname
-    );
-
-
-    add(
-      form,
-      "email",
-      result.email
-    );
-
-
-    add(
-      form,
-      "phone",
-      result.phone
-    );
-
-
-    add(
-      form,
-      "surl",
-      result.surl
-    );
-
-
-    add(
-      form,
-      "furl",
-      result.furl
-    );
-
-
-    add(
-      form,
-      "hash",
-      result.hash
-    );
-
-
-    add(form, "udf1", "");
-    add(form, "udf2", "");
-    add(form, "udf3", "");
-    add(form, "udf4", "");
-    add(form, "udf5", "");
-
-
-    document.body.appendChild(form);
-
-    form.submit();
-
-  })
-
-  .catch(function(error) {
-
-    error.textContent =
-      error.message;
-
-    button.disabled = false;
-
-    button.textContent =
-      "Proceed to Pay";
-
-  });
-
-}
-
-
-function add(
-  form,
-  name,
-  value
-) {
-
-  const input =
-    document.createElement(
-      "input"
-    );
-
-  input.type = "hidden";
-
-  input.name = name;
-
-  input.value = value;
-
-  form.appendChild(input);
+    message;
 }
 
 </script>
