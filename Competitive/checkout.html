@@ -11,7 +11,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>20Checkout</title>
+  <title>30Checkout</title>
 
 
   <style>
@@ -598,6 +598,15 @@ function loadBook() {
     );
 
 
+
+
+  payButton.disabled = false;
+
+payButton.innerText =
+  "Proceed to Pay ₹" +
+  Number(currentBook.price).toFixed(2);
+
+  
   if (!bookId) {
 
     bookInfo.innerHTML =
@@ -1371,6 +1380,16 @@ function paymentFailed(
 ===================================================== */
 
 loadBook();
+
+  document
+  .getElementById("payButton")
+  .addEventListener("click", function () {
+
+    console.log("PAY BUTTON CLICKED");
+
+    startPayment();
+
+  });
 
 </script>
 
