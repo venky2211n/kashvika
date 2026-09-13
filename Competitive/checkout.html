@@ -1,291 +1,421 @@
+```html
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1"
->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<title>50Checkout</title>
+  <title>Checkout</title>
 
-<style>
 
-* {
-  box-sizing: border-box;
-}
+  <style>
 
-body {
+    * {
+      box-sizing: border-box;
+    }
 
-  margin: 0;
+    body {
+      margin: 0;
+      padding: 30px 15px;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
 
-  font-family:
-    Arial,
-    sans-serif;
 
-  background:
-    #f5f7fb;
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
 
-  color:
-    #222;
 
-}
+    .checkout-container {
 
-.container {
+      max-width: 900px;
 
-  max-width:
-    600px;
+      margin: auto;
 
-  margin:
-    50px auto;
+      display: grid;
 
-  padding:
-    25px;
+      grid-template-columns: 1fr 1fr;
 
-  background:
-    white;
+      gap: 25px;
 
-  border-radius:
-    15px;
+    }
 
-  box-shadow:
-    0 10px 35px
-    rgba(0,0,0,.08);
 
-}
+    .card {
 
-h1 {
+      background: #fff;
 
-  margin-top:
-    0;
+      padding: 25px;
 
-}
+      border-radius: 12px;
 
-.book {
+      box-shadow:
+        0 4px 15px rgba(0,0,0,.08);
 
-  padding:
-    15px;
+    }
 
-  margin-bottom:
-    20px;
 
-  background:
-    #f7f8fa;
+    /* ================================
+       BOOK
+    ================================= */
 
-  border-radius:
-    10px;
+    .loading {
 
-}
+      text-align: center;
 
-.book-title {
+      padding: 30px;
 
-  font-size:
-    20px;
+      color: #666;
 
-  font-weight:
-    bold;
+    }
 
-}
 
-.price {
+    .error {
 
-  margin-top:
-    8px;
+      text-align: center;
 
-  font-size:
-    24px;
+      color: #d32f2f;
 
-  font-weight:
-    bold;
+      padding: 20px;
 
-}
+    }
 
-label {
 
-  display:
-    block;
+    .book-image {
 
-  margin-top:
-    15px;
+      width: 180px;
 
-  margin-bottom:
-    6px;
+      height: 240px;
 
-  font-weight:
-    bold;
+      object-fit: cover;
 
-}
+      display: block;
 
-input {
+      margin: 0 auto 20px;
 
-  width:
-    100%;
+      border-radius: 8px;
 
-  padding:
-    13px;
+    }
 
-  border:
-    1px solid #ddd;
 
-  border-radius:
-    8px;
+    .book-title {
 
-  font-size:
-    15px;
+      font-size: 24px;
 
-}
+      font-weight: bold;
 
-button {
+      text-align: center;
 
-  width:
-    100%;
+      margin-bottom: 10px;
 
-  margin-top:
-    22px;
+    }
 
-  padding:
-    14px;
 
-  border:
-    0;
+    .category {
 
-  border-radius:
-    8px;
+      text-align: center;
 
-  background:
-    #1463ff;
+      margin: 15px 0;
 
-  color:
-    white;
+    }
 
-  font-size:
-    16px;
 
-  cursor:
-    pointer;
+    .category span {
 
-}
+      background: #eef2ff;
 
-button:disabled {
+      color: #3949ab;
 
-  opacity:
-    .6;
+      padding: 6px 12px;
 
-  cursor:
-    not-allowed;
+      border-radius: 20px;
 
-}
+      font-size: 13px;
 
-#message {
+    }
 
-  margin-top:
-    15px;
 
-  text-align:
-    center;
+    .book-description {
 
-}
+      color: #666;
 
-</style>
+      line-height: 1.6;
+
+      text-align: center;
+
+      margin-top: 15px;
+
+    }
+
+
+    .price {
+
+      text-align: center;
+
+      font-size: 30px;
+
+      font-weight: bold;
+
+      margin-top: 20px;
+
+    }
+
+
+    /* ================================
+       FORM
+    ================================= */
+
+    h2 {
+
+      margin-top: 0;
+
+    }
+
+
+    label {
+
+      display: block;
+
+      margin-top: 15px;
+
+      margin-bottom: 6px;
+
+      font-weight: bold;
+
+    }
+
+
+    input {
+
+      width: 100%;
+
+      padding: 12px;
+
+      border: 1px solid #ccc;
+
+      border-radius: 7px;
+
+      font-size: 15px;
+
+      outline: none;
+
+    }
+
+
+    input:focus {
+
+      border-color: #2563eb;
+
+    }
+
+
+    button {
+
+      width: 100%;
+
+      margin-top: 25px;
+
+      padding: 14px;
+
+      border: none;
+
+      border-radius: 7px;
+
+      background: #2563eb;
+
+      color: white;
+
+      font-size: 17px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
+
+    button:hover {
+
+      background: #1d4ed8;
+
+    }
+
+
+    button:disabled {
+
+      background: #999;
+
+      cursor: not-allowed;
+
+    }
+
+
+    #message {
+
+      margin-top: 15px;
+
+      text-align: center;
+
+      font-weight: bold;
+
+      min-height: 25px;
+
+    }
+
+
+    @media (max-width: 700px) {
+
+      .checkout-container {
+
+        grid-template-columns: 1fr;
+
+      }
+
+    }
+
+  </style>
 
 </head>
+
 
 <body>
 
 
-<div class="container">
-
-<h1>
-Checkout
-</h1>
+<h1>Checkout</h1>
 
 
-<div
-  id="bookInfo"
-  class="book"
->
-Loading book...
+<div class="checkout-container">
+
+
+  <!-- =========================================
+       BOOK DETAILS
+  ========================================== -->
+
+  <div class="card">
+
+    <div
+      id="bookInfo"
+      class="loading"
+    >
+      Fetching book details...
+    </div>
+
+  </div>
+
+
+
+  <!-- =========================================
+       CUSTOMER DETAILS
+  ========================================== -->
+
+  <div class="card">
+
+    <h2>Customer Details</h2>
+
+
+    <form id="checkoutForm">
+
+
+      <label for="name">
+        Name
+      </label>
+
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter your name"
+        required
+      >
+
+
+      <label for="email">
+        Email
+      </label>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your email"
+        required
+      >
+
+
+      <label for="phone">
+        Phone
+      </label>
+
+      <input
+        type="tel"
+        id="phone"
+        placeholder="Enter your phone number"
+        required
+      >
+
+
+
+      <button
+        type="button"
+        id="payButton"
+        onclick="startPayment()"
+        disabled
+      >
+        Loading...
+      </button>
+
+
+    </form>
+
+
+    <div id="message"></div>
+
+
+  </div>
+
 </div>
 
-
-<form
-  id="checkoutForm"
->
-
-
-<label>
-Name
-</label>
-
-<input
-  id="name"
-  required
-  autocomplete="name"
->
-
-
-<label>
-Email
-</label>
-
-<input
-  id="email"
-  type="email"
-  required
-  autocomplete="email"
->
-
-
-<label>
-Phone
-</label>
-
-<input
-  id="phone"
-  type="tel"
-  required
-  autocomplete="tel"
->
-
-
-<!-- <button
-  id="payButton"
-  type="submit"
->
-Proceed to Pay
-</button> -->
-
-  <button
-  type="button"
-  onclick="startPayment()">
-  Proceed to Pay
-</button>
-
-
-</form>
-
-
-<div
-  id="message"
-></div>
-
-
-</div>
 
 
 <script>
+
+/* =====================================================
+   CONFIGURATION
+===================================================== */
+
+
+/*
+ * IMPORTANT:
+ *
+ * This must be the SAME Apps Script deployment
+ * that returned your book JSON successfully.
+ */
 
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbzAkSJIKHHUt1fUE762fdrKeRArwRlrVuyn7Qyz1Nls_SC9dBANG6Fp5JK_9ZNXeH4b9g/exec";
 
 
+/*
+ * Custom domain
+ */
+
 const CUSTOM_DOMAIN =
   "https://kashvika.website/Competitive";
 
+
+
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
+
+let currentBook = null;
 
 let paymentWindow = null;
 
@@ -293,17 +423,40 @@ let pollingTimer = null;
 
 let pollingStarted = false;
 
+let paymentFinished = false;
 
-/****************************************************
- * JSONP
- ****************************************************/
+
+
+/* =====================================================
+   GET BOOK ID
+===================================================== */
+
+const urlParams =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const bookId =
+  urlParams.get("id");
+
+
+
+/* =====================================================
+   JSONP
+===================================================== */
 
 function callAppsScript(params, callback) {
 
+
   const callbackName =
+
     "jsonp_" +
+
     Date.now() +
+
     "_" +
+
     Math.floor(
       Math.random() * 100000
     );
@@ -311,6 +464,7 @@ function callAppsScript(params, callback) {
 
   params.callback =
     callbackName;
+
 
 
   const script =
@@ -323,22 +477,49 @@ function callAppsScript(params, callback) {
     ).toString();
 
 
+
+  let completed = false;
+
+
+
   window[callbackName] =
     function(data) {
+
+      if (completed) {
+        return;
+      }
+
+      completed = true;
+
 
       try {
 
         callback(data);
 
-      } finally {
+      }
 
-        delete window[callbackName];
+      finally {
 
-        script.remove();
+        try {
+          delete window[callbackName];
+        }
+        catch(e) {
+          window[callbackName] =
+            undefined;
+        }
+
+
+        if (script.parentNode) {
+
+          script.parentNode
+            .removeChild(script);
+
+        }
 
       }
 
     };
+
 
 
   script.src =
@@ -347,12 +528,33 @@ function callAppsScript(params, callback) {
     query;
 
 
+
   script.onerror =
     function() {
 
-      delete window[callbackName];
+      if (completed) {
+        return;
+      }
 
-      script.remove();
+      completed = true;
+
+
+      try {
+        delete window[callbackName];
+      }
+      catch(e) {
+        window[callbackName] =
+          undefined;
+      }
+
+
+      if (script.parentNode) {
+
+        script.parentNode
+          .removeChild(script);
+
+      }
+
 
       callback({
 
@@ -366,6 +568,7 @@ function callAppsScript(params, callback) {
     };
 
 
+
   document
     .body
     .appendChild(script);
@@ -373,16 +576,382 @@ function callAppsScript(params, callback) {
 }
 
 
-/****************************************************
- * START PAYMENT
- ****************************************************/
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(value) {
+
+  return String(value || "")
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+
+/* =====================================================
+   LOAD BOOK
+===================================================== */
+
+function loadBook() {
+
+
+  const bookInfo =
+    document.getElementById(
+      "bookInfo"
+    );
+
+
+  const payButton =
+    document.getElementById(
+      "payButton"
+    );
+
+
+
+  if (!bookId) {
+
+    bookInfo.innerHTML =
+      '<div class="error">' +
+      'Book ID is missing.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+
+  bookInfo.innerHTML =
+    '<div class="loading">' +
+    'Fetching book details...' +
+    '</div>';
+
+
+
+  const callbackName =
+
+    "bookCallback_" +
+
+    Date.now();
+
+
+
+  window[callbackName] =
+    function(result) {
+
+
+      console.log(
+        "BOOK RESPONSE:",
+        result
+      );
+
+
+
+      if (
+        !result ||
+        result.success !== true
+      ) {
+
+        bookInfo.innerHTML =
+
+          '<div class="error">' +
+
+          (
+            result &&
+            result.error
+
+              ? escapeHtml(
+                  result.error
+                )
+
+              : "Book not found"
+          ) +
+
+          '</div>';
+
+
+        return;
+
+      }
+
+
+
+      if (!result.book) {
+
+        bookInfo.innerHTML =
+
+          '<div class="error">' +
+
+          'Book data is empty.' +
+
+          '</div>';
+
+
+        return;
+
+      }
+
+
+
+      currentBook =
+        result.book;
+
+
+
+      /* =========================================
+         DISPLAY BOOK
+      ========================================== */
+
+      let html = "";
+
+
+
+      if (
+        currentBook.imageUrl
+      ) {
+
+        html += `
+
+          <img
+
+            src="${escapeHtml(
+              currentBook.imageUrl
+            )}"
+
+            class="book-image"
+
+            alt="${escapeHtml(
+              currentBook.title
+            )}"
+
+            onerror="
+              this.style.display='none'
+            "
+
+          >
+
+        `;
+
+      }
+
+
+
+      html += `
+
+        <div class="book-title">
+
+          ${escapeHtml(
+            currentBook.title
+          )}
+
+        </div>
+
+      `;
+
+
+
+      if (
+        currentBook.category
+      ) {
+
+        html += `
+
+          <div class="category">
+
+            <span>
+
+              ${escapeHtml(
+                currentBook.category
+              )}
+
+            </span>
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      html += `
+
+        <div class="book-description">
+
+          ${escapeHtml(
+            currentBook.description || ""
+          )}
+
+        </div>
+
+
+        <div class="price">
+
+          ₹${Number(
+            currentBook.price || 0
+          ).toFixed(2)}
+
+        </div>
+
+      `;
+
+
+
+      bookInfo.innerHTML =
+        html;
+
+
+
+      /* =========================================
+         ENABLE PAYMENT BUTTON
+      ========================================== */
+
+      payButton.disabled =
+        false;
+
+
+      payButton.innerText =
+        "Proceed to Pay ₹" +
+
+        Number(
+          currentBook.price || 0
+        ).toFixed(2);
+
+
+
+      try {
+
+        delete window[callbackName];
+
+      }
+
+      catch(e) {
+
+        window[callbackName] =
+          undefined;
+
+      }
+
+    };
+
+
+
+  /* =========================================
+     JSONP REQUEST
+  ========================================== */
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  const requestUrl =
+
+    APPS_SCRIPT_URL +
+
+    "?options=book-data" +
+
+    "&id=" +
+
+    encodeURIComponent(
+      bookId
+    ) +
+
+    "&callback=" +
+
+    encodeURIComponent(
+      callbackName
+    ) +
+
+    "&_=" +
+
+    Date.now();
+
+
+
+  console.log(
+    "BOOK REQUEST:",
+    requestUrl
+  );
+
+
+
+  script.src =
+    requestUrl;
+
+
+
+  script.onerror =
+    function() {
+
+      bookInfo.innerHTML =
+
+        '<div class="error">' +
+
+        'Failed to fetch book details.' +
+
+        '<br><br>' +
+
+        'Please try again.' +
+
+        '</div>';
+
+
+
+      payButton.disabled =
+        true;
+
+    };
+
+
+
+  document
+    .body
+    .appendChild(script);
+
+}
+
+
+
+/* =====================================================
+   START PAYMENT
+===================================================== */
 
 function startPayment() {
+
 
   const bookId =
     new URLSearchParams(
       window.location.search
     ).get("id");
+
 
 
   const name =
@@ -392,11 +961,13 @@ function startPayment() {
       .trim();
 
 
+
   const email =
     document
       .getElementById("email")
       .value
       .trim();
+
 
 
   const phone =
@@ -406,23 +977,56 @@ function startPayment() {
       .trim();
 
 
-  if (!name || !email || !phone) {
 
-    alert(
-      "Please enter name, email and phone."
+  const message =
+    document.getElementById(
+      "message"
     );
+
+
+
+  if (!bookId) {
+
+    message.innerText =
+      "Book ID is missing.";
 
     return;
 
   }
 
 
+
+  if (
+    !name ||
+    !email ||
+    !phone
+  ) {
+
+    message.innerText =
+      "Please enter name, email and phone.";
+
+    return;
+
+  }
+
+
+
+  if (!currentBook) {
+
+    message.innerText =
+      "Book details are still loading.";
+
+    return;
+
+  }
+
+
+
   /*
-   * IMPORTANT
-   *
-   * Open popup immediately from
-   * the user's click.
+   * Open popup immediately
+   * from user's click.
    */
+
   paymentWindow =
     window.open(
       "",
@@ -431,34 +1035,73 @@ function startPayment() {
     );
 
 
+
   if (!paymentWindow) {
 
-    alert(
-      "Please allow popups for this website."
-    );
+    message.innerText =
+      "Please allow popups for this website.";
 
     return;
 
   }
 
 
+
+  /* =========================================
+     POPUP LOADING SCREEN
+  ========================================== */
+
   paymentWindow.document.open();
 
-  paymentWindow.document.write(
-    "<html>" +
-    "<body style='font-family:Arial;text-align:center;padding:40px'>" +
-    "<h2>Preparing payment...</h2>" +
-    "<p>Please wait...</p>" +
-    "</body>" +
-    "</html>"
-  );
+
+  paymentWindow.document.write(`
+
+    <!DOCTYPE html>
+
+    <html>
+
+    <head>
+
+      <title>PayU Payment</title>
+
+    </head>
+
+    <body
+      style="
+        font-family:Arial;
+        text-align:center;
+        padding:40px;
+      "
+    >
+
+      <h2>
+        Preparing payment...
+      </h2>
+
+      <p>
+        Please wait...
+      </p>
+
+    </body>
+
+    </html>
+
+  `);
+
 
   paymentWindow.document.close();
 
 
-  /*
-   * Ask Apps Script to create payment
-   */
+
+  message.innerText =
+    "Preparing payment...";
+
+
+
+  /* =========================================
+     CREATE PAYMENT
+  ========================================== */
+
   callAppsScript({
 
     options:
@@ -479,7 +1122,18 @@ function startPayment() {
   }, function(result) {
 
 
-    if (!result.success) {
+    console.log(
+      "CREATE PAYMENT:",
+      result
+    );
+
+
+
+    if (
+      !result ||
+      result.success !== true
+    ) {
+
 
       if (
         paymentWindow &&
@@ -491,28 +1145,44 @@ function startPayment() {
       }
 
 
-      alert(
-        result.error ||
-        "Unable to create payment."
-      );
+      message.innerText =
+        result &&
+        result.error
+
+          ? result.error
+
+          : "Unable to create payment.";
+
 
       return;
 
     }
 
 
-    /*
-     * POST paymentData to PayU
-     */
+
+    /* =========================================
+       SEND PAYMENT TO PAYU
+    ========================================== */
+
     submitToPayU(
+
       result.paymentUrl,
+
       result.paymentData
+
     );
 
 
-    /*
-     * START POLLING
-     */
+
+    message.innerText =
+      "Payment window opened. Complete your payment.";
+
+
+
+    /* =========================================
+       START POLLING
+    ========================================== */
+
     startPaymentPolling(
       result.txnid
     );
@@ -522,14 +1192,16 @@ function startPayment() {
 }
 
 
-/****************************************************
- * POST TO PAYU
- ****************************************************/
+
+/* =====================================================
+   SUBMIT FORM TO PAYU
+===================================================== */
 
 function submitToPayU(
   paymentUrl,
   paymentData
 ) {
+
 
   if (
     !paymentWindow ||
@@ -541,9 +1213,11 @@ function submitToPayU(
   }
 
 
+
   const form =
     paymentWindow.document
       .createElement("form");
+
 
 
   form.method =
@@ -558,37 +1232,45 @@ function submitToPayU(
     "none";
 
 
+
   Object.keys(
     paymentData
-  ).forEach(function(key) {
-
-    const input =
-      paymentWindow.document
-        .createElement("input");
+  ).forEach(
+    function(key) {
 
 
-    input.type =
-      "hidden";
+      const input =
+        paymentWindow.document
+          .createElement("input");
 
 
-    input.name =
-      key;
+      input.type =
+        "hidden";
 
 
-    input.value =
-      paymentData[key];
+      input.name =
+        key;
 
 
-    form.appendChild(
-      input
-    );
+      input.value =
+        paymentData[key];
 
-  });
+
+      form.appendChild(
+        input
+      );
+
+    }
+  );
+
 
 
   paymentWindow.document
     .body
-    .appendChild(form);
+    .appendChild(
+      form
+    );
+
 
 
   form.submit();
@@ -596,13 +1278,15 @@ function submitToPayU(
 }
 
 
-/****************************************************
- * POLLING
- ****************************************************/
+
+/* =====================================================
+   START POLLING
+===================================================== */
 
 function startPaymentPolling(
   txnid
 ) {
+
 
   if (pollingStarted) {
 
@@ -611,69 +1295,102 @@ function startPaymentPolling(
   }
 
 
+
   pollingStarted =
     true;
+
 
 
   let attempts = 0;
 
 
-  /*
-   * Check every 3 seconds
-   */
-  pollingTimer =
-    setInterval(function() {
-
-      attempts++;
-
-
-      checkPaymentStatus(
-        txnid
-      );
-
-
-      /*
-       * Stop after 10 minutes
-       *
-       * 10 min / 3 sec
-       * = 200 attempts
-       */
-      if (attempts >= 200) {
-
-        clearInterval(
-          pollingTimer
-        );
-
-
-        pollingTimer =
-          null;
-
-
-        pollingStarted =
-          false;
-
-      }
-
-    }, 3000);
-
 
   /*
    * Check immediately
    */
+
   checkPaymentStatus(
     txnid
   );
 
+
+
+  /*
+   * Then every 3 seconds
+   */
+
+  pollingTimer =
+    setInterval(
+      function() {
+
+
+        attempts++;
+
+
+        checkPaymentStatus(
+          txnid
+        );
+
+
+
+        /*
+         * 10 minutes
+         *
+         * 600 / 3 = 200
+         */
+
+        if (
+          attempts >= 200
+        ) {
+
+
+          clearInterval(
+            pollingTimer
+          );
+
+
+          pollingTimer =
+            null;
+
+
+          pollingStarted =
+            false;
+
+
+          document
+            .getElementById(
+              "message"
+            )
+            .innerText =
+              "Payment verification timed out. Please check your payment status.";
+
+        }
+
+
+      },
+      3000
+    );
+
 }
 
 
-/****************************************************
- * CHECK PAYMENT STATUS
- ****************************************************/
+
+/* =====================================================
+   CHECK PAYMENT STATUS
+===================================================== */
 
 function checkPaymentStatus(
   txnid
 ) {
+
+
+  if (paymentFinished) {
+
+    return;
+
+  }
+
+
 
   callAppsScript({
 
@@ -686,15 +1403,27 @@ function checkPaymentStatus(
   }, function(result) {
 
 
-    if (!result.success) {
+    console.log(
+      "PAYMENT STATUS:",
+      result
+    );
+
+
+
+    if (
+      !result ||
+      result.success !== true
+    ) {
 
       return;
 
     }
 
 
+
     const order =
       result.order;
+
 
 
     if (!order) {
@@ -704,14 +1433,27 @@ function checkPaymentStatus(
     }
 
 
-    /*
-     * PAYMENT SUCCESS
-     */
-    if (
+
+    const status =
       String(
         order.status || ""
-      ).toUpperCase() ===
-      "SUCCESS"
+      ).toUpperCase();
+
+
+
+    console.log(
+      "ORDER STATUS:",
+      status
+    );
+
+
+
+    /* =========================================
+       SUCCESS
+    ========================================== */
+
+    if (
+      status === "SUCCESS"
     ) {
 
       paymentCompleted(
@@ -723,14 +1465,13 @@ function checkPaymentStatus(
     }
 
 
-    /*
-     * PAYMENT FAILED
-     */
+
+    /* =========================================
+       FAILED
+    ========================================== */
+
     if (
-      String(
-        order.status || ""
-      ).toUpperCase() ===
-      "FAILED"
+      status === "FAILED"
     ) {
 
       paymentFailed(
@@ -742,25 +1483,51 @@ function checkPaymentStatus(
     }
 
 
+
     /*
      * PENDING
      *
      * Continue polling.
      */
 
+    document
+      .getElementById(
+        "message"
+      )
+      .innerText =
+        "Payment processing...";
+
   });
 
 }
 
 
-/****************************************************
- * PAYMENT SUCCESS
- ****************************************************/
+
+/* =====================================================
+   PAYMENT SUCCESS
+===================================================== */
 
 function paymentCompleted(
   txnid
 ) {
 
+
+  if (paymentFinished) {
+
+    return;
+
+  }
+
+
+  paymentFinished =
+    true;
+
+
+
+  /* =========================================
+     STOP POLLING
+  ========================================== */
+
   if (pollingTimer) {
 
     clearInterval(
@@ -777,9 +1544,11 @@ function paymentCompleted(
     false;
 
 
-  /*
-   * CLOSE PAYU POPUP
-   */
+
+  /* =========================================
+     CLOSE PAYU WINDOW
+  ========================================== */
+
   if (
     paymentWindow &&
     !paymentWindow.closed
@@ -790,12 +1559,17 @@ function paymentCompleted(
   }
 
 
-  /*
-   * OPEN CUSTOM DOMAIN SUCCESS PAGE
-   */
+
+  /* =========================================
+     REDIRECT
+  ========================================== */
+
   window.location.href =
+
     CUSTOM_DOMAIN +
+
     "/success.html?txnid=" +
+
     encodeURIComponent(
       txnid
     );
@@ -803,14 +1577,32 @@ function paymentCompleted(
 }
 
 
-/****************************************************
- * PAYMENT FAILED
- ****************************************************/
+
+/* =====================================================
+   PAYMENT FAILED
+===================================================== */
 
 function paymentFailed(
   txnid
 ) {
 
+
+  if (paymentFinished) {
+
+    return;
+
+  }
+
+
+  paymentFinished =
+    true;
+
+
+
+  /* =========================================
+     STOP POLLING
+  ========================================== */
+
   if (pollingTimer) {
 
     clearInterval(
@@ -827,9 +1619,11 @@ function paymentFailed(
     false;
 
 
-  /*
-   * CLOSE PAYU POPUP
-   */
+
+  /* =========================================
+     CLOSE PAYU WINDOW
+  ========================================== */
+
   if (
     paymentWindow &&
     !paymentWindow.closed
@@ -840,19 +1634,34 @@ function paymentFailed(
   }
 
 
-  /*
-   * CUSTOM DOMAIN FAILED PAGE
-   */
+
+  /* =========================================
+     REDIRECT FAILED PAGE
+  ========================================== */
+
   window.location.href =
+
     CUSTOM_DOMAIN +
+
     "/failed.html?txnid=" +
+
     encodeURIComponent(
       txnid
     );
 
 }
 
-</script>
-</body>
 
+
+/* =====================================================
+   LOAD BOOK WHEN PAGE OPENS
+===================================================== */
+
+loadBook();
+
+</script>
+
+
+</body>
 </html>
+```
