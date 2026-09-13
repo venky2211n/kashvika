@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Preparing Payment</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+}
+
+.payment-box {
+  width: 90%;
+  max-width: 500px;
+  background: white;
+  padding: 35px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 5px 25px rgba(0,0,0,.10);
+}
+
+.spinner {
+  width: 45px;
+  height: 45px;
+  border: 5px solid #ddd;
+  border-top-color: #0b63ce;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+p {
+  color: #666;
+}
+
+.error {
+  color: #c62828;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="payment-box">
+
+  <div
+    class="spinner"
+    id="spinner"
+  ></div>
+
+  <h2 id="title">
+    Preparing Payment
+  </h2>
+
+  <p id="message">
+    Please wait while we connect to the secure payment gateway...
+  </p>
+
+</div>
+
+
+<script>
+
+// ============================================
+// APPS SCRIPT
+// ============================================
+
+const APPS_SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbyRyStnq5DC16u4coWEPeGPOOBk8lJvmUctwxawDr9ZJIHPcmZ1132rrCsMO9l79A4x_A/exec";
+
+
+// ============================================
+// READ PARAMETERS
+// ============================================
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const bookId =
+  params.get("id");
+
+
+const name =
+  params.get("name");
+
+
+const email =
+  params.get("email");
+
+
+const phone =
+  params.get("phone");
+
+
+// ============================================
+// VALIDATION
+// ============================================
+
+if (
+  !bookId ||
+  !name ||
+  !email ||
+  !phone
+) {
+
+  showError(
+    "Required payment information is missing."
+  );
+
+} else {
+
+  startPayment();
+
+}
+
+
+// ============================================
+// START PAYMENT
+// ============================================
+
+function startPayment() {
+
+  // ------------------------------------------
+  // Create normal HTML form
+  // ------------------------------------------
+
+  const form =
+    document.createElement("form");
+
+
+  form.method =
+    "POST";
+
+
+  form.action =
+    APPS_SCRIPT_URL;
+
+
+  // ------------------------------------------
+  // Important:
+  //
+  // We do NOT send amount.
+  //
+  // Apps Script gets amount from Books sheet.
+  // ------------------------------------------
+
+  addHidden(
+    form,
+    "action",
+    "createPayment"
+  );
+
+
+  addHidden(
+    form,
+    "bookId",
+    bookId
+  );
+
+
+  addHidden(
+    form,
+    "name",
+    name
+  );
+
+
+  addHidden(
+    form,
+    "email",
+    email
+  );
+
+
+  addHidden(
+    form,
+    "phone",
+    phone
+  );
+
+
+  document.body.appendChild(form);
+
+
+  // ------------------------------------------
+  // Submit to Apps Script
+  // ------------------------------------------
+
+  form.submit();
+
+}
+
+
+// ============================================
+// ADD HIDDEN FIELD
+// ============================================
+
+function addHidden(
+  form,
+  name,
+  value
+) {
+
+  const input =
+    document.createElement("input");
+
+
+  input.type =
+    "hidden";
+
+
+  input.name =
+    name;
+
+
+  input.value =
+    value;
+
+
+  form.appendChild(input);
+
+}
+
+
+// ============================================
+// ERROR
+// ============================================
+
+function showError(message) {
+
+  document.getElementById("spinner")
+    .style.display = "none";
+
+
+  document.getElementById("title")
+    .innerText =
+      "Payment Error";
+
+
+  document.getElementById("message")
+    .innerHTML =
+      '<span class="error">' +
+      escapeHtml(message) +
+      '</span>';
+
+}
+
+
+// ============================================
+// ESCAPE HTML
+// ============================================
+
+function escapeHtml(value) {
+
+  return String(value || "")
+
+    .replace(/&/g, "&amp;")
+
+    .replace(/</g, "&lt;")
+
+    .replace(/>/g, "&gt;")
+
+    .replace(/"/g, "&quot;")
+
+    .replace(/'/g, "&#039;");
+
+}
+
+</script>
+
+</body>
+</html>
+
