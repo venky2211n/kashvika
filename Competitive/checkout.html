@@ -1,351 +1,458 @@
 ```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1.0"
+  >
 
-<title>Checkout</title>
+  <title>
+    Checkout
+  </title>
 
-<style>
 
-* {
-  box-sizing: border-box;
-}
+  <style>
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
-  color: #222;
-}
+    body {
 
-.container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-}
+      margin: 0;
 
-.card {
-  background: white;
-  padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 5px 25px rgba(0,0,0,.08);
-}
+      font-family:
+        Arial,
+        sans-serif;
 
-h1 {
-  text-align: center;
-  margin-bottom: 25px;
-}
+      background:
+        #f5f5f5;
+    }
 
-#bookInfo {
-  margin-bottom: 25px;
-}
 
-.book-info {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  padding: 20px;
-  background: #f8f9fc;
-  border-radius: 10px;
-}
+    .container {
 
-.book-info img {
-  width: 120px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-}
+      max-width:
+        800px;
 
-.book-info h2 {
-  margin: 0 0 10px;
-}
+      margin:
+        40px auto;
 
-.price {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 10px 0;
-}
+      padding:
+        20px;
+    }
 
-label {
-  display: block;
-  margin-top: 15px;
-  margin-bottom: 6px;
-  font-weight: bold;
-}
 
-input {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #ccc;
-  border-radius: 7px;
-  font-size: 16px;
-}
+    .card {
 
-button {
-  width: 100%;
-  margin-top: 25px;
-  padding: 15px;
-  border: 0;
-  border-radius: 8px;
-  background: #0b63ce;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-}
+      background:
+        white;
 
-button:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-}
+      padding:
+        30px;
 
-#message {
-  text-align: center;
-  margin-top: 15px;
-  color: #555;
-}
+      border-radius:
+        16px;
 
-.error {
-  color: #c62828;
-}
+      box-shadow:
+        0 10px 30px
+        rgba(0,0,0,.08);
+    }
 
-</style>
+
+    .book {
+
+      display:
+        flex;
+
+      gap:
+        20px;
+
+      margin-bottom:
+        30px;
+    }
+
+
+    .book img {
+
+      width:
+        120px;
+
+      height:
+        160px;
+
+      object-fit:
+        cover;
+
+      border-radius:
+        8px;
+    }
+
+
+    .price {
+
+      font-size:
+        24px;
+
+      font-weight:
+        bold;
+    }
+
+
+    .field {
+
+      margin-bottom:
+        18px;
+    }
+
+
+    label {
+
+      display:
+        block;
+
+      margin-bottom:
+        7px;
+
+      font-weight:
+        bold;
+    }
+
+
+    input {
+
+      width:
+        100%;
+
+      padding:
+        13px;
+
+      border:
+        1px solid #ccc;
+
+      border-radius:
+        8px;
+
+      font-size:
+        16px;
+    }
+
+
+    button {
+
+      width:
+        100%;
+
+      padding:
+        15px;
+
+      border:
+        0;
+
+      border-radius:
+        8px;
+
+      background:
+        #111;
+
+      color:
+        white;
+
+      font-size:
+        17px;
+
+      font-weight:
+        bold;
+
+      cursor:
+        pointer;
+    }
+
+  </style>
 
 </head>
 
 
 <body>
 
+
 <div class="container">
 
-  <div class="card">
 
-    <h1>Checkout</h1>
-
-    <div id="bookInfo">
-      Loading book...
-    </div>
+<div class="card">
 
 
-    <form id="checkoutForm">
-
-      <label for="name">
-        Full Name
-      </label>
-
-      <input
-        type="text"
-        id="name"
-        required
-        autocomplete="name"
-        placeholder="Enter your name"
-      >
+<div id="bookInfo">
+  Loading book...
+</div>
 
 
-      <label for="email">
-        Email
-      </label>
-
-      <input
-        type="email"
-        id="email"
-        required
-        autocomplete="email"
-        placeholder="Enter your email"
-      >
+<form id="checkoutForm">
 
 
-      <label for="phone">
-        Phone Number
-      </label>
+<div class="field">
 
-      <input
-        type="tel"
-        id="phone"
-        required
-        autocomplete="tel"
-        placeholder="Enter phone number"
-      >
+<label>
+  Full Name
+</label>
 
+<input
+  id="name"
+  type="text"
+  required
+  placeholder="Full name"
+>
 
-      <button
-        type="submit"
-        id="payButton"
-      >
-        Proceed to Pay
-      </button>
-
-    </form>
+</div>
 
 
-    <div id="message"></div>
+<div class="field">
 
-  </div>
+<label>
+  Email
+</label>
+
+<input
+  id="email"
+  type="email"
+  required
+  placeholder="Email address"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Phone
+</label>
+
+<input
+  id="phone"
+  type="tel"
+  required
+  placeholder="Phone number"
+>
+
+</div>
+
+
+<button
+  id="payButton"
+  type="submit"
+  disabled
+>
+  Proceed to Pay
+</button>
+
+
+</form>
+
+
+</div>
 
 </div>
 
 
 <script>
 
-// ============================================
-// CONFIG
-// ============================================
 
 const APPS_SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbyi6o4X3dJzLCOTMxM0sZpFPNhFYSKQFN9SRQdW2H-ay8HXNWYZirobxWB_MbwVwhqoww/exec";
 
+  "https://script.google.com/macros/s/AKfycbyRyStnq5DC16u4coWEPeGPOOBk8lJvmUctwxawDr9ZJIHPcmZ1132rrCsMO9l79A4x_A/exec";
 
-// ============================================
-// GET BOOK ID
-// ============================================
 
 const params =
   new URLSearchParams(
     window.location.search
   );
 
-const bookId =
+
+const BOOK_ID =
   params.get("id");
 
 
-if (!bookId) {
+const bookInfo =
+  document.getElementById(
+    "bookInfo"
+  );
 
-  document.getElementById("bookInfo")
-    .innerHTML =
-      '<p class="error">Book ID is missing.</p>';
 
-  document.getElementById("payButton")
-    .disabled = true;
+const payButton =
+  document.getElementById(
+    "payButton"
+  );
 
+
+function escapeHtml(value) {
+
+  return String(
+    value == null
+      ? ""
+      : value
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 }
 
 
-// ============================================
-// LOAD BOOK USING JSONP
-// ============================================
-
+/*
+ * Load book.
+ */
 function loadBook() {
 
-  if (!bookId) return;
+  if (!BOOK_ID) {
+
+    bookInfo.innerHTML =
+      "<p>Book ID missing.</p>";
+
+    return;
+  }
+
 
   const callbackName =
-    "bookCallback_" + Date.now();
+    "bookCallback_" +
+    Date.now();
 
 
   window[callbackName] =
     function(response) {
 
-      try {
+      if (
+        !response ||
+        !response.success ||
+        !response.book
+      ) {
 
-        if (!response || !response.success) {
+        bookInfo.innerHTML =
+          "<p>Book not found.</p>";
 
-          throw new Error(
-            response?.message ||
-            "Book not found"
-          );
-
-        }
-
-
-        const book =
-          response.book;
+        return;
+      }
 
 
-        document.getElementById("bookInfo")
-          .innerHTML = `
+      const book =
+        response.book;
 
-          <div class="book-info">
 
-            <img
-              src="${escapeHtml(book.imageUrl)}"
-              alt="${escapeHtml(book.title)}"
-            >
+      bookInfo.innerHTML = `
 
-            <div>
+        <div class="book">
 
-              <h2>
-                ${escapeHtml(book.title)}
-              </h2>
+          <img
+            src="${escapeHtml(
+              book.imageUrl
+            )}"
+            alt="${escapeHtml(
+              book.title
+            )}"
+          >
 
-              <div class="price">
-                ₹${Number(book.price).toFixed(2)}
-              </div>
+          <div>
 
-              <p>
-                ${escapeHtml(book.category || "")}
-              </p>
+            <h2>
+              ${escapeHtml(
+                book.title
+              )}
+            </h2>
 
+            <div class="price">
+              ₹${Number(
+                book.price
+              ).toFixed(2)}
             </div>
+
+            <p>
+              ${escapeHtml(
+                book.category || ""
+              )}
+            </p>
 
           </div>
 
-        `;
+        </div>
+
+      `;
 
 
-      } catch (error) {
-
-        document.getElementById("bookInfo")
-          .innerHTML =
-            '<p class="error">' +
-            escapeHtml(error.message) +
-            '</p>';
-
-        document.getElementById("payButton")
-          .disabled = true;
-
-      }
+      payButton.disabled =
+        false;
 
 
-      delete window[callbackName];
-
-
-      const oldScript =
-        document.getElementById(callbackName);
-
-      if (oldScript) {
-        oldScript.remove();
-      }
-
+      delete window[
+        callbackName
+      ];
     };
 
 
   const script =
-    document.createElement("script");
-
-
-  script.id =
-    callbackName;
+    document.createElement(
+      "script"
+    );
 
 
   script.src =
+
     APPS_SCRIPT_URL +
-    "?action=book" +
+
+    "?options=book" +
+
     "&id=" +
-    encodeURIComponent(bookId) +
+
+    encodeURIComponent(
+      BOOK_ID
+    ) +
+
     "&callback=" +
-    encodeURIComponent(callbackName);
+
+    encodeURIComponent(
+      callbackName
+    );
 
 
-  document.body.appendChild(script);
-
+  document.body.appendChild(
+    script
+  );
 }
 
 
 loadBook();
 
 
-// ============================================
-// CHECKOUT SUBMIT
-// ============================================
-
+/*
+ * Proceed to Pay
+ */
 document
-  .getElementById("checkoutForm")
+  .getElementById(
+    "checkoutForm"
+  )
   .addEventListener(
     "submit",
     function(e) {
@@ -354,98 +461,77 @@ document
 
 
       const name =
-        document
-          .getElementById("name")
-          .value
-          .trim();
+        document.getElementById(
+          "name"
+        ).value.trim();
 
 
       const email =
-        document
-          .getElementById("email")
-          .value
-          .trim();
+        document.getElementById(
+          "email"
+        ).value.trim();
 
 
       const phone =
-        document
-          .getElementById("phone")
-          .value
-          .trim();
+        document.getElementById(
+          "phone"
+        ).value.trim();
 
 
-      if (!name) {
+      if (
+        !name ||
+        !email ||
+        !phone
+      ) {
 
-        alert("Please enter your name.");
+        alert(
+          "Please complete all fields."
+        );
+
         return;
-
       }
 
 
-      if (!email) {
-
-        alert("Please enter your email.");
-        return;
-
-      }
+      payButton.disabled =
+        true;
 
 
-      if (!phone) {
-
-        alert("Please enter your phone number.");
-        return;
-
-      }
+      payButton.textContent =
+        "Preparing Payment...";
 
 
-      if (!bookId) {
-
-        alert("Book ID is missing.");
-        return;
-
-      }
-
-
-      const button =
-        document.getElementById("payButton");
-
-
-      const message =
-        document.getElementById("message");
-
-
-      button.disabled = true;
-
-      button.innerText =
-        "Opening Payment...";
-
-
-      message.innerText =
-        "Please wait...";
-
-
-      // ========================================
-      // OPEN PAY.HTML
-      // ========================================
-      //
-      // Example:
-      //
-      // https://kashvika.website/Competitive/pay.html?id=102
-      //
-      // Customer information is passed to pay.html.
-      //
-      // ========================================
-
+      /*
+       * IMPORTANT:
+       *
+       * This is the CUSTOM DOMAIN URL.
+       */
       const payUrl =
+
         "pay.html" +
+
         "?id=" +
-        encodeURIComponent(bookId) +
+
+        encodeURIComponent(
+          BOOK_ID
+        ) +
+
         "&name=" +
-        encodeURIComponent(name) +
+
+        encodeURIComponent(
+          name
+        ) +
+
         "&email=" +
-        encodeURIComponent(email) +
+
+        encodeURIComponent(
+          email
+        ) +
+
         "&phone=" +
-        encodeURIComponent(phone);
+
+        encodeURIComponent(
+          phone
+        );
 
 
       window.location.href =
@@ -454,29 +540,10 @@ document
     }
   );
 
-
-// ============================================
-// ESCAPE HTML
-// ============================================
-
-function escapeHtml(value) {
-
-  return String(value || "")
-
-    .replace(/&/g, "&amp;")
-
-    .replace(/</g, "&lt;")
-
-    .replace(/>/g, "&gt;")
-
-    .replace(/"/g, "&quot;")
-
-    .replace(/'/g, "&#039;");
-
-}
-
 </script>
 
+
 </body>
+
 </html>
 ```
