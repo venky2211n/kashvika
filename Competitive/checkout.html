@@ -1,257 +1,96 @@
-```html
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width,
-             initial-scale=1.0"
-  >
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
 
-  <title>
-    Checkout
-  </title>
+<title>Checkout</title>
 
+<style>
 
-  <style>
+body {
+  font-family: Arial;
+  background: #f5f7fb;
+}
 
-    body {
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+}
 
-      margin: 0;
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+}
 
-      font-family:
-        Arial,
-        sans-serif;
+input {
+  width: 100%;
+  padding: 13px;
+  margin: 8px 0 15px;
+  box-sizing: border-box;
+}
 
-      background:
-        #f5f5f5;
-    }
+button {
+  width: 100%;
+  padding: 14px;
+  background: #111827;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+}
 
+#error {
+  color: red;
+}
 
-    .container {
-
-      max-width:
-        800px;
-
-      margin:
-        40px auto;
-
-      padding:
-        20px;
-    }
-
-
-    .card {
-
-      background:
-        white;
-
-      padding:
-        30px;
-
-      border-radius:
-        16px;
-
-      box-shadow:
-        0 10px 30px
-        rgba(0,0,0,.08);
-    }
-
-
-    .book {
-
-      display:
-        flex;
-
-      gap:
-        20px;
-
-      margin-bottom:
-        30px;
-    }
-
-
-    .book img {
-
-      width:
-        120px;
-
-      height:
-        160px;
-
-      object-fit:
-        cover;
-
-      border-radius:
-        8px;
-    }
-
-
-    .price {
-
-      font-size:
-        24px;
-
-      font-weight:
-        bold;
-    }
-
-
-    .field {
-
-      margin-bottom:
-        18px;
-    }
-
-
-    label {
-
-      display:
-        block;
-
-      margin-bottom:
-        7px;
-
-      font-weight:
-        bold;
-    }
-
-
-    input {
-
-      width:
-        100%;
-
-      padding:
-        13px;
-
-      border:
-        1px solid #ccc;
-
-      border-radius:
-        8px;
-
-      font-size:
-        16px;
-    }
-
-
-    button {
-
-      width:
-        100%;
-
-      padding:
-        15px;
-
-      border:
-        0;
-
-      border-radius:
-        8px;
-
-      background:
-        #111;
-
-      color:
-        white;
-
-      font-size:
-        17px;
-
-      font-weight:
-        bold;
-
-      cursor:
-        pointer;
-    }
-
-  </style>
+</style>
 
 </head>
 
-
 <body>
-
 
 <div class="container">
 
-
 <div class="card">
 
+<h2 id="title">
+Loading book...
+</h2>
 
-<div id="bookInfo">
-  Loading book...
-</div>
+<p>
+₹<span id="price"></span>
+</p>
 
-
-<form id="checkoutForm">
-
-
-<div class="field">
-
-<label>
-  Full Name
-</label>
+<div id="error"></div>
 
 <input
   id="name"
-  type="text"
-  required
-  placeholder="Full name"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-  Email
-</label>
+  placeholder="Full Name">
 
 <input
   id="email"
   type="email"
-  required
-  placeholder="Email address"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-  Phone
-</label>
+  placeholder="Email">
 
 <input
   id="phone"
-  type="tel"
-  required
-  placeholder="Phone number"
->
-
-</div>
-
+  maxlength="10"
+  placeholder="Phone">
 
 <button
-  id="payButton"
-  type="submit"
-  disabled
->
-  Proceed to Pay
+  onclick="pay()"
+  id="payButton">
+
+Proceed to Pay
+
 </button>
-
-
-</form>
-
 
 </div>
 
@@ -260,10 +99,8 @@
 
 <script>
 
-
 const APPS_SCRIPT_URL =
-
-  "https://script.google.com/macros/s/AKfycbxVFNWOBmK7fW_TRczOwQlMqkUot_LzjxcRidM-QhQhZWrgIgHgB1ymrIXIE1P0g5kLoA/exec";
+  "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
 
 
 const params =
@@ -272,278 +109,316 @@ const params =
   );
 
 
-const BOOK_ID =
+const bookId =
   params.get("id");
 
 
-const bookInfo =
-  document.getElementById(
-    "bookInfo"
-  );
-
-
-const payButton =
-  document.getElementById(
-    "payButton"
-  );
-
-
-function escapeHtml(value) {
-
-  return String(
-    value == null
-      ? ""
-      : value
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-}
+let book = null;
 
 
 /*
- * Load book.
+ * Load book
  */
-function loadBook() {
+fetch(
+  APPS_SCRIPT_URL +
+  "?options=book-json&id=" +
+  encodeURIComponent(bookId)
+)
 
-  if (!BOOK_ID) {
+.then(function(response) {
 
-    bookInfo.innerHTML =
-      "<p>Book ID missing.</p>";
+  return response.json();
+
+})
+
+.then(function(data) {
+
+  if (!data.success) {
+
+    throw new Error(
+      "Book not found"
+    );
+  }
+
+
+  book = data;
+
+
+  document.getElementById(
+    "title"
+  ).textContent =
+    book.title;
+
+
+  document.getElementById(
+    "price"
+  ).textContent =
+    Number(book.price)
+      .toFixed(2);
+
+})
+
+.catch(function(error) {
+
+  document.getElementById(
+    "error"
+  ).textContent =
+    error.message;
+
+});
+
+
+function pay() {
+
+  const name =
+    document.getElementById(
+      "name"
+    ).value.trim();
+
+
+  const email =
+    document.getElementById(
+      "email"
+    ).value.trim();
+
+
+  const phone =
+    document.getElementById(
+      "phone"
+    ).value.trim();
+
+
+  const error =
+    document.getElementById(
+      "error"
+    );
+
+
+  if (!name) {
+
+    error.textContent =
+      "Enter your name.";
 
     return;
   }
 
 
-  const callbackName =
-    "bookCallback_" +
-    Date.now();
+  if (!email) {
+
+    error.textContent =
+      "Enter your email.";
+
+    return;
+  }
 
 
-  window[callbackName] =
-    function(response) {
+  if (!/^[0-9]{10}$/.test(phone)) {
 
-      if (
-        !response ||
-        !response.success ||
-        !response.book
-      ) {
+    error.textContent =
+      "Enter a valid 10 digit phone.";
 
-        bookInfo.innerHTML =
-          "<p>Book not found.</p>";
-
-        return;
-      }
+    return;
+  }
 
 
-      const book =
-        response.book;
-
-
-      bookInfo.innerHTML = `
-
-        <div class="book">
-
-          <img
-            src="${escapeHtml(
-              book.imageUrl
-            )}"
-            alt="${escapeHtml(
-              book.title
-            )}"
-          >
-
-          <div>
-
-            <h2>
-              ${escapeHtml(
-                book.title
-              )}
-            </h2>
-
-            <div class="price">
-              ₹${Number(
-                book.price
-              ).toFixed(2)}
-            </div>
-
-            <p>
-              ${escapeHtml(
-                book.category || ""
-              )}
-            </p>
-
-          </div>
-
-        </div>
-
-      `;
-
-
-      payButton.disabled =
-        false;
-
-
-      delete window[
-        callbackName
-      ];
-    };
-
-
-  const script =
-    document.createElement(
-      "script"
+  const button =
+    document.getElementById(
+      "payButton"
     );
 
 
-  script.src =
+  button.disabled = true;
 
+  button.textContent =
+    "Preparing Payment...";
+
+
+  /*
+   * IMPORTANT
+   *
+   * The secret PayU salt remains
+   * inside Apps Script.
+   */
+  fetch(
     APPS_SCRIPT_URL +
+    "?options=create-payment",
+    {
 
-    "?options=book" +
+      method: "POST",
 
-    "&id=" +
+      headers: {
+        "Content-Type":
+          "application/json"
+      },
 
-    encodeURIComponent(
-      BOOK_ID
-    ) +
+      body: JSON.stringify({
 
-    "&callback=" +
+        bookId: bookId,
 
-    encodeURIComponent(
-      callbackName
+        name: name,
+
+        email: email,
+
+        phone: phone
+
+      })
+
+    }
+  )
+
+  .then(function(response) {
+
+    return response.json();
+
+  })
+
+  .then(function(result) {
+
+    if (!result.success) {
+
+      throw new Error(
+        result.message ||
+        "Payment creation failed"
+      );
+
+    }
+
+
+    /*
+     * Create PayU form.
+     */
+    const form =
+      document.createElement(
+        "form"
+      );
+
+
+    form.method = "POST";
+
+    form.action =
+      result.payuUrl;
+
+
+    add(
+      form,
+      "key",
+      result.key
     );
 
 
-  document.body.appendChild(
-    script
-  );
+    add(
+      form,
+      "txnid",
+      result.txnid
+    );
+
+
+    add(
+      form,
+      "amount",
+      result.amount
+    );
+
+
+    add(
+      form,
+      "productinfo",
+      result.productinfo
+    );
+
+
+    add(
+      form,
+      "firstname",
+      result.firstname
+    );
+
+
+    add(
+      form,
+      "email",
+      result.email
+    );
+
+
+    add(
+      form,
+      "phone",
+      result.phone
+    );
+
+
+    add(
+      form,
+      "surl",
+      result.surl
+    );
+
+
+    add(
+      form,
+      "furl",
+      result.furl
+    );
+
+
+    add(
+      form,
+      "hash",
+      result.hash
+    );
+
+
+    add(form, "udf1", "");
+    add(form, "udf2", "");
+    add(form, "udf3", "");
+    add(form, "udf4", "");
+    add(form, "udf5", "");
+
+
+    document.body.appendChild(form);
+
+    form.submit();
+
+  })
+
+  .catch(function(error) {
+
+    error.textContent =
+      error.message;
+
+    button.disabled = false;
+
+    button.textContent =
+      "Proceed to Pay";
+
+  });
+
 }
 
 
-loadBook();
+function add(
+  form,
+  name,
+  value
+) {
 
+  const input =
+    document.createElement(
+      "input"
+    );
 
-/*
- * Proceed to Pay
- */
-document
-  .getElementById(
-    "checkoutForm"
-  )
-  .addEventListener(
-    "submit",
-    function(e) {
+  input.type = "hidden";
 
-      e.preventDefault();
+  input.name = name;
 
+  input.value = value;
 
-      const name =
-        document.getElementById(
-          "name"
-        ).value.trim();
-
-
-      const email =
-        document.getElementById(
-          "email"
-        ).value.trim();
-
-
-      const phone =
-        document.getElementById(
-          "phone"
-        ).value.trim();
-
-
-      if (
-        !name ||
-        !email ||
-        !phone
-      ) {
-
-        alert(
-          "Please complete all fields."
-        );
-
-        return;
-      }
-
-
-      payButton.disabled =
-        true;
-
-
-      payButton.textContent =
-        "Preparing Payment...";
-
-
-      /*
-       * IMPORTANT:
-       *
-       * This is the CUSTOM DOMAIN URL.
-       */
-      const payUrl =
-
-        "pay.html" +
-
-        "?id=" +
-
-        encodeURIComponent(
-          BOOK_ID
-        ) +
-
-        "&name=" +
-
-        encodeURIComponent(
-          name
-        ) +
-
-        "&email=" +
-
-        encodeURIComponent(
-          email
-        ) +
-
-        "&phone=" +
-
-        encodeURIComponent(
-          phone
-        );
-
-
-      window.location.href =
-        payUrl;
-
-    }
-  );
+  form.appendChild(input);
+}
 
 </script>
-
 
 </body>
 
 </html>
-```
