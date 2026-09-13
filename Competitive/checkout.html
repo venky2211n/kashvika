@@ -11,7 +11,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>100Checkout</title>
+  <title>20Checkout</title>
 
 
   <style>
@@ -384,36 +384,15 @@
 
 
 
+```html
 <script>
-
-/* =====================================================
-   CONFIGURATION
-===================================================== */
-
-
-/*
- * IMPORTANT:
- *
- * This must be the SAME Apps Script deployment
- * that returned your book JSON successfully.
- */
 
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbzAkSJIKHHUt1fUE762fdrKeRArwRlrVuyn7Qyz1Nls_SC9dBANG6Fp5JK_9ZNXeH4b9g/exec";
 
-
-/*
- * Custom domain
- */
-
 const CUSTOM_DOMAIN =
   "https://kashvika.website/Competitive";
 
-
-
-/* =====================================================
-   GLOBAL VARIABLES
-===================================================== */
 
 let currentBook = null;
 
@@ -426,20 +405,17 @@ let pollingStarted = false;
 let paymentFinished = false;
 
 
-
 /* =====================================================
    GET BOOK ID
 ===================================================== */
 
-const urlParams =
+const params =
   new URLSearchParams(
     window.location.search
   );
 
-
 const bookId =
-  urlParams.get("id");
-
+  params.get("id");
 
 
 /* =====================================================
@@ -448,15 +424,10 @@ const bookId =
 
 function callAppsScript(params, callback) {
 
-
   const callbackName =
-
     "jsonp_" +
-
     Date.now() +
-
     "_" +
-
     Math.floor(
       Math.random() * 100000
     );
@@ -464,7 +435,6 @@ function callAppsScript(params, callback) {
 
   params.callback =
     callbackName;
-
 
 
   const script =
@@ -477,19 +447,17 @@ function callAppsScript(params, callback) {
     ).toString();
 
 
-
-  let completed = false;
-
+  let finished = false;
 
 
   window[callbackName] =
     function(data) {
 
-      if (completed) {
+      if (finished) {
         return;
       }
 
-      completed = true;
+      finished = true;
 
 
       try {
@@ -498,28 +466,38 @@ function callAppsScript(params, callback) {
 
       }
 
-      finally {
+      catch(error) {
 
-        try {
-          delete window[callbackName];
-        }
-        catch(e) {
-          window[callbackName] =
-            undefined;
-        }
+        console.error(
+          "Callback error:",
+          error
+        );
+
+      }
 
 
-        if (script.parentNode) {
+      try {
 
-          script.parentNode
-            .removeChild(script);
+        delete window[callbackName];
 
-        }
+      }
+
+      catch(e) {
+
+        window[callbackName] =
+          undefined;
+
+      }
+
+
+      if (script.parentNode) {
+
+        script.parentNode
+          .removeChild(script);
 
       }
 
     };
-
 
 
   script.src =
@@ -528,23 +506,27 @@ function callAppsScript(params, callback) {
     query;
 
 
-
   script.onerror =
     function() {
 
-      if (completed) {
+      if (finished) {
         return;
       }
 
-      completed = true;
+      finished = true;
 
 
       try {
+
         delete window[callbackName];
+
       }
+
       catch(e) {
+
         window[callbackName] =
           undefined;
+
       }
 
 
@@ -561,12 +543,11 @@ function callAppsScript(params, callback) {
         success: false,
 
         error:
-          "Failed to connect to payment server"
+          "Failed to connect to Apps Script"
 
       });
 
     };
-
 
 
   document
@@ -574,7 +555,6 @@ function callAppsScript(params, callback) {
     .appendChild(script);
 
 }
-
 
 
 /* =====================================================
@@ -585,33 +565,17 @@ function escapeHtml(value) {
 
   return String(value || "")
 
-    .replace(
-      /&/g,
-      "&amp;"
-    )
+    .replace(/&/g, "&amp;")
 
-    .replace(
-      /</g,
-      "&lt;"
-    )
+    .replace(/</g, "&lt;")
 
-    .replace(
-      />/g,
-      "&gt;"
-    )
+    .replace(/>/g, "&gt;")
 
-    .replace(
-      /"/g,
-      "&quot;"
-    )
+    .replace(/"/g, "&quot;")
 
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+    .replace(/'/g, "&#039;");
 
 }
-
 
 
 /* =====================================================
@@ -619,7 +583,6 @@ function escapeHtml(value) {
 ===================================================== */
 
 function loadBook() {
-
 
   const bookInfo =
     document.getElementById(
@@ -631,7 +594,6 @@ function loadBook() {
     document.getElementById(
       "payButton"
     );
-
 
 
   if (!bookId) {
@@ -646,298 +608,201 @@ function loadBook() {
   }
 
 
-
   bookInfo.innerHTML =
     '<div class="loading">' +
     'Fetching book details...' +
     '</div>';
 
 
-
-  const callbackName =
-
-    "bookCallback_" +
-
-    Date.now();
-
-
-
-  window[callbackName] =
-    function(result) {
-
-
-      console.log(
-        "BOOK RESPONSE:",
-        result
-      );
-
-
-
-      if (
-        !result ||
-        result.success !== true
-      ) {
-
-        bookInfo.innerHTML =
-
-          '<div class="error">' +
-
-          (
-            result &&
-            result.error
-
-              ? escapeHtml(
-                  result.error
-                )
-
-              : "Book not found"
-          ) +
-
-          '</div>';
-
-
-        return;
-
-      }
-
-
-
-      if (!result.book) {
-
-        bookInfo.innerHTML =
-
-          '<div class="error">' +
-
-          'Book data is empty.' +
-
-          '</div>';
-
-
-        return;
-
-      }
-
-
-
-      currentBook =
-        result.book;
-
-
-
-      /* =========================================
-         DISPLAY BOOK
-      ========================================== */
-
-      let html = "";
-
-
-
-      if (
-        currentBook.imageUrl
-      ) {
-
-        html += `
-
-          <img
-
-            src="${escapeHtml(
-              currentBook.imageUrl
-            )}"
-
-            class="book-image"
-
-            alt="${escapeHtml(
-              currentBook.title
-            )}"
-
-            onerror="
-              this.style.display='none'
-            "
-
-          >
-
-        `;
-
-      }
-
-
-
-      html += `
-
-        <div class="book-title">
-
-          ${escapeHtml(
-            currentBook.title
-          )}
-
-        </div>
-
-      `;
-
-
-
-      if (
-        currentBook.category
-      ) {
-
-        html += `
-
-          <div class="category">
-
-            <span>
-
-              ${escapeHtml(
-                currentBook.category
-              )}
-
-            </span>
-
-          </div>
-
-        `;
-
-      }
-
-
-
-      html += `
-
-        <div class="book-description">
-
-          ${escapeHtml(
-            currentBook.description || ""
-          )}
-
-        </div>
-
-
-        <div class="price">
-
-          ₹${Number(
-            currentBook.price || 0
-          ).toFixed(2)}
-
-        </div>
-
-      `;
-
-
-
-      bookInfo.innerHTML =
-        html;
-
-
-
-      /* =========================================
-         ENABLE PAYMENT BUTTON
-      ========================================== */
-
-      payButton.disabled =
-        false;
-
-
-      payButton.innerText =
-        "Proceed to Pay ₹" +
-
-        Number(
-          currentBook.price || 0
-        ).toFixed(2);
-
-
-
-      try {
-
-        delete window[callbackName];
-
-      }
-
-      catch(e) {
-
-        window[callbackName] =
-          undefined;
-
-      }
-
-    };
-
-
-
-  /* =========================================
-     JSONP REQUEST
-  ========================================== */
-
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
-  const requestUrl =
-
-    APPS_SCRIPT_URL +
-
-    "?options=book-data" +
-
-    "&id=" +
-
-    encodeURIComponent(
-      bookId
-    ) +
-
-    "&callback=" +
-
-    encodeURIComponent(
-      callbackName
-    ) +
-
-    "&_=" +
-
-    Date.now();
-
-
-
   console.log(
-    "BOOK REQUEST:",
-    requestUrl
+    "Loading book:",
+    bookId
   );
 
 
+  callAppsScript({
 
-  script.src =
-    requestUrl;
+    options:
+      "book-data",
+
+    id:
+      bookId
+
+  }, function(result) {
 
 
+    console.log(
+      "BOOK DATA RESPONSE:",
+      result
+    );
 
-  script.onerror =
-    function() {
+
+    if (
+      !result ||
+      result.success !== true
+    ) {
 
       bookInfo.innerHTML =
-
         '<div class="error">' +
 
-        'Failed to fetch book details.' +
-
-        '<br><br>' +
-
-        'Please try again.' +
+        escapeHtml(
+          result &&
+          result.error
+            ? result.error
+            : "Book not found"
+        ) +
 
         '</div>';
 
+      return;
+
+    }
 
 
-      payButton.disabled =
-        true;
+    if (!result.book) {
 
-    };
+      bookInfo.innerHTML =
+        '<div class="error">' +
+        'Book data is empty.' +
+        '</div>';
+
+      return;
+
+    }
 
 
+    currentBook =
+      result.book;
 
-  document
-    .body
-    .appendChild(script);
+
+    /* ==========================================
+       BOOK IMAGE
+    ========================================== */
+
+    let html = "";
+
+
+    if (currentBook.imageUrl) {
+
+      html += `
+
+        <img
+          src="${escapeHtml(
+            currentBook.imageUrl
+          )}"
+          class="book-image"
+          alt="${escapeHtml(
+            currentBook.title
+          )}"
+        >
+
+      `;
+
+    }
+
+
+    /* ==========================================
+       TITLE
+    ========================================== */
+
+    html += `
+
+      <div class="book-title">
+
+        ${escapeHtml(
+          currentBook.title
+        )}
+
+      </div>
+
+    `;
+
+
+    /* ==========================================
+       CATEGORY
+    ========================================== */
+
+    if (currentBook.category) {
+
+      html += `
+
+        <div class="category">
+
+          <span>
+
+            ${escapeHtml(
+              currentBook.category
+            )}
+
+          </span>
+
+        </div>
+
+      `;
+
+    }
+
+
+    /* ==========================================
+       DESCRIPTION
+    ========================================== */
+
+    html += `
+
+      <div class="book-description">
+
+        ${escapeHtml(
+          currentBook.description || ""
+        )}
+
+      </div>
+
+    `;
+
+
+    /* ==========================================
+       PRICE
+    ========================================== */
+
+    html += `
+
+      <div class="price">
+
+        ₹${Number(
+          currentBook.price || 0
+        ).toFixed(2)}
+
+      </div>
+
+    `;
+
+
+    bookInfo.innerHTML =
+      html;
+
+
+    /* ==========================================
+       ENABLE BUTTON
+    ========================================== */
+
+    payButton.disabled =
+      false;
+
+
+    payButton.innerText =
+      "Proceed to Pay ₹" +
+      Number(
+        currentBook.price || 0
+      ).toFixed(2);
+
+
+    console.log(
+      "PAY BUTTON ENABLED"
+    );
+
+  });
 
 }
-
 
 
 /* =====================================================
@@ -946,12 +811,25 @@ function loadBook() {
 
 function startPayment() {
 
+  console.log(
+    "startPayment() called"
+  );
 
-  const bookId =
-    new URLSearchParams(
-      window.location.search
-    ).get("id");
 
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  if (!currentBook) {
+
+    message.innerText =
+      "Book details are not loaded yet.";
+
+    return;
+
+  }
 
 
   const name =
@@ -961,13 +839,11 @@ function startPayment() {
       .trim();
 
 
-
   const email =
     document
       .getElementById("email")
       .value
       .trim();
-
 
 
   const phone =
@@ -977,30 +853,7 @@ function startPayment() {
       .trim();
 
 
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-
-
-  if (!bookId) {
-
-    message.innerText =
-      "Book ID is missing.";
-
-    return;
-
-  }
-
-
-
-  if (
-    !name ||
-    !email ||
-    !phone
-  ) {
+  if (!name || !email || !phone) {
 
     message.innerText =
       "Please enter name, email and phone.";
@@ -1010,21 +863,8 @@ function startPayment() {
   }
 
 
-
-  if (!currentBook) {
-
-    message.innerText =
-      "Book details are still loading.";
-
-    return;
-
-  }
-
-
-
   /*
-   * Open popup immediately
-   * from user's click.
+   * Open popup immediately.
    */
 
   paymentWindow =
@@ -1035,54 +875,48 @@ function startPayment() {
     );
 
 
-
   if (!paymentWindow) {
 
     message.innerText =
-      "Please allow popups for this website.";
+      "Popup blocked. Please allow popups.";
 
     return;
 
   }
 
 
-
-  /* =========================================
-     POPUP LOADING SCREEN
-  ========================================== */
-
   paymentWindow.document.open();
 
 
   paymentWindow.document.write(`
 
-    <!DOCTYPE html>
-
     <html>
 
-    <head>
+      <head>
 
-      <title>PayU Payment</title>
+        <title>
+          PayU Payment
+        </title>
 
-    </head>
+      </head>
 
-    <body
-      style="
-        font-family:Arial;
-        text-align:center;
-        padding:40px;
-      "
-    >
+      <body
+        style="
+          font-family:Arial;
+          text-align:center;
+          padding:40px;
+        "
+      >
 
-      <h2>
-        Preparing payment...
-      </h2>
+        <h2>
+          Preparing payment...
+        </h2>
 
-      <p>
-        Please wait...
-      </p>
+        <p>
+          Please wait...
+        </p>
 
-    </body>
+      </body>
 
     </html>
 
@@ -1092,13 +926,11 @@ function startPayment() {
   paymentWindow.document.close();
 
 
-
   message.innerText =
-    "Preparing payment...";
+    "Creating payment...";
 
 
-
-  /* =========================================
+  /* ==========================================
      CREATE PAYMENT
   ========================================== */
 
@@ -1123,17 +955,15 @@ function startPayment() {
 
 
     console.log(
-      "CREATE PAYMENT:",
+      "CREATE PAYMENT RESPONSE:",
       result
     );
-
 
 
     if (
       !result ||
       result.success !== true
     ) {
-
 
       if (
         paymentWindow &&
@@ -1148,20 +978,16 @@ function startPayment() {
       message.innerText =
         result &&
         result.error
-
           ? result.error
-
           : "Unable to create payment.";
-
 
       return;
 
     }
 
 
-
-    /* =========================================
-       SEND PAYMENT TO PAYU
+    /* ==========================================
+       SEND TO PAYU
     ========================================== */
 
     submitToPayU(
@@ -1173,14 +999,12 @@ function startPayment() {
     );
 
 
-
     message.innerText =
-      "Payment window opened. Complete your payment.";
+      "Complete payment in the payment window.";
 
 
-
-    /* =========================================
-       START POLLING
+    /* ==========================================
+       POLLING
     ========================================== */
 
     startPaymentPolling(
@@ -1192,16 +1016,14 @@ function startPayment() {
 }
 
 
-
 /* =====================================================
-   SUBMIT FORM TO PAYU
+   SUBMIT TO PAYU
 ===================================================== */
 
 function submitToPayU(
   paymentUrl,
   paymentData
 ) {
-
 
   if (
     !paymentWindow ||
@@ -1213,11 +1035,9 @@ function submitToPayU(
   }
 
 
-
   const form =
     paymentWindow.document
       .createElement("form");
-
 
 
   form.method =
@@ -1232,12 +1052,10 @@ function submitToPayU(
     "none";
 
 
-
   Object.keys(
     paymentData
   ).forEach(
     function(key) {
-
 
       const input =
         paymentWindow.document
@@ -1264,7 +1082,6 @@ function submitToPayU(
   );
 
 
-
   paymentWindow.document
     .body
     .appendChild(
@@ -1272,11 +1089,9 @@ function submitToPayU(
     );
 
 
-
   form.submit();
 
 }
-
 
 
 /* =====================================================
@@ -1287,7 +1102,6 @@ function startPaymentPolling(
   txnid
 ) {
 
-
   if (pollingStarted) {
 
     return;
@@ -1295,34 +1109,21 @@ function startPaymentPolling(
   }
 
 
-
   pollingStarted =
     true;
 
 
-
   let attempts = 0;
 
-
-
-  /*
-   * Check immediately
-   */
 
   checkPaymentStatus(
     txnid
   );
 
 
-
-  /*
-   * Then every 3 seconds
-   */
-
   pollingTimer =
     setInterval(
       function() {
-
 
         attempts++;
 
@@ -1332,47 +1133,32 @@ function startPaymentPolling(
         );
 
 
-
-        /*
-         * 10 minutes
-         *
-         * 600 / 3 = 200
-         */
-
-        if (
-          attempts >= 200
-        ) {
-
+        if (attempts >= 200) {
 
           clearInterval(
             pollingTimer
           );
 
-
           pollingTimer =
             null;
 
-
           pollingStarted =
             false;
-
 
           document
             .getElementById(
               "message"
             )
             .innerText =
-              "Payment verification timed out. Please check your payment status.";
+              "Payment verification timed out.";
 
         }
-
 
       },
       3000
     );
 
 }
-
 
 
 /* =====================================================
@@ -1383,13 +1169,11 @@ function checkPaymentStatus(
   txnid
 ) {
 
-
   if (paymentFinished) {
 
     return;
 
   }
-
 
 
   callAppsScript({
@@ -1409,7 +1193,6 @@ function checkPaymentStatus(
     );
 
 
-
     if (
       !result ||
       result.success !== true
@@ -1420,37 +1203,18 @@ function checkPaymentStatus(
     }
 
 
-
-    const order =
-      result.order;
-
-
-
-    if (!order) {
+    if (!result.order) {
 
       return;
 
     }
 
 
-
     const status =
       String(
-        order.status || ""
+        result.order.status || ""
       ).toUpperCase();
 
-
-
-    console.log(
-      "ORDER STATUS:",
-      status
-    );
-
-
-
-    /* =========================================
-       SUCCESS
-    ========================================== */
 
     if (
       status === "SUCCESS"
@@ -1465,11 +1229,6 @@ function checkPaymentStatus(
     }
 
 
-
-    /* =========================================
-       FAILED
-    ========================================== */
-
     if (
       status === "FAILED"
     ) {
@@ -1483,13 +1242,6 @@ function checkPaymentStatus(
     }
 
 
-
-    /*
-     * PENDING
-     *
-     * Continue polling.
-     */
-
     document
       .getElementById(
         "message"
@@ -1502,16 +1254,14 @@ function checkPaymentStatus(
 }
 
 
-
 /* =====================================================
-   PAYMENT SUCCESS
+   SUCCESS
 ===================================================== */
 
 function paymentCompleted(
   txnid
 ) {
 
-
   if (paymentFinished) {
 
     return;
@@ -1522,11 +1272,6 @@ function paymentCompleted(
   paymentFinished =
     true;
 
-
-
-  /* =========================================
-     STOP POLLING
-  ========================================== */
 
   if (pollingTimer) {
 
@@ -1544,11 +1289,6 @@ function paymentCompleted(
     false;
 
 
-
-  /* =========================================
-     CLOSE PAYU WINDOW
-  ========================================== */
-
   if (
     paymentWindow &&
     !paymentWindow.closed
@@ -1559,17 +1299,9 @@ function paymentCompleted(
   }
 
 
-
-  /* =========================================
-     REDIRECT
-  ========================================== */
-
   window.location.href =
-
     CUSTOM_DOMAIN +
-
     "/success.html?txnid=" +
-
     encodeURIComponent(
       txnid
     );
@@ -1577,16 +1309,14 @@ function paymentCompleted(
 }
 
 
-
 /* =====================================================
-   PAYMENT FAILED
+   FAILED
 ===================================================== */
 
 function paymentFailed(
   txnid
 ) {
 
-
   if (paymentFinished) {
 
     return;
@@ -1597,11 +1327,6 @@ function paymentFailed(
   paymentFinished =
     true;
 
-
-
-  /* =========================================
-     STOP POLLING
-  ========================================== */
 
   if (pollingTimer) {
 
@@ -1619,11 +1344,6 @@ function paymentFailed(
     false;
 
 
-
-  /* =========================================
-     CLOSE PAYU WINDOW
-  ========================================== */
-
   if (
     paymentWindow &&
     !paymentWindow.closed
@@ -1634,17 +1354,9 @@ function paymentFailed(
   }
 
 
-
-  /* =========================================
-     REDIRECT FAILED PAGE
-  ========================================== */
-
   window.location.href =
-
     CUSTOM_DOMAIN +
-
     "/failed.html?txnid=" +
-
     encodeURIComponent(
       txnid
     );
@@ -1652,14 +1364,15 @@ function paymentFailed(
 }
 
 
-
 /* =====================================================
-   LOAD BOOK WHEN PAGE OPENS
+   LOAD BOOK
 ===================================================== */
 
 loadBook();
 
 </script>
+
+
 
 
 </body>
