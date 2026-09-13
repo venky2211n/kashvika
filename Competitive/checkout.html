@@ -252,11 +252,17 @@ Phone
 >
 
 
-<button
+<!-- <button
   id="payButton"
   type="submit"
 >
 Proceed to Pay
+</button> -->
+
+  <button
+  type="button"
+  onclick="startPayment()">
+  Proceed to Pay
 </button>
 
 
@@ -273,104 +279,60 @@ Proceed to Pay
 
 <script>
 
-
-/****************************************************
- * CONFIG
- ****************************************************/
-
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxFp_xfgNssGV3Dkm3lCZZT7_rFPURgXWRVDRVIT7OO8vn_Jx2IejFZKYPTCKloo8g7sA/exec";
+  "https://script.google.com/macros/s/AKfycbzAkSJIKHHUt1fUE762fdrKeRArwRlrVuyn7Qyz1Nls_SC9dBANG6Fp5JK_9ZNXeH4b9g/exec";
 
 
-/*
- * Example:
- *
- * const APPS_SCRIPT_URL =
- * "https://script.google.com/macros/s/XXXXX/exec";
- */
+const CUSTOM_DOMAIN =
+  "https://kashvika.website/Competitive";
 
 
-/****************************************************
- * BOOK ID
- ****************************************************/
+let paymentWindow = null;
 
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
+let pollingTimer = null;
 
-
-const bookId =
-  params.get("id");
-
-
-if (!bookId) {
-
-  document.getElementById(
-    "bookInfo"
-  ).textContent =
-    "Book ID missing.";
-
-}
+let pollingStarted = false;
 
 
 /****************************************************
- * LOAD BOOK USING JSONP
+ * JSONP
  ****************************************************/
 
-if (bookId) {
+function callAppsScript(params, callback) {
 
-  loadBook();
-
-}
-
-
-function loadBook() {
-
-  const callback =
-    "bookCallback_" +
-    Date.now();
+  const callbackName =
+    "jsonp_" +
+    Date.now() +
+    "_" +
+    Math.floor(
+      Math.random() * 100000
+    );
 
 
-  window[callback] =
-    function(result) {
+  params.callback =
+    callbackName;
+
+
+  const script =
+    document.createElement("script");
+
+
+  const query =
+    new URLSearchParams(
+      params
+    ).toString();
+
+
+  window[callbackName] =
+    function(data) {
 
       try {
 
-        if (
-          !result.success
-        ) {
-
-          throw new Error(
-            result.error ||
-            "Book not found"
-          );
-
-        }
-
-
-        const book =
-          result.book;
-
-
-        document.getElementById(
-          "bookInfo"
-        ).innerHTML = `
-
-          <div class="book-title">
-            ${escapeHtml(book.title)}
-          </div>
-
-          <div class="price">
-            ₹${Number(book.price).toFixed(2)}
-          </div>
-
-        `;
-
+        callback(data);
 
       } finally {
 
-        delete window[callback];
+        delete window[callbackName];
 
         script.remove();
 
@@ -379,100 +341,76 @@ function loadBook() {
     };
 
 
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
   script.src =
     APPS_SCRIPT_URL +
-    "?options=book-data" +
-    "&id=" +
-    encodeURIComponent(bookId) +
-    "&callback=" +
-    encodeURIComponent(callback);
+    "?" +
+    query;
 
 
   script.onerror =
     function() {
 
-      document.getElementById(
-        "bookInfo"
-      ).textContent =
-        "Unable to load book.";
-
-      delete window[callback];
+      delete window[callbackName];
 
       script.remove();
+
+      callback({
+
+        success: false,
+
+        error:
+          "Failed to connect to payment server"
+
+      });
 
     };
 
 
-  document.body.appendChild(
-    script
-  );
+  document
+    .body
+    .appendChild(script);
 
 }
 
 
 /****************************************************
- * START CHECKOUT
+ * START PAYMENT
  ****************************************************/
 
-document
-  .getElementById(
-    "checkoutForm"
-  )
-  .addEventListener(
-    "submit",
-    startPayment
-  );
+function startPayment() {
 
-
-function startPayment(e) {
-
-  e.preventDefault();
-
-
-  const button =
-    document.getElementById(
-      "payButton"
-    );
-
-
-  const message =
-    document.getElementById(
-      "message"
-    );
+  const bookId =
+    new URLSearchParams(
+      window.location.search
+    ).get("id");
 
 
   const name =
-    document.getElementById(
-      "name"
-    ).value.trim();
+    document
+      .getElementById("name")
+      .value
+      .trim();
 
 
   const email =
-    document.getElementById(
-      "email"
-    ).value.trim();
+    document
+      .getElementById("email")
+      .value
+      .trim();
 
 
   const phone =
-    document.getElementById(
-      "phone"
-    ).value.trim();
+    document
+      .getElementById("phone")
+      .value
+      .trim();
 
 
-  if (
-    !name ||
-    !email ||
-    !phone
-  ) {
+  if (!name || !email || !phone) {
 
-    message.textContent =
-      "Please enter all details.";
+    alert(
+      "Please enter name, email and phone."
+    );
 
     return;
 
@@ -480,222 +418,68 @@ function startPayment(e) {
 
 
   /*
-   * IMPORTANT:
+   * IMPORTANT
    *
-   * Open popup NOW, synchronously
-   * from the user's click.
+   * Open popup immediately from
+   * the user's click.
    */
-  const paymentWindow =
+  paymentWindow =
     window.open(
       "",
       "PayUPaymentWindow",
-      "width=520," +
-      "height=760," +
-      "left=200," +
-      "top=50," +
-      "scrollbars=yes," +
-      "resizable=yes"
+      "width=520,height=760,scrollbars=yes,resizable=yes"
     );
 
 
   if (!paymentWindow) {
 
-    message.textContent =
-      "Popup blocked. Please allow popups for this website.";
+    alert(
+      "Please allow popups for this website."
+    );
 
     return;
 
   }
 
 
-  /*
-   * Temporary popup content
-   */
   paymentWindow.document.open();
 
-  paymentWindow.document.write(`
-
-    <!DOCTYPE html>
-
-    <html>
-
-    <head>
-
-    <title>
-      Preparing Payment
-    </title>
-
-    <style>
-
-    body {
-      font-family: Arial;
-      text-align: center;
-      padding-top: 100px;
-    }
-
-    </style>
-
-    </head>
-
-    <body>
-
-    <h2>
-      Preparing Payment...
-    </h2>
-
-    <p>
-      Please wait.
-    </p>
-
-    </body>
-
-    </html>
-
-  `);
+  paymentWindow.document.write(
+    "<html>" +
+    "<body style='font-family:Arial;text-align:center;padding:40px'>" +
+    "<h2>Preparing payment...</h2>" +
+    "<p>Please wait...</p>" +
+    "</body>" +
+    "</html>"
+  );
 
   paymentWindow.document.close();
 
 
-  button.disabled =
-    true;
-
-  button.textContent =
-    "Preparing Payment...";
-
-
-  message.textContent =
-    "Opening PayU payment window...";
-
-
   /*
-   * Apps Script JSONP
+   * Ask Apps Script to create payment
    */
-  createPayment(
-    paymentWindow,
-    name,
-    email,
-    phone,
-    button,
-    message
-  );
+  callAppsScript({
 
-}
+    options:
+      "create-payment",
 
+    id:
+      bookId,
 
-/****************************************************
- * CREATE PAYMENT
- ****************************************************/
+    name:
+      name,
 
-function createPayment(
-  paymentWindow,
-  name,
-  email,
-  phone,
-  button,
-  message
-) {
+    email:
+      email,
 
-  const callback =
-    "paymentCallback_" +
-    Date.now();
+    phone:
+      phone
+
+  }, function(result) {
 
 
-  window[callback] =
-    function(result) {
-
-      try {
-
-        if (
-          !result.success
-        ) {
-
-          throw new Error(
-            result.error ||
-            "Unable to create payment"
-          );
-
-        }
-
-
-        /*
-         * We now have:
-         *
-         * result.paymentUrl
-         * result.paymentData
-         */
-        submitToPayU(
-          paymentWindow,
-          result.paymentUrl,
-          result.paymentData
-        );
-
-
-        button.textContent =
-          "Payment Window Opened";
-
-
-        message.textContent =
-          "Complete the payment in the PayU window.";
-
-
-      } catch (err) {
-
-        if (
-          paymentWindow &&
-          !paymentWindow.closed
-        ) {
-
-          paymentWindow.close();
-
-        }
-
-
-        button.disabled =
-          false;
-
-
-        button.textContent =
-          "Proceed to Pay";
-
-
-        message.textContent =
-          err.message;
-
-
-      } finally {
-
-        delete window[callback];
-
-        script.remove();
-
-      }
-
-    };
-
-
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
-  script.src =
-    APPS_SCRIPT_URL +
-    "?options=create-payment" +
-    "&id=" +
-    encodeURIComponent(bookId) +
-    "&name=" +
-    encodeURIComponent(name) +
-    "&email=" +
-    encodeURIComponent(email) +
-    "&phone=" +
-    encodeURIComponent(phone) +
-    "&callback=" +
-    encodeURIComponent(callback);
-
-
-  script.onerror =
-    function() {
+    if (!result.success) {
 
       if (
         paymentWindow &&
@@ -707,81 +491,59 @@ function createPayment(
       }
 
 
-      button.disabled =
-        false;
+      alert(
+        result.error ||
+        "Unable to create payment."
+      );
+
+      return;
+
+    }
 
 
-      button.textContent =
-        "Proceed to Pay";
+    /*
+     * POST paymentData to PayU
+     */
+    submitToPayU(
+      result.paymentUrl,
+      result.paymentData
+    );
 
 
-      message.textContent =
-        "Unable to contact payment server.";
+    /*
+     * START POLLING
+     */
+    startPaymentPolling(
+      result.txnid
+    );
 
-
-      delete window[callback];
-
-      script.remove();
-
-    };
-
-
-  document.body.appendChild(
-    script
-  );
+  });
 
 }
 
 
 /****************************************************
- * SUBMIT TO PAYU
+ * POST TO PAYU
  ****************************************************/
 
 function submitToPayU(
-  paymentWindow,
   paymentUrl,
   paymentData
 ) {
 
-  const doc =
-    paymentWindow.document;
+  if (
+    !paymentWindow ||
+    paymentWindow.closed
+  ) {
+
+    return;
+
+  }
 
 
-  /*
-   * Clear popup
-   */
-  doc.open();
-
-
-  doc.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>PayU Payment</title>
-    </head>
-    <body>
-      <p style="
-        font-family:Arial;
-        text-align:center;
-        margin-top:80px;
-      ">
-        Redirecting to PayU...
-      </p>
-    </body>
-    </html>
-  `);
-
-
-  doc.close();
-
-
-  /*
-   * Create PayU form
-   */
   const form =
-    doc.createElement(
-      "form"
-    );
+    paymentWindow.document
+      .createElement("form");
 
 
   form.method =
@@ -792,91 +554,305 @@ function submitToPayU(
     paymentUrl;
 
 
-  form.target =
-    "_self";
+  form.style.display =
+    "none";
 
 
   Object.keys(
     paymentData
-  ).forEach(
-    function(key) {
+  ).forEach(function(key) {
 
-      const input =
-        doc.createElement(
-          "input"
-        );
+    const input =
+      paymentWindow.document
+        .createElement("input");
 
 
-      input.type =
-        "hidden";
+    input.type =
+      "hidden";
 
 
-      input.name =
-        key;
+    input.name =
+      key;
 
 
-      input.value =
-        paymentData[key];
+    input.value =
+      paymentData[key];
 
 
-      form.appendChild(
-        input
-      );
+    form.appendChild(
+      input
+    );
 
-    }
-  );
-
-
-  doc.body.appendChild(
-    form
-  );
+  });
 
 
-  /*
-   * Send customer to PayU
-   */
+  paymentWindow.document
+    .body
+    .appendChild(form);
+
+
   form.submit();
 
 }
 
 
 /****************************************************
- * ESCAPE HTML
+ * POLLING
  ****************************************************/
 
-function escapeHtml(value) {
+function startPaymentPolling(
+  txnid
+) {
 
-  return String(value)
+  if (pollingStarted) {
 
-    .replace(
-      /&/g,
-      "&amp;"
-    )
+    return;
 
-    .replace(
-      /</g,
-      "&lt;"
-    )
+  }
 
-    .replace(
-      />/g,
-      "&gt;"
-    )
 
-    .replace(
-      /"/g,
-      "&quot;"
-    )
+  pollingStarted =
+    true;
 
-    .replace(
-      /'/g,
-      "&#039;"
+
+  let attempts = 0;
+
+
+  /*
+   * Check every 3 seconds
+   */
+  pollingTimer =
+    setInterval(function() {
+
+      attempts++;
+
+
+      checkPaymentStatus(
+        txnid
+      );
+
+
+      /*
+       * Stop after 10 minutes
+       *
+       * 10 min / 3 sec
+       * = 200 attempts
+       */
+      if (attempts >= 200) {
+
+        clearInterval(
+          pollingTimer
+        );
+
+
+        pollingTimer =
+          null;
+
+
+        pollingStarted =
+          false;
+
+      }
+
+    }, 3000);
+
+
+  /*
+   * Check immediately
+   */
+  checkPaymentStatus(
+    txnid
+  );
+
+}
+
+
+/****************************************************
+ * CHECK PAYMENT STATUS
+ ****************************************************/
+
+function checkPaymentStatus(
+  txnid
+) {
+
+  callAppsScript({
+
+    options:
+      "payment-status",
+
+    txnid:
+      txnid
+
+  }, function(result) {
+
+
+    if (!result.success) {
+
+      return;
+
+    }
+
+
+    const order =
+      result.order;
+
+
+    if (!order) {
+
+      return;
+
+    }
+
+
+    /*
+     * PAYMENT SUCCESS
+     */
+    if (
+      String(
+        order.status || ""
+      ).toUpperCase() ===
+      "SUCCESS"
+    ) {
+
+      paymentCompleted(
+        txnid
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * PAYMENT FAILED
+     */
+    if (
+      String(
+        order.status || ""
+      ).toUpperCase() ===
+      "FAILED"
+    ) {
+
+      paymentFailed(
+        txnid
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * PENDING
+     *
+     * Continue polling.
+     */
+
+  });
+
+}
+
+
+/****************************************************
+ * PAYMENT SUCCESS
+ ****************************************************/
+
+function paymentCompleted(
+  txnid
+) {
+
+  if (pollingTimer) {
+
+    clearInterval(
+      pollingTimer
+    );
+
+    pollingTimer =
+      null;
+
+  }
+
+
+  pollingStarted =
+    false;
+
+
+  /*
+   * CLOSE PAYU POPUP
+   */
+  if (
+    paymentWindow &&
+    !paymentWindow.closed
+  ) {
+
+    paymentWindow.close();
+
+  }
+
+
+  /*
+   * OPEN CUSTOM DOMAIN SUCCESS PAGE
+   */
+  window.location.href =
+    CUSTOM_DOMAIN +
+    "/success.html?txnid=" +
+    encodeURIComponent(
+      txnid
+    );
+
+}
+
+
+/****************************************************
+ * PAYMENT FAILED
+ ****************************************************/
+
+function paymentFailed(
+  txnid
+) {
+
+  if (pollingTimer) {
+
+    clearInterval(
+      pollingTimer
+    );
+
+    pollingTimer =
+      null;
+
+  }
+
+
+  pollingStarted =
+    false;
+
+
+  /*
+   * CLOSE PAYU POPUP
+   */
+  if (
+    paymentWindow &&
+    !paymentWindow.closed
+  ) {
+
+    paymentWindow.close();
+
+  }
+
+
+  /*
+   * CUSTOM DOMAIN FAILED PAGE
+   */
+  window.location.href =
+    CUSTOM_DOMAIN +
+    "/failed.html?txnid=" +
+    encodeURIComponent(
+      txnid
     );
 
 }
 
 </script>
-
 </body>
 
 </html>
