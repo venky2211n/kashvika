@@ -11,7 +11,7 @@
 >
 
 <title>
-41Kashvika Refund System
+51Kashvika Refund System
 </title>
 
 
@@ -802,98 +802,317 @@ let currentRefundId = "";
  * LOGIN
 **************************************************/
 
-async function login() {
+
+function loginAdmin() {
 
   const username =
-    document
-      .getElementById("username")
-      .value
-      .trim();
-
+    document.getElementById('username').value.trim();
 
   const password =
-    document
-      .getElementById("password")
-      .value;
-
+    document.getElementById('password').value;
 
   if (!username || !password) {
 
     showMessage(
-      "loginMessage",
-      "Enter username and password.",
-      "error"
+      'Enter username and password.'
     );
 
     return;
-
   }
 
+  showLoading('Logging in...');
 
-  showLoading(true);
+
+  const callbackName =
+    'loginCallback_' +
+    Date.now();
 
 
-  try {
+  window[callbackName] =
+    function(result) {
 
-    const data =
-      await apiCall(
-        "refund-login",
-        {
-          username,
-          password
+      hideLoading();
+
+
+      try {
+
+        if (!result.success) {
+
+          showMessage(
+            result.message ||
+            'Login failed.'
+          );
+
+          return;
         }
+
+
+        /*
+         * Save admin session token.
+         */
+        adminToken =
+          result.token;
+
+
+        /*
+         * Show refund dashboard.
+         */
+        document.getElementById(
+          'loginPanel'
+        ).style.display = 'none';
+
+
+        document.getElementById(
+          'refundPanel'
+        ).style.display = 'block';
+
+
+      } finally {
+
+        delete window[
+          callbackName
+        ];
+      }
+    };
+
+
+  const script =
+    document.createElement('script');
+
+
+  script.src =
+    APPS_SCRIPT_URL +
+    '?options=refund-login' +
+    '&username=' +
+    encodeURIComponent(username) +
+    '&password=' +
+    encodeURIComponent(password) +
+    '&callback=' +
+    encodeURIComponent(callbackName);
+
+
+  script.onerror =
+    function() {
+
+      hideLoading();
+
+      showMessage(
+        'Unable to connect to Apps Script.'
       );
 
-
-    if (!data.success) {
-
-      throw new Error(
-        data.error ||
-        "Login failed."
-      );
-
-    }
+      delete window[
+        callbackName
+      ];
+    };
 
 
-    sessionToken =
-      data.token;
-
-
-    document
-      .getElementById(
-        "loginBox"
-      )
-      .style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "mainBox"
-      )
-      .style.display =
-      "block";
-
-
-  }
-
-  catch(err) {
-
-    showMessage(
-      "loginMessage",
-      err.message,
-      "error"
-    );
-
-  }
-
-  finally {
-
-    showLoading(false);
-
-  }
-
+  document.body.appendChild(script);
 }
+
+
+
+
+  
+
+
+
+//   function loginAdmin() {
+
+//   const username =
+//     document.getElementById('username').value.trim();
+
+//   const password =
+//     document.getElementById('password').value;
+
+//   if (!username || !password) {
+
+//     showMessage(
+//       'Enter username and password.'
+//     );
+
+//     return;
+//   }
+
+//   showLoading('Logging in...');
+
+
+//   const callbackName =
+//     'loginCallback_' +
+//     Date.now();
+
+
+//   window[callbackName] =
+//     function(result) {
+
+//       hideLoading();
+
+
+//       try {
+
+//         if (!result.success) {
+
+//           showMessage(
+//             result.message ||
+//             'Login failed.'
+//           );
+
+//           return;
+//         }
+
+
+//         /*
+//          * Save admin session token.
+//          */
+//         adminToken =
+//           result.token;
+
+
+//         /*
+//          * Show refund dashboard.
+//          */
+//         document.getElementById(
+//           'loginPanel'
+//         ).style.display = 'none';
+
+
+//         document.getElementById(
+//           'refundPanel'
+//         ).style.display = 'block';
+
+
+//       } finally {
+
+//         delete window[
+//           callbackName
+//         ];
+//       }
+//     };
+
+
+//   const script =
+//     document.createElement('script');
+
+
+//   script.src =
+//     APPS_SCRIPT_URL +
+//     '?options=refund-login' +
+//     '&username=' +
+//     encodeURIComponent(username) +
+//     '&password=' +
+//     encodeURIComponent(password) +
+//     '&callback=' +
+//     encodeURIComponent(callbackName);
+
+
+//   script.onerror =
+//     function() {
+
+//       hideLoading();
+
+//       showMessage(
+//         'Unable to connect to Apps Script.'
+//       );
+
+//       delete window[
+//         callbackName
+//       ];
+//     };
+
+
+//   document.body.appendChild(script);
+// }
+// async function login() {
+
+//   const username =
+//     document
+//       .getElementById("username")
+//       .value
+//       .trim();
+
+
+//   const password =
+//     document
+//       .getElementById("password")
+//       .value;
+
+
+//   if (!username || !password) {
+
+//     showMessage(
+//       "loginMessage",
+//       "Enter username and password.",
+//       "error"
+//     );
+
+//     return;
+
+//   }
+
+
+//   showLoading(true);
+
+
+//   try {
+
+//     const data =
+//       await apiCall(
+//         "refund-login",
+//         {
+//           username,
+//           password
+//         }
+//       );
+
+
+//     if (!data.success) {
+
+//       throw new Error(
+//         data.error ||
+//         "Login failed."
+//       );
+
+//     }
+
+
+//     sessionToken =
+//       data.token;
+
+
+//     document
+//       .getElementById(
+//         "loginBox"
+//       )
+//       .style.display =
+//       "none";
+
+
+//     document
+//       .getElementById(
+//         "mainBox"
+//       )
+//       .style.display =
+//       "block";
+
+
+//   }
+
+//   catch(err) {
+
+//     showMessage(
+//       "loginMessage",
+//       err.message,
+//       "error"
+//     );
+
+//   }
+
+//   finally {
+
+//     showLoading(false);
+
+//   }
+
+// }
 
 
 /**************************************************
