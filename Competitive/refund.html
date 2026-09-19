@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>
+Kashvika Refund System
+</title>
+
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+
+  margin: 0;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background:
+    #f4f6f9;
+
+  color:
+    #222;
+}
+
+
+.container {
+
+  width:
+    min(1100px, 94%);
+
+  margin:
+    35px auto;
+
+}
+
+
+/**************************************************
+ LOGIN
+**************************************************/
+
+#loginBox {
+
+  max-width:
+    420px;
+
+  margin:
+    80px auto;
+
+  background:
+    white;
+
+  padding:
+    30px;
+
+  border-radius:
+    12px;
+
+  box-shadow:
+    0 5px 25px
+    rgba(0,0,0,.10);
+
+}
+
+
+#loginBox h2 {
+
+  margin-top:
+    0;
+
+  text-align:
+    center;
+
+}
+
+
+input,
+textarea,
+button {
+
+  width:
+    100%;
+
+  padding:
+    12px;
+
+  margin-top:
+    8px;
+
+  border:
+    1px solid #ccc;
+
+  border-radius:
+    7px;
+
+  font-size:
+    15px;
+
+}
+
+
+textarea {
+
+  min-height:
+    90px;
+
+  resize:
+    vertical;
+
+}
+
+
+button {
+
+  border:
+    none;
+
+  cursor:
+    pointer;
+
+  background:
+    #1769aa;
+
+  color:
+    white;
+
+  font-weight:
+    bold;
+
+}
+
+
+button:hover {
+
+  opacity:
+    .9;
+
+}
+
+
+button.danger {
+
+  background:
+    #d93025;
+
+}
+
+
+button.secondary {
+
+  background:
+    #555;
+
+}
+
+
+button:disabled {
+
+  opacity:
+    .5;
+
+  cursor:
+    not-allowed;
+
+}
+
+
+/**************************************************
+ MAIN PANEL
+**************************************************/
+
+#mainBox {
+
+  display:
+    none;
+
+}
+
+
+.header {
+
+  background:
+    white;
+
+  padding:
+    20px;
+
+  border-radius:
+    12px;
+
+  margin-bottom:
+    20px;
+
+  box-shadow:
+    0 3px 15px
+    rgba(0,0,0,.07);
+
+}
+
+
+.header h1 {
+
+  margin:
+    0 0 5px 0;
+
+}
+
+
+.header small {
+
+  color:
+    #666;
+
+}
+
+
+.searchPanel,
+.orderPanel,
+.refundPanel,
+.statusPanel {
+
+  background:
+    white;
+
+  padding:
+    22px;
+
+  border-radius:
+    12px;
+
+  margin-bottom:
+    20px;
+
+  box-shadow:
+    0 3px 15px
+    rgba(0,0,0,.07);
+
+}
+
+
+.grid {
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        220px,
+        1fr
+      )
+    );
+
+  gap:
+    15px;
+
+}
+
+
+.field {
+
+  padding:
+    12px;
+
+  background:
+    #f7f8fa;
+
+  border-radius:
+    8px;
+
+}
+
+
+.field label {
+
+  display:
+    block;
+
+  font-size:
+    12px;
+
+  color:
+    #777;
+
+  margin-bottom:
+    5px;
+
+}
+
+
+.field strong {
+
+  word-break:
+    break-word;
+
+}
+
+
+/**************************************************
+ MONEY
+**************************************************/
+
+.money {
+
+  font-size:
+    24px;
+
+  font-weight:
+    bold;
+
+}
+
+
+.remaining {
+
+  color:
+    #168039;
+
+}
+
+
+/**************************************************
+ MESSAGES
+**************************************************/
+
+.message {
+
+  padding:
+    12px;
+
+  border-radius:
+    7px;
+
+  margin-top:
+    12px;
+
+  display:
+    none;
+
+}
+
+
+.success {
+
+  background:
+    #e7f6ec;
+
+  color:
+    #146c2e;
+
+}
+
+
+.error {
+
+  background:
+    #fdeaea;
+
+  color:
+    #a61b1b;
+
+}
+
+
+.info {
+
+  background:
+    #e8f0fe;
+
+  color:
+    #174ea6;
+
+}
+
+
+/**************************************************
+ LOADING
+**************************************************/
+
+#loading {
+
+  display:
+    none;
+
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  background:
+    rgba(255,255,255,.75);
+
+  z-index:
+    9999;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+}
+
+
+.loader {
+
+  background:
+    white;
+
+  padding:
+    25px 35px;
+
+  border-radius:
+    10px;
+
+  box-shadow:
+    0 4px 20px
+    rgba(0,0,0,.2);
+
+}
+
+
+/**************************************************
+ MOBILE
+**************************************************/
+
+@media(max-width:600px) {
+
+  .container {
+
+    width:
+      96%;
+
+    margin-top:
+      15px;
+
+  }
+
+  .header h1 {
+
+    font-size:
+      22px;
+
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div id="loading">
+
+  <div class="loader">
+
+    Processing...
+
+  </div>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- =============================================
+     LOGIN
+================================================ -->
+
+<div id="loginBox">
+
+  <h2>
+    Refund Admin Login
+  </h2>
+
+
+  <input
+    id="username"
+    type="text"
+    placeholder="Admin username"
+    autocomplete="username"
+  >
+
+
+  <input
+    id="password"
+    type="password"
+    placeholder="Admin password"
+    autocomplete="current-password"
+  >
+
+
+  <button
+    onclick="login()"
+  >
+    LOGIN
+  </button>
+
+
+  <div
+    id="loginMessage"
+    class="message error"
+  ></div>
+
+</div>
+
+
+<!-- =============================================
+     MAIN
+================================================ -->
+
+<div id="mainBox">
+
+
+  <div class="header">
+
+    <h1>
+      KASHVIKA AUTO FIN SOLUTIONS
+    </h1>
+
+    <small>
+      Razorpay Refund Administration
+    </small>
+
+  </div>
+
+
+  <!-- SEARCH -->
+
+  <div class="searchPanel">
+
+    <h3>
+      Find Order
+    </h3>
+
+
+    <input
+      id="search"
+      placeholder="Order ID / Payment ID / Transaction ID"
+    >
+
+
+    <button
+      onclick="searchOrder()"
+    >
+      SEARCH ORDER
+    </button>
+
+
+    <div
+      id="searchMessage"
+      class="message"
+    ></div>
+
+  </div>
+
+
+  <!-- ORDER -->
+
+  <div
+    id="orderPanel"
+    class="orderPanel"
+    style="display:none;"
+  >
+
+    <h3>
+      Order Details
+    </h3>
+
+
+    <div
+      id="orderGrid"
+      class="grid"
+    ></div>
+
+
+  </div>
+
+
+  <!-- REFUND -->
+
+  <div
+    id="refundPanel"
+    class="refundPanel"
+    style="display:none;"
+  >
+
+    <h3>
+      Refund Payment
+    </h3>
+
+
+    <div
+      class="grid"
+    >
+
+      <div class="field">
+
+        <label>
+          Original Amount
+        </label>
+
+        <strong
+          id="originalAmount"
+          class="money"
+        >
+          ₹0.00
+        </strong>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Already Refunded
+        </label>
+
+        <strong
+          id="alreadyRefunded"
+          class="money"
+        >
+          ₹0.00
+        </strong>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Remaining Refundable
+        </label>
+
+        <strong
+          id="remainingAmount"
+          class="money remaining"
+        >
+          ₹0.00
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+
+    <label>
+      Refund Amount
+    </label>
+
+
+    <input
+      id="refundAmount"
+      type="number"
+      min="0"
+      step="0.01"
+      placeholder="Enter refund amount"
+    >
+
+
+    <button
+      type="button"
+      onclick="fullRefund()"
+      class="secondary"
+    >
+      FULL REFUND
+    </button>
+
+
+    <br><br>
+
+
+    <label>
+      Refund Reason
+    </label>
+
+
+    <textarea
+      id="refundReason"
+      placeholder="Enter refund reason"
+    ></textarea>
+
+
+    <br>
+
+
+    <button
+      type="button"
+      onclick="processRefund()"
+      class="danger"
+      id="refundButton"
+    >
+      REFUND NOW
+    </button>
+
+
+    <div
+      id="refundMessage"
+      class="message"
+    ></div>
+
+  </div>
+
+
+  <!-- STATUS -->
+
+  <div
+    id="statusPanel"
+    class="statusPanel"
+    style="display:none;"
+  >
+
+    <h3>
+      Refund Status
+    </h3>
+
+
+    <div
+      id="statusText"
+    >
+      Waiting...
+    </div>
+
+
+    <div
+      id="refundDetails"
+    ></div>
+
+  </div>
+
+
+</div>
+
+</div>
+
+
+<script>
+
+/**************************************************
+ * CONFIG
+**************************************************/
+
+const APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxOrERFdFZqfozC7GbYbjJji95b1Fbh6R0JopreL72k9T3__eq-OV9I9r992DiJQ4aH/exec";
+
+
+/**************************************************
+ * SESSION
+**************************************************/
+
+let sessionToken = "";
+
+
+/**************************************************
+ * CURRENT ORDER
+**************************************************/
+
+let currentOrder = null;
+
+let currentPayment = null;
+
+let currentRefundId = "";
+
+
+/**************************************************
+ * LOGIN
+**************************************************/
+
+async function login() {
+
+  const username =
+    document
+      .getElementById("username")
+      .value
+      .trim();
+
+
+  const password =
+    document
+      .getElementById("password")
+      .value;
+
+
+  if (!username || !password) {
+
+    showMessage(
+      "loginMessage",
+      "Enter username and password.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showLoading(true);
+
+
+  try {
+
+    const data =
+      await apiCall(
+        "refund-login",
+        {
+          username,
+          password
+        }
+      );
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error ||
+        "Login failed."
+      );
+
+    }
+
+
+    sessionToken =
+      data.token;
+
+
+    document
+      .getElementById(
+        "loginBox"
+      )
+      .style.display =
+      "none";
+
+
+    document
+      .getElementById(
+        "mainBox"
+      )
+      .style.display =
+      "block";
+
+
+  }
+
+  catch(err) {
+
+    showMessage(
+      "loginMessage",
+      err.message,
+      "error"
+    );
+
+  }
+
+  finally {
+
+    showLoading(false);
+
+  }
+
+}
+
+
+/**************************************************
+ * SEARCH ORDER
+**************************************************/
+
+async function searchOrder() {
+
+  const search =
+    document
+      .getElementById("search")
+      .value
+      .trim();
+
+
+  if (!search) {
+
+    showMessage(
+      "searchMessage",
+      "Enter Order ID, Payment ID or Transaction ID.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  showLoading(true);
+
+
+  try {
+
+    const data =
+      await apiCall(
+        "refund-order",
+        {
+          token:
+            sessionToken,
+
+          search:
+            search
+
+        }
+      );
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error ||
+        "Order not found."
+      );
+
+    }
+
+
+    currentOrder =
+      data;
+
+
+    renderOrder(
+      data
+    );
+
+
+    /*
+     * Now fetch current payment
+     * directly from Razorpay.
+     */
+
+    if (!data.paymentId) {
+
+      throw new Error(
+        "This order does not contain a Razorpay Payment ID."
+      );
+
+    }
+
+
+    const paymentData =
+      await apiCall(
+        "refund-payment",
+        {
+
+          token:
+            sessionToken,
+
+          paymentId:
+            data.paymentId
+
+        }
+      );
+
+
+    if (!paymentData.success) {
+
+      throw new Error(
+        paymentData.error ||
+        "Unable to fetch Razorpay payment."
+      );
+
+    }
+
+
+    currentPayment =
+      paymentData.payment;
+
+
+    renderPayment(
+      currentPayment
+    );
+
+
+  }
+
+  catch(err) {
+
+    showMessage(
+      "searchMessage",
+      err.message,
+      "error"
+    );
+
+  }
+
+  finally {
+
+    showLoading(false);
+
+  }
+
+}
+
+
+/**************************************************
+ * RENDER ORDER
+**************************************************/
+
+function renderOrder(
+  data
+) {
+
+  const grid =
+    document
+      .getElementById(
+        "orderGrid"
+      );
+
+
+  grid.innerHTML = `
+
+    <div class="field">
+      <label>Transaction ID</label>
+      <strong>${esc(data.transactionId)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Razorpay Order ID</label>
+      <strong>${esc(data.orderId)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Razorpay Payment ID</label>
+      <strong>${esc(data.paymentId)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Book ID</label>
+      <strong>${esc(data.bookId)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Product</label>
+      <strong>${esc(data.product)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Customer</label>
+      <strong>${esc(data.name)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <strong>${esc(data.email)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Phone</label>
+      <strong>${esc(data.phone)}</strong>
+    </div>
+
+    <div class="field">
+      <label>Order Status</label>
+      <strong>${esc(data.status)}</strong>
+    </div>
+
+  `;
+
+
+  document
+    .getElementById(
+      "orderPanel"
+    )
+    .style.display =
+    "block";
+
+}
+
+
+/**************************************************
+ * RENDER PAYMENT
+**************************************************/
+
+function renderPayment(
+  payment
+) {
+
+  document
+    .getElementById(
+      "originalAmount"
+    )
+    .textContent =
+    money(
+      payment.amount
+    );
+
+
+  document
+    .getElementById(
+      "alreadyRefunded"
+    )
+    .textContent =
+    money(
+      payment.refunded
+    );
+
+
+  document
+    .getElementById(
+      "remainingAmount"
+    )
+    .textContent =
+    money(
+      payment.remaining
+    );
+
+
+  document
+    .getElementById(
+      "refundAmount"
+    )
+    .value =
+    payment.remaining > 0
+      ? payment.remaining.toFixed(2)
+      : "";
+
+
+  document
+    .getElementById(
+      "refundPanel"
+    )
+    .style.display =
+    "block";
+
+
+  if (
+    payment.remaining <= 0
+  ) {
+
+    document
+      .getElementById(
+        "refundButton"
+      )
+      .disabled =
+      true;
+
+  }
+
+  else {
+
+    document
+      .getElementById(
+        "refundButton"
+      )
+      .disabled =
+      false;
+
+  }
+
+}
+
+
+/**************************************************
+ * FULL REFUND
+**************************************************/
+
+function fullRefund() {
+
+  if (!currentPayment) {
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      "refundAmount"
+    )
+    .value =
+    currentPayment.remaining
+      .toFixed(2);
+
+}
+
+
+/**************************************************
+ * PROCESS REFUND
+**************************************************/
+
+async function processRefund() {
+
+  if (!currentPayment) {
+
+    showMessage(
+      "refundMessage",
+      "Please search for an order first.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const amount =
+    Number(
+      document
+        .getElementById(
+          "refundAmount"
+        )
+        .value
+    );
+
+
+  const reason =
+    document
+      .getElementById(
+        "refundReason"
+      )
+      .value
+      .trim();
+
+
+  if (
+    !amount ||
+    amount <= 0
+  ) {
+
+    showMessage(
+      "refundMessage",
+      "Enter a valid refund amount.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    amount >
+    currentPayment.remaining
+  ) {
+
+    showMessage(
+      "refundMessage",
+
+      "Refund amount cannot exceed ₹" +
+      currentPayment.remaining.toFixed(2),
+
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+
+      "Confirm Razorpay refund?\n\n" +
+
+      "Payment: " +
+      currentPayment.id +
+      "\n" +
+
+      "Refund: ₹" +
+      amount.toFixed(2) +
+      "\n\n" +
+
+      "This will send a real refund request."
+
+    );
+
+
+  if (!confirmed) {
+
+    return;
+
+  }
+
+
+  showLoading(true);
+
+
+  document
+    .getElementById(
+      "refundButton"
+    )
+    .disabled =
+    true;
+
+
+  try {
+
+    const data =
+      await apiCall(
+        "refund-create",
+        {
+
+          token:
+            sessionToken,
+
+          paymentId:
+            currentPayment.id,
+
+          amount:
+            amount,
+
+          reason:
+            reason
+
+        }
+      );
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error ||
+        "Refund failed."
+      );
+
+    }
+
+
+    currentRefundId =
+      data.refund.id;
+
+
+    showMessage(
+      "refundMessage",
+
+      "Refund request created. Refund ID: " +
+      currentRefundId,
+
+      "success"
+    );
+
+
+    document
+      .getElementById(
+        "statusPanel"
+      )
+      .style.display =
+      "block";
+
+
+    document
+      .getElementById(
+        "statusText"
+      )
+      .textContent =
+      "Refund created. Checking Razorpay status...";
+
+
+    startRefundPolling();
+
+
+  }
+
+  catch(err) {
+
+    showMessage(
+      "refundMessage",
+      err.message,
+      "error"
+    );
+
+
+    document
+      .getElementById(
+        "refundButton"
+      )
+      .disabled =
+      false;
+
+  }
+
+  finally {
+
+    showLoading(false);
+
+  }
+
+}
+
+
+/**************************************************
+ * REFUND STATUS POLLING
+**************************************************/
+
+let pollingTimer = null;
+
+let pollingCount = 0;
+
+const MAX_POLLING =
+  100;
+
+
+function startRefundPolling() {
+
+  if (pollingTimer) {
+
+    clearInterval(
+      pollingTimer
+    );
+
+  }
+
+
+  pollingCount = 0;
+
+
+  checkRefundStatus();
+
+
+  pollingTimer =
+    setInterval(
+      checkRefundStatus,
+      5000
+    );
+
+}
+
+
+async function checkRefundStatus() {
+
+  pollingCount++;
+
+
+  if (
+    pollingCount >
+    MAX_POLLING
+  ) {
+
+    stopRefundPolling();
+
+    document
+      .getElementById(
+        "statusText"
+      )
+      .textContent =
+      "Status polling timed out. Check the Razorpay Dashboard.";
+
+    return;
+
+  }
+
+
+  try {
+
+    const data =
+      await apiCall(
+        "refund-status",
+        {
+
+          token:
+            sessionToken,
+
+          refundId:
+            currentRefundId
+
+        }
+      );
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error ||
+        "Unable to fetch refund status."
+      );
+
+    }
+
+
+    const refund =
+      data.refund;
+
+
+    document
+      .getElementById(
+        "statusText"
+      )
+      .textContent =
+      "Current refund status: " +
+      refund.status;
+
+
+    document
+      .getElementById(
+        "refundDetails"
+      )
+      .innerHTML = `
+
+        <div class="grid">
+
+          <div class="field">
+            <label>Refund ID</label>
+            <strong>${esc(refund.id)}</strong>
+          </div>
+
+          <div class="field">
+            <label>Payment ID</label>
+            <strong>${esc(refund.paymentId)}</strong>
+          </div>
+
+          <div class="field">
+            <label>Refund Amount</label>
+            <strong>
+              ${money(refund.amount)}
+            </strong>
+          </div>
+
+          <div class="field">
+            <label>Status</label>
+            <strong>
+              ${esc(refund.status)}
+            </strong>
+          </div>
+
+          <div class="field">
+            <label>ARN</label>
+            <strong>
+              ${esc(refund.arn || "Not available yet")}
+            </strong>
+          </div>
+
+        </div>
+
+      `;
+
+
+    /*
+     * Stop when terminal state is reached.
+     */
+
+    if (
+      refund.status === "processed" ||
+
+      refund.status === "failed" ||
+
+      refund.status === "cancelled"
+    ) {
+
+      stopRefundPolling();
+
+      if (
+        refund.status === "processed"
+      ) {
+
+        showMessage(
+          "refundMessage",
+          "Refund processed successfully.",
+          "success"
+        );
+
+      }
+
+      else {
+
+        showMessage(
+          "refundMessage",
+
+          "Refund status: " +
+          refund.status,
+
+          "error"
+        );
+
+      }
+
+
+      /*
+       * Refresh payment data.
+       */
+
+      refreshPayment();
+
+    }
+
+  }
+
+  catch(err) {
+
+    console.log(
+      err
+    );
+
+  }
+
+}
+
+
+/**************************************************
+ * STOP POLLING
+**************************************************/
+
+function stopRefundPolling() {
+
+  if (pollingTimer) {
+
+    clearInterval(
+      pollingTimer
+    );
+
+    pollingTimer =
+      null;
+
+  }
+
+}
+
+
+/**************************************************
+ * REFRESH PAYMENT
+**************************************************/
+
+async function refreshPayment() {
+
+  if (!currentPayment) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const data =
+      await apiCall(
+        "refund-payment",
+        {
+
+          token:
+            sessionToken,
+
+          paymentId:
+            currentPayment.id
+
+        }
+      );
+
+
+    if (data.success) {
+
+      currentPayment =
+        data.payment;
+
+      renderPayment(
+        currentPayment
+      );
+
+    }
+
+  }
+
+  catch(err) {
+
+    console.log(
+      err
+    );
+
+  }
+
+}
+
+
+/**************************************************
+ * API CALL
+**************************************************/
+
+async function apiCall(
+  option,
+  params
+) {
+
+  const url =
+    new URL(
+      APPS_SCRIPT_URL
+    );
+
+
+  url.searchParams.set(
+    "options",
+    option
+  );
+
+
+  Object.keys(
+    params || {}
+  ).forEach(
+    key => {
+
+      url.searchParams.set(
+        key,
+        params[key]
+      );
+
+    }
+  );
+
+
+  const response =
+    await fetch(
+      url.toString(),
+      {
+
+        method:
+          "GET",
+
+        cache:
+          "no-store"
+
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Server error: HTTP " +
+      response.status
+    );
+
+  }
+
+
+  return await response.json();
+
+}
+
+
+/**************************************************
+ * LOADING
+**************************************************/
+
+function showLoading(
+  show
+) {
+
+  document
+    .getElementById(
+      "loading"
+    )
+    .style.display =
+    show
+      ? "flex"
+      : "none";
+
+}
+
+
+/**************************************************
+ * MESSAGE
+**************************************************/
+
+function showMessage(
+  id,
+  message,
+  type
+) {
+
+  const el =
+    document
+      .getElementById(
+        id
+      );
+
+
+  el.textContent =
+    message;
+
+
+  el.className =
+    "message " +
+    type;
+
+
+  el.style.display =
+    "block";
+
+}
+
+
+/**************************************************
+ * MONEY
+**************************************************/
+
+function money(
+  amount
+) {
+
+  return "₹" +
+    Number(
+      amount || 0
+    ).toLocaleString(
+      "en-IN",
+      {
+
+        minimumFractionDigits:
+          2,
+
+        maximumFractionDigits:
+          2
+
+      }
+    );
+
+}
+
+
+/**************************************************
+ * HTML ESCAPE
+**************************************************/
+
+function esc(
+  value
+) {
+
+  return String(
+    value == null
+      ? ""
+      : value
+  )
+
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+
+  .replace(
+    /</g,
+    "&lt;"
+  )
+
+  .replace(
+    />/g,
+    "&gt;"
+  )
+
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+</script>
+
+</body>
+
+</html>
