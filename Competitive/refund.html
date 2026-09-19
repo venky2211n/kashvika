@@ -1248,7 +1248,162 @@ function clearResults() {
  * ==============================================
  */
 
-function searchPayment() {
+      
+// function searchPayment() {
+
+//     hideMessage();
+
+
+//     if (!adminToken) {
+
+//         showMessage(
+//             "Please login first."
+//         );
+
+//         return;
+
+//     }
+
+
+//     const paymentId =
+//         document
+//             .getElementById("paymentId")
+//             .value
+//             .trim();
+
+
+//     if (!paymentId) {
+
+//         showMessage(
+//             "Enter Razorpay Payment ID."
+//         );
+
+//         return;
+
+//     }
+
+
+//     if (
+//         paymentId.indexOf("pay_") !== 0
+//     ) {
+
+//         showMessage(
+//             "Enter a valid Razorpay Payment ID beginning with pay_."
+//         );
+
+//         return;
+
+//     }
+
+
+//     clearResults();
+
+
+//     showLoading(
+//         "Finding order..."
+//     );
+
+
+//     document
+//         .getElementById("searchButton")
+//         .disabled = true;
+
+
+//     /*
+//      * First find order in Orders sheet.
+//      */
+
+//     jsonpRequest(
+
+//         {
+
+//             options:
+//                 "refund-order",
+
+//             token:
+//                 adminToken,
+
+//             paymentId:
+//                 paymentId
+
+//         },
+
+
+//         function(result) {
+
+//             document
+//                 .getElementById("searchButton")
+//                 .disabled = false;
+
+
+//             if (
+//                 !result ||
+//                 !result.success
+//             ) {
+
+//                 hideLoading();
+
+//                 showMessage(
+//                     result &&
+//                     result.message
+//                         ? result.message
+//                         : "Order not found."
+//                 );
+
+//                 return;
+
+//             }
+
+
+//             currentOrder =
+//                 result;
+
+
+//             displayOrder(
+//                 result
+//             );
+
+
+//             /*
+//              * Now get live Razorpay payment.
+//              */
+
+//             showLoading(
+//                 "Checking Razorpay payment..."
+//             );
+
+
+//             getRazorpayPayment(
+//                 paymentId
+//             );
+
+//         },
+
+
+//         function(error) {
+
+//             hideLoading();
+
+
+//             document
+//                 .getElementById("searchButton")
+//                 .disabled = false;
+
+
+//             showMessage(
+//                 error ||
+//                 "Unable to find order."
+//             );
+
+//         }
+
+//     );
+
+// }
+
+
+
+      function searchPayment() {
 
     hideMessage();
 
@@ -1264,30 +1419,17 @@ function searchPayment() {
     }
 
 
-    const paymentId =
+    const search =
         document
             .getElementById("paymentId")
             .value
             .trim();
 
 
-    if (!paymentId) {
+    if (!search) {
 
         showMessage(
-            "Enter Razorpay Payment ID."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        paymentId.indexOf("pay_") !== 0
-    ) {
-
-        showMessage(
-            "Enter a valid Razorpay Payment ID beginning with pay_."
+            "Enter TXNID or Razorpay Payment ID."
         );
 
         return;
@@ -1309,7 +1451,13 @@ function searchPayment() {
 
 
     /*
-     * First find order in Orders sheet.
+     * Search using either:
+     *
+     * TXN1788191877727
+     *
+     * OR
+     *
+     * pay_TWR0IMkU5hH2zW
      */
 
     jsonpRequest(
@@ -1322,8 +1470,8 @@ function searchPayment() {
             token:
                 adminToken,
 
-            paymentId:
-                paymentId
+            search:
+                search
 
         },
 
@@ -1342,6 +1490,7 @@ function searchPayment() {
 
                 hideLoading();
 
+
                 showMessage(
                     result &&
                     result.message
@@ -1349,14 +1498,23 @@ function searchPayment() {
                         : "Order not found."
                 );
 
+
                 return;
 
             }
 
 
-            currentOrder =
-                result;
+            /*
+             * Save order.
+             */
 
+            currentOrder =
+                result.order;
+
+
+            /*
+             * Display order.
+             */
 
             displayOrder(
                 result
@@ -1364,7 +1522,55 @@ function searchPayment() {
 
 
             /*
-             * Now get live Razorpay payment.
+             * IMPORTANT:
+             *
+             * We now get the actual
+             * Razorpay Payment ID from
+             * column J.
+             */
+
+            const paymentId =
+                result.order &&
+                result.order.paymentId
+                    ? String(
+                        result.order.paymentId
+                      ).trim()
+                    : "";
+
+
+            if (!paymentId) {
+
+                hideLoading();
+
+
+                showMessage(
+                    "Order was found, but Razorpay Payment ID is missing from column J."
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+             * Put the actual payment ID
+             * into the input box.
+             */
+
+            document
+                .getElementById(
+                    "paymentId"
+                )
+                .value =
+                    paymentId;
+
+
+            currentPayment = null;
+
+
+            /*
+             * Now check live Razorpay status.
              */
 
             showLoading(
@@ -1399,7 +1605,6 @@ function searchPayment() {
     );
 
 }
-
 
 /************************************************
  * ==============================================
