@@ -1729,23 +1729,30 @@ function displayOrder(
  * ==============================================
  */
 
-function getRazorpayPayment(
-    paymentId
-) {
+      function getRazorpayPayment(paymentId) {
+
+    paymentId = String(paymentId || "").trim();
+
+    if (!paymentId) {
+
+        hideLoading();
+
+        showMessage(
+            "Razorpay Payment ID is missing."
+        );
+
+        return;
+    }
+
 
     jsonpRequest(
 
         {
+            options: "refund-payment",
 
-            options:
-                "refund-payment",
+            token: adminToken,
 
-            token:
-                adminToken,
-
-            paymentId:
-                paymentId
-
+            paymentId: paymentId
         },
 
 
@@ -1754,26 +1761,78 @@ function getRazorpayPayment(
             hideLoading();
 
 
-            if (
-                !result ||
-                !result.success
-            ) {
+            if (!result || !result.success) {
 
                 showMessage(
-                    result &&
-                    result.message
+                    result && result.message
                         ? result.message
                         : "Unable to get payment details."
                 );
 
                 return;
-
             }
 
 
-            currentPayment =
+            /*
+             * Support both possible backend responses:
+             *
+             * {
+             *   success:true,
+             *   payment:{...}
+             * }
+             *
+             * OR
+             *
+             * {
+             *   success:true,
+             *   id:"pay_..."
+             * }
+             */
+
+            let payment =
                 result.payment ||
                 result;
+
+
+            /*
+             * IMPORTANT:
+             *
+             * Always force the Payment ID from
+             * the ID we requested.
+             */
+
+            payment.id =
+                payment.id ||
+                payment.paymentId ||
+                paymentId;
+
+
+            currentPayment =
+                payment;
+
+
+            /*
+             * Also keep the Payment ID in
+             * currentOrder.
+             */
+
+            if (!currentOrder) {
+                currentOrder = {};
+            }
+
+
+            currentOrder.paymentId =
+                payment.id;
+
+
+            /*
+             * Put it back into the input box.
+             */
+
+            document
+                .getElementById("paymentId")
+                .value =
+                    payment.id;
 
 
             displayPayment(
@@ -1804,27 +1863,241 @@ function getRazorpayPayment(
 }
 
 
+      
+
+// function getRazorpayPayment(
+//     paymentId
+// ) {
+
+//     jsonpRequest(
+
+//         {
+
+//             options:
+//                 "refund-payment",
+
+//             token:
+//                 adminToken,
+
+//             paymentId:
+//                 paymentId
+
+//         },
+
+
+//         function(result) {
+
+//             hideLoading();
+
+
+//             if (
+//                 !result ||
+//                 !result.success
+//             ) {
+
+//                 showMessage(
+//                     result &&
+//                     result.message
+//                         ? result.message
+//                         : "Unable to get payment details."
+//                 );
+
+//                 return;
+
+//             }
+
+
+//             currentPayment =
+//                 result.payment ||
+//                 result;
+
+
+//             displayPayment(
+//                 currentPayment
+//             );
+
+
+//             updatePaymentActions(
+//                 currentPayment
+//             );
+
+//         },
+
+
+//         function(error) {
+
+//             hideLoading();
+
+//             showMessage(
+//                 error ||
+//                 "Unable to check Razorpay payment."
+//             );
+
+//         }
+
+//     );
+
+// }
+
+
 /************************************************
  * ==============================================
  * DISPLAY PAYMENT
  * ==============================================
  */
 
-function displayPayment(
-    payment
-) {
+// function displayPayment(
+//     payment
+// ) {
+
+//     const status =
+//         String(
+//             payment.status ||
+//             ""
+//         ).toLowerCase();
+
+
+//     const statusClass =
+//         getStatusClass(
+//             status
+//         );
+
+
+//     const html = `
+
+//         <table class="details">
+
+//             <tr>
+//                 <td>Payment ID</td>
+//                 <td>
+//                     <strong>
+//                         ${escapeHtml(
+//                             payment.id ||
+//                             ""
+//                         )}
+//                     </strong>
+//                 </td>
+//             </tr>
+
+//             <tr>
+//                 <td>Status</td>
+//                 <td>
+//                     <span class="status ${statusClass}">
+//                         ${escapeHtml(
+//                             status.toUpperCase()
+//                         )}
+//                     </span>
+//                 </td>
+//             </tr>
+
+//             <tr>
+//                 <td>Amount</td>
+//                 <td>
+//                     ₹${formatPaise(
+//                         payment.amount
+//                     )}
+//                 </td>
+//             </tr>
+
+//             <tr>
+//                 <td>Amount Refunded</td>
+//                 <td>
+//                     ₹${formatPaise(
+//                         payment.amount_refunded
+//                     )}
+//                 </td>
+//             </tr>
+
+//             <tr>
+//                 <td>Refund Status</td>
+//                 <td>
+//                     ${escapeHtml(
+//                         payment.refund_status ||
+//                         "Not refunded"
+//                     )}
+//                 </td>
+//             </tr>
+
+//             <tr>
+//                 <td>Method</td>
+//                 <td>
+//                     ${escapeHtml(
+//                         payment.method ||
+//                         ""
+//                     )}
+//                 </td>
+//             </tr>
+
+//             <tr>
+//                 <td>Created</td>
+//                 <td>
+//                     ${formatUnixTime(
+//                         payment.created_at
+//                     )}
+//                 </td>
+//             </tr>
+
+//         </table>
+
+//     `;
+
+
+//     document
+//         .getElementById("paymentDetails")
+//         .innerHTML = html;
+
+
+//     document
+//         .getElementById("paymentSection")
+//         .style.display = "block";
+
+// }
+
+
+      function displayPayment(payment) {
+
+    /*
+     * Always recover Payment ID.
+     */
+
+    const paymentId =
+        payment.id ||
+        payment.paymentId ||
+        (
+            currentOrder &&
+            currentOrder.paymentId
+                ? currentOrder.paymentId
+                : ""
+        ) ||
+        document
+            .getElementById(
+                "paymentId"
+            )
+            .value
+            .trim();
+
+
+    /*
+     * Store it permanently in
+     * currentPayment.
+     */
+
+    payment.id =
+        paymentId;
+
+
+    currentPayment =
+        payment;
+
 
     const status =
         String(
-            payment.status ||
-            ""
+            payment.status || ""
         ).toLowerCase();
 
 
     const statusClass =
-        getStatusClass(
-            status
-        );
+        getStatusClass(status);
 
 
     const html = `
@@ -1833,29 +2106,36 @@ function displayPayment(
 
             <tr>
                 <td>Payment ID</td>
+
                 <td>
                     <strong>
                         ${escapeHtml(
-                            payment.id ||
-                            ""
+                            paymentId
                         )}
                     </strong>
                 </td>
             </tr>
 
+
             <tr>
                 <td>Status</td>
+
                 <td>
-                    <span class="status ${statusClass}">
+
+                    <span
+                        class="status ${statusClass}">
                         ${escapeHtml(
                             status.toUpperCase()
                         )}
                     </span>
+
                 </td>
             </tr>
 
+
             <tr>
                 <td>Amount</td>
+
                 <td>
                     ₹${formatPaise(
                         payment.amount
@@ -1863,8 +2143,10 @@ function displayPayment(
                 </td>
             </tr>
 
+
             <tr>
                 <td>Amount Refunded</td>
+
                 <td>
                     ₹${formatPaise(
                         payment.amount_refunded
@@ -1872,8 +2154,10 @@ function displayPayment(
                 </td>
             </tr>
 
+
             <tr>
                 <td>Refund Status</td>
+
                 <td>
                     ${escapeHtml(
                         payment.refund_status ||
@@ -1882,8 +2166,10 @@ function displayPayment(
                 </td>
             </tr>
 
+
             <tr>
                 <td>Method</td>
+
                 <td>
                     ${escapeHtml(
                         payment.method ||
@@ -1892,8 +2178,10 @@ function displayPayment(
                 </td>
             </tr>
 
+
             <tr>
                 <td>Created</td>
+
                 <td>
                     ${formatUnixTime(
                         payment.created_at
@@ -1907,13 +2195,19 @@ function displayPayment(
 
 
     document
-        .getElementById("paymentDetails")
-        .innerHTML = html;
+        .getElementById(
+            "paymentDetails"
+        )
+        .innerHTML =
+            html;
 
 
     document
-        .getElementById("paymentSection")
-        .style.display = "block";
+        .getElementById(
+            "paymentSection"
+        )
+        .style.display =
+            "block";
 
 }
 
@@ -2064,7 +2358,179 @@ function updatePaymentActions(
  * ==============================================
  */
 
-function capturePayment() {
+// function capturePayment() {
+
+//     hideMessage();
+
+
+//     if (!adminToken) {
+
+//         showMessage(
+//             "Please login first."
+//         );
+
+//         return;
+
+//     }
+
+
+//     if (!currentPayment) {
+
+//         showMessage(
+//             "Payment details are not loaded."
+//         );
+
+//         return;
+
+//     }
+
+
+//     const paymentId =
+//         currentPayment.id;
+
+
+//     if (!paymentId) {
+
+//         showMessage(
+//             "Payment ID is missing."
+//         );
+
+//         return;
+
+//     }
+
+
+//     if (
+//         String(
+//             currentPayment.status
+//         ).toLowerCase() !==
+//         "authorized"
+//     ) {
+
+//         showMessage(
+//             "This payment is not currently authorized."
+//         );
+
+//         return;
+
+//     }
+
+
+//     if (
+//         !confirm(
+//             "Capture payment " +
+//             paymentId +
+//             "?"
+//         )
+//     ) {
+
+//         return;
+
+//     }
+
+
+//     showLoading(
+//         "Capturing payment..."
+//     );
+
+
+//     document
+//         .getElementById("captureButton")
+//         .disabled = true;
+
+
+//     jsonpRequest(
+
+//         {
+
+//             options:
+//                 "capture-payment",
+
+//             token:
+//                 adminToken,
+
+//             paymentId:
+//                 paymentId
+
+//         },
+
+
+//         function(result) {
+
+//             hideLoading();
+
+
+//             document
+//                 .getElementById("captureButton")
+//                 .disabled = false;
+
+
+//             if (
+//                 !result ||
+//                 !result.success
+//             ) {
+
+//                 showMessage(
+//                     result &&
+//                     result.message
+//                         ? result.message
+//                         : "Payment capture failed."
+//                 );
+
+//                 return;
+
+//             }
+
+
+//             showMessage(
+//                 "Payment captured successfully. Orders status has been updated to SUCCESS.",
+//                 "success"
+//             );
+
+
+//             /*
+//              * Refresh live payment details.
+//              */
+
+//             showLoading(
+//                 "Refreshing payment..."
+//             );
+
+
+//             getRazorpayPayment(
+//                 paymentId
+//             );
+
+//         },
+
+
+//         function(error) {
+
+//             hideLoading();
+
+
+//             document
+//                 .getElementById("captureButton")
+//                 .disabled = false;
+
+
+//             showMessage(
+//                 error ||
+//                 "Payment capture failed."
+//             );
+
+//         }
+
+//     );
+
+// }
+
+
+
+
+
+
+      function capturePayment() {
 
     hideMessage();
 
@@ -2076,49 +2542,127 @@ function capturePayment() {
         );
 
         return;
-
     }
 
 
-    if (!currentPayment) {
+    /*
+     * Get Payment ID from multiple
+     * reliable locations.
+     */
 
-        showMessage(
-            "Payment details are not loaded."
-        );
-
-        return;
-
-    }
+    let paymentId = "";
 
 
-    const paymentId =
-        currentPayment.id;
+    if (
+        currentPayment &&
+        currentPayment.id
+    ) {
 
-
-    if (!paymentId) {
-
-        showMessage(
-            "Payment ID is missing."
-        );
-
-        return;
+        paymentId =
+            String(
+                currentPayment.id
+            ).trim();
 
     }
 
 
     if (
-        String(
-            currentPayment.status
-        ).toLowerCase() !==
-        "authorized"
+        !paymentId &&
+        currentPayment &&
+        currentPayment.paymentId
     ) {
 
+        paymentId =
+            String(
+                currentPayment.paymentId
+            ).trim();
+
+    }
+
+
+    if (
+        !paymentId &&
+        currentOrder &&
+        currentOrder.paymentId
+    ) {
+
+        paymentId =
+            String(
+                currentOrder.paymentId
+            ).trim();
+
+    }
+
+
+    if (!paymentId) {
+
+        paymentId =
+            document
+                .getElementById(
+                    "paymentId"
+                )
+                .value
+                .trim();
+
+    }
+
+
+    /*
+     * Final validation.
+     */
+
+    if (!paymentId) {
+
         showMessage(
-            "This payment is not currently authorized."
+            "Razorpay Payment ID is missing. Please search the payment again."
         );
 
         return;
+    }
 
+
+    /*
+     * Make sure it is actually a
+     * Razorpay Payment ID.
+     */
+
+    if (
+        paymentId.indexOf("pay_") !== 0
+    ) {
+
+        showMessage(
+            "Invalid Razorpay Payment ID: " +
+            paymentId
+        );
+
+        return;
+    }
+
+
+    /*
+     * Make sure payment is authorized.
+     */
+
+    const paymentStatus =
+        currentPayment &&
+        currentPayment.status
+            ? String(
+                currentPayment.status
+              ).toLowerCase()
+            : "";
+
+
+    if (
+        paymentStatus &&
+        paymentStatus !== "authorized"
+    ) {
+
+        showMessage(
+            "Payment is not authorized. Current status: " +
+            paymentStatus
+        );
+
+        return;
     }
 
 
@@ -2131,7 +2675,6 @@ function capturePayment() {
     ) {
 
         return;
-
     }
 
 
@@ -2141,8 +2684,23 @@ function capturePayment() {
 
 
     document
-        .getElementById("captureButton")
+        .getElementById(
+            "captureButton"
+        )
         .disabled = true;
+
+
+    /*
+     * DEBUG INFORMATION
+     *
+     * This guarantees that the backend
+     * receives paymentId.
+     */
+
+    console.log(
+        "CAPTURE PAYMENT ID:",
+        paymentId
+    );
 
 
     jsonpRequest(
@@ -2167,7 +2725,9 @@ function capturePayment() {
 
 
             document
-                .getElementById("captureButton")
+                .getElementById(
+                    "captureButton"
+                )
                 .disabled = false;
 
 
@@ -2184,27 +2744,38 @@ function capturePayment() {
                 );
 
                 return;
-
             }
 
 
+            /*
+             * Capture succeeded.
+             */
+
             showMessage(
-                "Payment captured successfully. Orders status has been updated to SUCCESS.",
+                "Payment captured successfully.",
                 "success"
             );
 
 
             /*
-             * Refresh live payment details.
+             * Refresh payment directly
+             * using the known Payment ID.
              */
 
-            showLoading(
-                "Refreshing payment..."
-            );
+            setTimeout(
+                function() {
+
+                    showLoading(
+                        "Checking captured payment..."
+                    );
 
 
-            getRazorpayPayment(
-                paymentId
+                    getRazorpayPayment(
+                        paymentId
+                    );
+
+                },
+                1000
             );
 
         },
@@ -2216,7 +2787,9 @@ function capturePayment() {
 
 
             document
-                .getElementById("captureButton")
+                .getElementById(
+                    "captureButton"
+                )
                 .disabled = false;
 
 
@@ -2230,7 +2803,6 @@ function capturePayment() {
     );
 
 }
-
 
 /************************************************
  * ==============================================
