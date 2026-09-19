@@ -757,6 +757,19 @@ button:disabled {
 </div>
 
 
+
+
+  <button
+  id="captureBtn"
+  type="button"
+  onclick="capturePayment()"
+  style="display:none;">
+  Capture Payment
+</button>
+
+
+  
+
 <script>
 
 /**************************************************
@@ -1827,6 +1840,64 @@ function money(
 }
 
 
+
+
+
+
+  function capturePayment() {
+
+  if (!currentPaymentId) {
+    alert('Payment ID not available.');
+    return;
+  }
+
+  if (!confirm(
+    'Capture this Razorpay payment?'
+  )) {
+    return;
+  }
+
+  showLoading('Capturing payment...');
+
+  const url =
+    APPS_SCRIPT_URL +
+    '?options=capture-payment' +
+    '&paymentId=' +
+    encodeURIComponent(currentPaymentId) +
+    '&token=' +
+    encodeURIComponent(adminToken) +
+    '&callback=captureCallback';
+
+  const script =
+    document.createElement('script');
+
+  window.captureCallback =
+    function(result) {
+
+      hideLoading();
+
+      if (!result.success) {
+
+        alert(
+          result.message ||
+          'Payment capture failed.'
+        );
+
+        return;
+      }
+
+      alert(
+        'Payment captured successfully.'
+      );
+
+      getPaymentStatus();
+
+    };
+
+  script.src = url;
+
+  document.body.appendChild(script);
+}
 /**************************************************
  * HTML ESCAPE
 **************************************************/
