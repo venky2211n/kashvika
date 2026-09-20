@@ -1,0 +1,3340 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Razorpay Refund Management</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 7px 0 0;
+            opacity: 0.8;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input,
+        textarea,
+        button {
+            font-family: inherit;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .form-row input {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .details {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .details td:first-child {
+            width: 35%;
+            font-weight: bold;
+            background: #f8fafc;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .status-authorized {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-captured {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-refunded {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-unknown {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.warning {
+            display: block;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .action-box {
+            margin-top: 15px;
+            padding: 18px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #ddd;
+        }
+
+        .action-box h3 {
+            margin-top: 0;
+        }
+
+        .amount-box {
+            margin-top: 15px;
+        }
+
+        .amount-box label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        .small-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .mismatch {
+            background: #fff1f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .match {
+            background: #ecfdf5;
+            border: 1px solid #86efac;
+            color: #166534;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .logout-area {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-box {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ddd;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media(max-width: 600px) {
+
+            .container {
+                width: 94%;
+                margin: 15px auto;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-row input,
+            .form-row button {
+                width: 100%;
+            }
+
+            .details td:first-child {
+                width: 42%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>Razorpay Refund Management</h1>
+
+        <p>
+            Capture authorized payments and process refunds
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         MESSAGE
+    ====================================================== -->
+
+    <div
+        id="message"
+        class="message">
+    </div>
+
+
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
+
+    <div
+        id="loginPanel"
+        class="card">
+
+        <h2>Admin Login</h2>
+
+        <div style="margin-bottom:12px;">
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Admin username"
+                autocomplete="username">
+
+        </div>
+
+        <div style="margin-bottom:12px;">
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Admin password"
+                autocomplete="current-password">
+
+        </div>
+
+        <button
+            type="button"
+            id="loginButton"
+            class="btn-primary"
+            onclick="loginAdmin()">
+
+            Login
+
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         REFUND PANEL
+    ====================================================== -->
+
+    <div
+        id="refundPanel"
+        class="section">
+
+
+        <!-- =================================================
+             SEARCH PAYMENT
+        ================================================== -->
+
+        <div class="card">
+
+            <h2>Find Payment</h2>
+
+            <div class="small-text">
+                Enter TXNID or Razorpay Payment ID
+            </div>
+
+            <div
+                class="form-row"
+                style="margin-top:12px;">
+
+                <input
+                    type="text"
+                    id="paymentId"
+                    placeholder="TXN1788192773429 or pay_xxxxxxxxx">
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="searchButton"
+                    onclick="searchPayment()">
+
+                    Search
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    onclick="logoutAdmin()">
+
+                    Logout
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ORDER DETAILS
+        ================================================== -->
+
+        <div
+            id="orderSection"
+            class="card section">
+
+            <h2>Order Details</h2>
+
+            <div id="orderDetails"></div>
+
+        </div>
+
+
+        <!-- =================================================
+             PAYMENT DETAILS
+        ================================================== -->
+
+        <div
+            id="paymentSection"
+            class="card section">
+
+            <h2>Razorpay Payment</h2>
+
+            <div id="paymentDetails"></div>
+
+            <div
+                id="amountComparison">
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CAPTURE SECTION
+        ================================================== -->
+
+        <div
+            id="captureSection"
+            class="card section">
+
+            <h2>Capture Payment</h2>
+
+            <div class="action-box">
+
+                <h3>
+                    This payment is currently
+                    <strong>AUTHORIZED</strong>.
+                </h3>
+
+                <p>
+                    The payment must be captured before
+                    it can be refunded.
+                </p>
+
+                <p
+                    id="captureAmountInfo"
+                    class="small-text">
+                </p>
+
+                <button
+                    type="button"
+                    id="captureButton"
+                    class="btn-success"
+                    onclick="capturePayment()">
+
+                    Capture Payment
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             REFUND SECTION
+        ================================================== -->
+
+        <div
+            id="refundSection"
+            class="card section">
+
+            <h2>Refund Payment</h2>
+
+            <div class="action-box">
+
+                <div
+                    id="remainingRefundText"
+                    class="small-text">
+                </div>
+
+
+                <div class="amount-box">
+
+                    <label for="refundAmount">
+                        Refund Amount (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="refundAmount"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="Example: 299.00">
+
+                    <div class="small-text">
+                        Enter amount in rupees. Example:
+                        ₹299.00, not 29900.
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="amount-box">
+
+                    <label for="refundReason">
+                        Refund Reason
+                    </label>
+
+                    <textarea
+                        id="refundReason"
+                        rows="3"
+                        placeholder="Customer refund">
+                    </textarea>
+
+                </div>
+
+
+                <div style="margin-top:15px;">
+
+                    <button
+                        type="button"
+                        id="refundButton"
+                        class="btn-danger"
+                        onclick="createRefund()">
+
+                        Process Refund
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             REFUND RESULT
+        ================================================== -->
+
+        <div
+            id="refundResultSection"
+            class="card section">
+
+            <h2>Refund Result</h2>
+
+            <div id="refundResult"></div>
+
+        </div>
+
+
+        <!-- =================================================
+             REFUND STATUS
+        ================================================== -->
+
+        <div
+            id="refundStatusSection"
+            class="card section">
+
+            <h2>Refund Status</h2>
+
+            <div id="refundStatusDetails"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     LOADING OVERLAY
+========================================================= -->
+
+<div id="loadingOverlay">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <div id="loadingText">
+            Processing...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/************************************************************
+ * APPS SCRIPT URL
+ ************************************************************/
+
+const APPS_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbw10J14ljq_TKjEDuPK96BtIZShTIv0UP24psA7tMNdB22yg77kKXaST_qhJInE1YDR/exec";
+
+
+/************************************************************
+ * GLOBAL VARIABLES
+ ************************************************************/
+
+let adminToken = "";
+
+let currentOrder = null;
+
+let currentPayment = null;
+
+let currentRefund = null;
+
+let refundStatusTimer = null;
+
+
+/************************************************************
+ * PAGE LOAD
+ ************************************************************/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        document
+            .getElementById("username")
+            .addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (event.key === "Enter") {
+                        loginAdmin();
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById("password")
+            .addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (event.key === "Enter") {
+                        loginAdmin();
+                    }
+
+                }
+            );
+
+
+        document
+            .getElementById("paymentId")
+            .addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (event.key === "Enter") {
+                        searchPayment();
+                    }
+
+                }
+            );
+
+    }
+);
+
+
+/************************************************************
+ * JSONP REQUEST
+ *
+ * Apps Script returns:
+ *
+ * callback({...});
+ *
+ ************************************************************/
+
+function jsonpRequest(
+    params,
+    successCallback,
+    errorCallback
+) {
+
+    const callbackName =
+        "jsonpCallback_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+            Math.random() * 100000
+        );
+
+
+    let finished = false;
+
+    let script = null;
+
+
+    function cleanup() {
+
+        try {
+            delete window[callbackName];
+        } catch (e) {}
+
+        if (
+            script &&
+            script.parentNode
+        ) {
+
+            script.parentNode.removeChild(
+                script
+            );
+
+        }
+
+    }
+
+
+    function fail(message) {
+
+        if (finished) {
+            return;
+        }
+
+        finished = true;
+
+        cleanup();
+
+        if (errorCallback) {
+            errorCallback(message);
+        }
+
+    }
+
+
+    window[callbackName] =
+        function(result) {
+
+            if (finished) {
+                return;
+            }
+
+            finished = true;
+
+            cleanup();
+
+            if (successCallback) {
+                successCallback(result);
+            }
+
+        };
+
+
+    const query =
+        new URLSearchParams();
+
+
+    Object.keys(params || {})
+        .forEach(
+            function(key) {
+
+                const value =
+                    params[key];
+
+                if (
+                    value !== undefined &&
+                    value !== null
+                ) {
+
+                    query.append(
+                        key,
+                        String(value)
+                    );
+
+                }
+
+            }
+        );
+
+
+    query.append(
+        "callback",
+        callbackName
+    );
+
+
+    script =
+        document.createElement("script");
+
+
+    script.src =
+        APPS_SCRIPT_URL +
+        "?" +
+        query.toString();
+
+
+    script.async = true;
+
+
+    script.onerror =
+        function() {
+
+            fail(
+                "Unable to connect to Apps Script."
+            );
+
+        };
+
+
+    document.body.appendChild(
+        script
+    );
+
+
+    setTimeout(
+        function() {
+
+            if (!finished) {
+
+                fail(
+                    "Request timed out. Please try again."
+                );
+
+            }
+
+        },
+        30000
+    );
+
+}
+
+
+/************************************************************
+ * LOGIN
+ ************************************************************/
+
+function loginAdmin() {
+
+    hideMessage();
+
+
+    const username =
+        document
+            .getElementById("username")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("password")
+            .value;
+
+
+    if (!username) {
+
+        showMessage(
+            "Enter admin username."
+        );
+
+        return;
+
+    }
+
+
+    if (!password) {
+
+        showMessage(
+            "Enter admin password."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !APPS_SCRIPT_URL ||
+        APPS_SCRIPT_URL ===
+        "YOUR_APPS_SCRIPT_WEB_APP_URL"
+    ) {
+
+        showMessage(
+            "Please set APPS_SCRIPT_URL in refund.html."
+        );
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Logging in..."
+    );
+
+
+    document
+        .getElementById("loginButton")
+        .disabled = true;
+
+
+    jsonpRequest(
+
+        {
+            options: "refund-login",
+
+            username: username,
+
+            password: password
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            document
+                .getElementById("loginButton")
+                .disabled = false;
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showMessage(
+                    result &&
+                    result.message
+                        ? result.message
+                        : "Login failed."
+                );
+
+                return;
+
+            }
+
+
+            adminToken =
+                result.token;
+
+
+            document
+                .getElementById("loginPanel")
+                .style.display = "none";
+
+
+            document
+                .getElementById("refundPanel")
+                .style.display = "block";
+
+
+            showMessage(
+                "Login successful.",
+                "success"
+            );
+
+
+            document
+                .getElementById("paymentId")
+                .focus();
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+            document
+                .getElementById("loginButton")
+                .disabled = false;
+
+
+            showMessage(
+                error ||
+                "Login request failed."
+            );
+
+        }
+
+    );
+
+}
+
+
+/************************************************************
+ * LOGOUT
+ ************************************************************/
+
+function logoutAdmin() {
+
+    adminToken = "";
+
+    currentOrder = null;
+
+    currentPayment = null;
+
+    currentRefund = null;
+
+
+    if (refundStatusTimer) {
+
+        clearInterval(
+            refundStatusTimer
+        );
+
+        refundStatusTimer = null;
+
+    }
+
+
+    document
+        .getElementById("refundPanel")
+        .style.display = "none";
+
+
+    document
+        .getElementById("loginPanel")
+        .style.display = "block";
+
+
+    document
+        .getElementById("username")
+        .value = "";
+
+
+    document
+        .getElementById("password")
+        .value = "";
+
+
+    document
+        .getElementById("paymentId")
+        .value = "";
+
+
+    hideSections();
+
+    hideMessage();
+
+}
+
+
+/************************************************************
+ * SEARCH PAYMENT
+ *
+ * Supports:
+ *
+ * TXNID
+ * OR
+ * Razorpay Payment ID
+ ************************************************************/
+
+function searchPayment() {
+
+    hideMessage();
+
+    hideSections();
+
+
+    if (!adminToken) {
+
+        showMessage(
+            "Please login first."
+        );
+
+        return;
+
+    }
+
+
+    const search =
+        document
+            .getElementById("paymentId")
+            .value
+            .trim();
+
+
+    if (!search) {
+
+        showMessage(
+            "Enter TXNID or Razorpay Payment ID."
+        );
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Finding order..."
+    );
+
+
+    document
+        .getElementById("searchButton")
+        .disabled = true;
+
+
+    jsonpRequest(
+
+        {
+            options: "refund-order",
+
+            token: adminToken,
+
+            search: search
+        },
+
+
+        function(result) {
+
+            document
+                .getElementById("searchButton")
+                .disabled = false;
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                hideLoading();
+
+                showMessage(
+                    result &&
+                    result.message
+                        ? result.message
+                        : "Order not found."
+                );
+
+                return;
+
+            }
+
+
+            currentOrder =
+                result.order;
+
+
+            displayOrder(
+                currentOrder
+            );
+
+
+            const paymentId =
+                String(
+                    currentOrder.paymentId ||
+                    ""
+                ).trim();
+
+
+            if (!paymentId) {
+
+                hideLoading();
+
+                showMessage(
+                    "This order does not contain a Razorpay Payment ID."
+                );
+
+                return;
+
+            }
+
+
+            document
+                .getElementById("paymentId")
+                .value = paymentId;
+
+
+            getRazorpayPayment(
+                paymentId
+            );
+
+        },
+
+
+        function(error) {
+
+            document
+                .getElementById("searchButton")
+                .disabled = false;
+
+            hideLoading();
+
+            showMessage(
+                error ||
+                "Unable to search order."
+            );
+
+        }
+
+    );
+
+}
+
+
+/************************************************************
+ * GET RAZORPAY PAYMENT
+ ************************************************************/
+
+function getRazorpayPayment(
+    paymentId
+) {
+
+    paymentId =
+        String(
+            paymentId || ""
+        ).trim();
+
+
+    if (!paymentId) {
+
+        hideLoading();
+
+        showMessage(
+            "Razorpay Payment ID is missing."
+        );
+
+        return;
+
+    }
+
+
+    jsonpRequest(
+
+        {
+            options: "refund-payment",
+
+            token: adminToken,
+
+            paymentId: paymentId
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showMessage(
+                    result &&
+                    result.message
+                        ? result.message
+                        : "Unable to get payment details."
+                );
+
+                return;
+
+            }
+
+
+            let payment =
+                result.payment ||
+                result;
+
+
+            /*
+             * Make sure the payment object
+             * always has its Razorpay ID.
+             */
+
+            payment.id =
+                payment.id ||
+                payment.paymentId ||
+                paymentId;
+
+
+            currentPayment =
+                payment;
+
+
+            if (!currentOrder) {
+                currentOrder = {};
+            }
+
+
+            currentOrder.paymentId =
+                payment.id;
+
+
+            document
+                .getElementById("paymentId")
+                .value =
+                payment.id;
+
+
+            displayPayment(
+                currentPayment
+            );
+
+
+            updatePaymentActions(
+                currentPayment
+            );
+
+
+            compareAmounts();
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+            showMessage(
+                error ||
+                "Unable to check Razorpay payment."
+            );
+
+        }
+
+    );
+
+}
+
+
+/************************************************************
+ * DISPLAY ORDER
+ ************************************************************/
+
+function displayOrder(
+    order
+) {
+
+    const html = `
+
+        <table class="details">
+
+            <tr>
+                <td>TXNID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            order.txnId || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Book ID</td>
+                <td>
+                    ${escapeHtml(
+                        String(
+                            order.bookId || ""
+                        )
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Product</td>
+                <td>
+                    ${escapeHtml(
+                        order.product || ""
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Order Amount</td>
+                <td>
+                    <strong>
+                        ₹${formatMoney(
+                            order.amount
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Name</td>
+                <td>
+                    ${escapeHtml(
+                        order.name || ""
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Email</td>
+                <td>
+                    ${escapeHtml(
+                        order.email || ""
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Phone</td>
+                <td>
+                    ${escapeHtml(
+                        order.phone || ""
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Orders Status</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            order.status || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Razorpay Payment ID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            order.paymentId || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+        </table>
+
+    `;
+
+
+    document
+        .getElementById(
+            "orderDetails"
+        )
+        .innerHTML = html;
+
+
+    document
+        .getElementById(
+            "orderSection"
+        )
+        .style.display = "block";
+
+}
+
+
+/************************************************************
+ * DISPLAY PAYMENT
+ ************************************************************/
+
+function displayPayment(
+    payment
+) {
+
+    const paymentId =
+        payment.id ||
+        payment.paymentId ||
+        (
+            currentOrder &&
+            currentOrder.paymentId
+                ? currentOrder.paymentId
+                : ""
+        ) ||
+        document
+            .getElementById("paymentId")
+            .value
+            .trim();
+
+
+    payment.id =
+        paymentId;
+
+
+    currentPayment =
+        payment;
+
+
+    const status =
+        String(
+            payment.status || ""
+        ).toLowerCase();
+
+
+    const statusClass =
+        getStatusClass(
+            status
+        );
+
+
+    const html = `
+
+        <table class="details">
+
+            <tr>
+                <td>Payment ID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            paymentId
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Status</td>
+                <td>
+                    <span class="status ${statusClass}">
+                        ${escapeHtml(
+                            status.toUpperCase()
+                        )}
+                    </span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Amount</td>
+                <td>
+                    <strong>
+                        ₹${formatPaise(
+                            payment.amount
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Amount Refunded</td>
+                <td>
+                    ₹${formatPaise(
+                        payment.amount_refunded
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Remaining Refundable</td>
+                <td>
+                    <strong>
+                        ₹${calculateRemainingRefundable(
+                            payment
+                        ).toFixed(2)}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Refund Status</td>
+                <td>
+                    ${escapeHtml(
+                        payment.refund_status ||
+                        "Not refunded"
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Method</td>
+                <td>
+                    ${escapeHtml(
+                        payment.method || "N/A"
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Created</td>
+                <td>
+                    ${formatUnixTime(
+                        payment.created_at
+                    )}
+                </td>
+            </tr>
+
+        </table>
+
+    `;
+
+
+    document
+        .getElementById(
+            "paymentDetails"
+        )
+        .innerHTML = html;
+
+
+    document
+        .getElementById(
+            "paymentSection"
+        )
+        .style.display = "block";
+
+}
+
+
+/************************************************************
+ * COMPARE ORDERS AMOUNT WITH RAZORPAY AMOUNT
+ ************************************************************/
+
+function compareAmounts() {
+
+    if (
+        !currentOrder ||
+        !currentPayment
+    ) {
+        return;
+    }
+
+
+    const orderAmount =
+        Number(
+            currentOrder.amount || 0
+        );
+
+
+    const razorpayAmount =
+        Number(
+            currentPayment.amount || 0
+        ) / 100;
+
+
+    const difference =
+        Math.abs(
+            orderAmount -
+            razorpayAmount
+        );
+
+
+    const comparison =
+        document.getElementById(
+            "amountComparison"
+        );
+
+
+    if (difference > 0.01) {
+
+        comparison.innerHTML = `
+
+            <div class="mismatch">
+
+                ⚠ AMOUNT MISMATCH
+
+                <br><br>
+
+                Orders Sheet:
+                ₹${orderAmount.toFixed(2)}
+
+                <br>
+
+                Razorpay:
+                ₹${razorpayAmount.toFixed(2)}
+
+                <br><br>
+
+                This payment will NOT be captured
+                automatically because the amounts
+                do not match.
+
+                <br><br>
+
+                If the customer was supposed to pay
+                ₹${orderAmount.toFixed(2)}, create a
+                new Razorpay payment for that amount.
+
+            </div>
+
+        `;
+
+    } else {
+
+        comparison.innerHTML = `
+
+            <div class="match">
+
+                ✓ Amounts match.
+
+                <br><br>
+
+                Order Amount:
+                ₹${orderAmount.toFixed(2)}
+
+                <br>
+
+                Razorpay Amount:
+                ₹${razorpayAmount.toFixed(2)}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/************************************************************
+ * UPDATE PAYMENT ACTIONS
+ ************************************************************/
+
+function updatePaymentActions(
+    payment
+) {
+
+    hideElement(
+        "captureSection"
+    );
+
+    hideElement(
+        "refundSection"
+    );
+
+
+    const status =
+        String(
+            payment.status || ""
+        ).toLowerCase();
+
+
+    const amountsMatch =
+        amountsMatchExactly();
+
+
+    if (
+        status === "authorized"
+    ) {
+
+        document
+            .getElementById(
+                "captureSection"
+            )
+            .style.display = "block";
+
+
+        const razorpayAmount =
+            Number(
+                payment.amount || 0
+            ) / 100;
+
+
+        const orderAmount =
+            currentOrder
+                ? Number(
+                    currentOrder.amount || 0
+                )
+                : 0;
+
+
+        document
+            .getElementById(
+                "captureAmountInfo"
+            )
+            .innerHTML =
+
+            "Razorpay authorized amount: ₹" +
+            razorpayAmount.toFixed(2) +
+            "<br>" +
+
+            "Orders sheet amount: ₹" +
+            orderAmount.toFixed(2);
+
+
+        /*
+         * Disable capture if amounts
+         * do not match.
+         */
+
+        document
+            .getElementById(
+                "captureButton"
+            )
+            .disabled =
+            !amountsMatch;
+
+
+        if (!amountsMatch) {
+
+            document
+                .getElementById(
+                    "captureAmountInfo"
+                )
+                .innerHTML +=
+                    "<br><br><strong>" +
+                    "Capture disabled because " +
+                    "the amounts do not match." +
+                    "</strong>";
+
+        }
+
+    }
+
+
+    else if (
+        status === "captured"
+    ) {
+
+        document
+            .getElementById(
+                "refundSection"
+            )
+            .style.display = "block";
+
+
+        updateRemainingRefundAmount();
+
+    }
+
+
+    // else if (
+    //     status === "refunded"
+    // ) {
+
+    //     showMessage(
+    //         "This payment has already been refunded.",
+    //         "success"
+    //     );
+
+    // }
+
+  else if (
+    status === "refunded"
+) {
+
+    showMessage(
+        "This payment has been fully refunded. No refundable amount remains.",
+        "success"
+    );
+
+}
+
+else if (
+    status === "captured"
+) {
+
+    document
+        .getElementById("refundSection")
+        .style.display = "block";
+
+    updateRemainingRefundAmount();
+
+}
+
+}
+
+
+/************************************************************
+ * AMOUNTS MATCH
+ ************************************************************/
+
+function amountsMatchExactly() {
+
+    if (
+        !currentOrder ||
+        !currentPayment
+    ) {
+        return false;
+    }
+
+
+    const orderAmountPaise =
+        Math.round(
+            Number(
+                currentOrder.amount || 0
+            ) * 100
+        );
+
+
+    const razorpayAmountPaise =
+        Number(
+            currentPayment.amount || 0
+        );
+
+
+    return (
+        orderAmountPaise ===
+        razorpayAmountPaise
+    );
+
+}
+
+
+/************************************************************
+ * CAPTURE PAYMENT
+ ************************************************************/
+
+function capturePayment() {
+
+    hideMessage();
+
+
+    if (!adminToken) {
+
+        showMessage(
+            "Please login first."
+        );
+
+        return;
+
+    }
+
+
+    let paymentId = "";
+
+
+    if (
+        currentPayment &&
+        currentPayment.id
+    ) {
+
+        paymentId =
+            String(
+                currentPayment.id
+            ).trim();
+
+    }
+
+
+    if (
+        !paymentId &&
+        currentPayment &&
+        currentPayment.paymentId
+    ) {
+
+        paymentId =
+            String(
+                currentPayment.paymentId
+            ).trim();
+
+    }
+
+
+    if (
+        !paymentId &&
+        currentOrder &&
+        currentOrder.paymentId
+    ) {
+
+        paymentId =
+            String(
+                currentOrder.paymentId
+            ).trim();
+
+    }
+
+
+    if (!paymentId) {
+
+        paymentId =
+            document
+                .getElementById(
+                    "paymentId"
+                )
+                .value
+                .trim();
+
+    }
+
+
+    if (!paymentId) {
+
+        showMessage(
+            "Razorpay Payment ID is missing. Please search the payment again."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        paymentId.indexOf("pay_") !== 0
+    ) {
+
+        showMessage(
+            "Invalid Razorpay Payment ID: " +
+            paymentId
+        );
+
+        return;
+
+    }
+
+
+    if (!currentPayment) {
+
+        showMessage(
+            "Please search the payment again."
+        );
+
+        return;
+
+    }
+
+
+    const paymentStatus =
+        String(
+            currentPayment.status || ""
+        ).toLowerCase();
+
+
+    if (
+        paymentStatus !==
+        "authorized"
+    ) {
+
+        showMessage(
+            "Payment is not authorized. Current status: " +
+            paymentStatus
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Do not capture if Orders amount
+     * and Razorpay amount differ.
+     */
+
+    if (
+        !amountsMatchExactly()
+    ) {
+
+        showMessage(
+            "Capture blocked because the Orders amount and Razorpay payment amount do not match."
+        );
+
+        return;
+
+    }
+
+
+    const orderAmount =
+        Number(
+            currentOrder.amount || 0
+        );
+
+
+    const razorpayAmount =
+        Number(
+            currentPayment.amount || 0
+        ) / 100;
+
+
+    if (
+        !confirm(
+            "Capture payment " +
+            paymentId +
+            " for ₹" +
+            razorpayAmount.toFixed(2) +
+            "?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Capturing payment..."
+    );
+
+
+    document
+        .getElementById(
+            "captureButton"
+        )
+        .disabled = true;
+
+
+    jsonpRequest(
+
+        {
+            options: "capture-payment",
+
+            token: adminToken,
+
+            paymentId: paymentId
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            document
+                .getElementById(
+                    "captureButton"
+                )
+                .disabled = false;
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showMessage(
+                    result &&
+                    result.message
+                        ? result.message
+                        : "Payment capture failed."
+                );
+
+                return;
+
+            }
+
+
+            showMessage(
+                "Payment captured successfully.",
+                "success"
+            );
+
+
+            setTimeout(
+                function() {
+
+                    showLoading(
+                        "Checking captured payment..."
+                    );
+
+
+                    getRazorpayPayment(
+                        paymentId
+                    );
+
+                },
+                1000
+            );
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+
+            document
+                .getElementById(
+                    "captureButton"
+                )
+                .disabled = false;
+
+
+            showMessage(
+                error ||
+                "Payment capture failed."
+            );
+
+        }
+
+    );
+
+}
+
+
+/************************************************************
+ * CREATE REFUND
+ ************************************************************/
+
+function createRefund() {
+
+    hideMessage();
+
+
+    if (!adminToken) {
+
+        showMessage(
+            "Please login first."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !currentPayment ||
+        !currentPayment.id
+    ) {
+
+        showMessage(
+            "Please search a payment first."
+        );
+
+        return;
+
+    }
+
+
+    const paymentId =
+        String(
+            currentPayment.id
+        ).trim();
+
+
+    const status =
+        String(
+            currentPayment.status || ""
+        ).toLowerCase();
+
+
+    if (
+        status !== "captured"
+    ) {
+
+        showMessage(
+            "Payment must be captured before refunding. Current status: " +
+            status
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * HTML value is RUPEES.
+     *
+     * Example:
+     *
+     * 299
+     *
+     * Backend converts:
+     *
+     * 299 × 100 = 29900 paise
+     */
+
+    const amount =
+        Number(
+            document
+                .getElementById(
+                    "refundAmount"
+                )
+                .value
+        );
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        showMessage(
+            "Enter a valid refund amount."
+        );
+
+        return;
+
+    }
+
+
+    const remaining =
+        calculateRemainingRefundable(
+            currentPayment
+        );
+
+
+    if (
+        amount >
+        remaining + 0.000001
+    ) {
+
+        showMessage(
+            "Refund amount cannot exceed remaining refundable amount ₹" +
+            remaining.toFixed(2)
+        );
+
+        return;
+
+    }
+
+
+    const reason =
+        document
+            .getElementById(
+                "refundReason"
+            )
+            .value
+            .trim() ||
+        "Customer refund";
+
+
+    if (
+        !confirm(
+            "Process refund of ₹" +
+            amount.toFixed(2) +
+            " for payment " +
+            paymentId +
+            "?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Processing refund..."
+    );
+
+
+    document
+        .getElementById(
+            "refundButton"
+        )
+        .disabled = true;
+
+
+    jsonpRequest(
+
+        {
+            options: "refund-create",
+
+            token: adminToken,
+
+            paymentId: paymentId,
+
+            /*
+             * Send RUPEES.
+             * Code.gs converts once.
+             */
+
+            amount: amount,
+
+            reason: reason
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            document
+                .getElementById(
+                    "refundButton"
+                )
+                .disabled = false;
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showMessage(
+                    result &&
+                    result.message
+                        ? result.message
+                        : "Refund failed."
+                );
+
+                return;
+
+            }
+
+
+            currentRefund =
+                result;
+
+
+            displayRefundResult(
+                result
+            );
+
+
+            /*
+             * Important:
+             *
+             * The response tells us
+             * whether saveRefund_()
+             * succeeded.
+             */
+
+            if (
+                result.savedToSheet === true
+            ) {
+
+                showMessage(
+                    "Refund processed and saved to Refunds sheet.",
+                    "success"
+                );
+
+            }
+
+            else {
+
+                showMessage(
+                    "Refund was processed by Razorpay, but it was NOT saved to the Refunds sheet." +
+                    (
+                        result.saveError
+                            ? " Error: " +
+                              result.saveError
+                            : ""
+                    ),
+                    "warning"
+                );
+
+            }
+
+
+            /*
+             * Refresh Razorpay payment
+             * after refund creation.
+             */
+
+            setTimeout(
+                function() {
+
+                    showLoading(
+                        "Refreshing payment..."
+                    );
+
+                    getRazorpayPayment(
+                        paymentId
+                    );
+
+                },
+                1000
+            );
+
+
+            /*
+             * Start refund status polling
+             */
+
+            if (
+                result.refundId
+            ) {
+
+                startRefundStatusPolling(
+                    result.refundId,
+                    paymentId
+                );
+
+            }
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+
+            document
+                .getElementById(
+                    "refundButton"
+                )
+                .disabled = false;
+
+
+            showMessage(
+                error ||
+                "Refund request failed."
+            );
+
+        }
+
+    );
+
+}
+
+
+/************************************************************
+ * DISPLAY REFUND RESULT
+ ************************************************************/
+
+function displayRefundResult(
+    result
+) {
+
+    const html = `
+
+        <table class="details">
+
+            <tr>
+                <td>Refund ID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            result.refundId || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Payment ID</td>
+                <td>
+                    ${escapeHtml(
+                        result.paymentId || ""
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>TXNID</td>
+                <td>
+                    ${escapeHtml(
+                        result.txnId || ""
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Amount</td>
+                <td>
+                    <strong>
+                        ₹${formatMoney(
+                            result.amount
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Status</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            String(
+                                result.status || ""
+                            ).toUpperCase()
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>ARN</td>
+                <td>
+                    ${escapeHtml(
+                        result.arn || "Pending"
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>Saved to Refunds Sheet</td>
+                <td>
+                    <strong>
+                        ${
+                            result.savedToSheet === true
+                                ? "YES"
+                                : "NO"
+                        }
+                    </strong>
+                </td>
+            </tr>
+
+            ${
+                result.saveError
+                    ? `
+                        <tr>
+                            <td>Sheet Error</td>
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        result.saveError
+                                    )}
+                                </strong>
+                            </td>
+                        </tr>
+                    `
+                    : ""
+            }
+
+        </table>
+
+    `;
+
+
+    document
+        .getElementById(
+            "refundResult"
+        )
+        .innerHTML = html;
+
+
+    document
+        .getElementById(
+            "refundResultSection"
+        )
+        .style.display = "block";
+
+}
+
+
+/************************************************************
+ * REFUND STATUS POLLING
+ ************************************************************/
+
+function startRefundStatusPolling(
+    refundId,
+    paymentId
+) {
+
+    if (refundStatusTimer) {
+
+        clearInterval(
+            refundStatusTimer
+        );
+
+    }
+
+
+    document
+        .getElementById(
+            "refundStatusSection"
+        )
+        .style.display = "block";
+
+
+    getRefundStatus(
+        refundId
+    );
+
+
+    let count = 0;
+
+
+    refundStatusTimer =
+        setInterval(
+            function() {
+
+                count++;
+
+
+                if (count > 20) {
+
+                    clearInterval(
+                        refundStatusTimer
+                    );
+
+                    refundStatusTimer =
+                        null;
+
+                    return;
+
+                }
+
+
+                getRefundStatus(
+                    refundId
+                );
+
+            },
+            5000
+        );
+
+}
+
+
+/************************************************************
+ * GET REFUND STATUS
+ ************************************************************/
+
+function getRefundStatus(
+    refundId
+) {
+
+    if (!refundId) {
+        return;
+    }
+
+
+    jsonpRequest(
+
+        {
+            options: "refund-status",
+
+            token: adminToken,
+
+            refundId: refundId
+        },
+
+
+        function(result) {
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                return;
+
+            }
+
+
+            displayRefundStatus(
+                result
+            );
+
+
+            const status =
+                String(
+                    result.status || ""
+                ).toLowerCase();
+
+
+            if (
+                status === "processed" ||
+                status === "failed" ||
+                status === "refunded"
+            ) {
+
+                if (
+                    refundStatusTimer
+                ) {
+
+                    clearInterval(
+                        refundStatusTimer
+                    );
+
+                    refundStatusTimer =
+                        null;
+
+                }
+
+            }
+
+        },
+
+
+        function(error) {
+
+            console.log(
+                "Refund status error:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+/************************************************************
+ * DISPLAY REFUND STATUS
+ ************************************************************/
+
+function displayRefundStatus(
+    result
+) {
+
+    const html = `
+
+        <table class="details">
+
+            <tr>
+                <td>Refund ID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            result.refundId || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Status</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            String(
+                                result.status || ""
+                            ).toUpperCase()
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Amount</td>
+                <td>
+                    ₹${formatMoney(
+                        result.amount
+                    )}
+                </td>
+            </tr>
+
+            <tr>
+                <td>ARN</td>
+                <td>
+                    ${escapeHtml(
+                        result.arn || "Pending"
+                    )}
+                </td>
+            </tr>
+
+        </table>
+
+    `;
+
+
+    document
+        .getElementById(
+            "refundStatusDetails"
+        )
+        .innerHTML = html;
+
+}
+
+
+/************************************************************
+ * CALCULATE REMAINING REFUNDABLE
+ ************************************************************/
+
+function calculateRemainingRefundable(
+    payment
+) {
+
+    if (!payment) {
+        return 0;
+    }
+
+
+    const amountPaise =
+        Number(
+            payment.amount || 0
+        );
+
+
+    const refundedPaise =
+        Number(
+            payment.amount_refunded || 0
+        );
+
+
+    const remainingPaise =
+        Math.max(
+            0,
+            amountPaise -
+            refundedPaise
+        );
+
+
+    return (
+        remainingPaise /
+        100
+    );
+
+}
+
+
+/************************************************************
+ * UPDATE REMAINING REFUND AMOUNT
+ ************************************************************/
+
+function updateRemainingRefundAmount() {
+
+    if (!currentPayment) {
+        return;
+    }
+
+
+    const remaining =
+        calculateRemainingRefundable(
+            currentPayment
+        );
+
+
+    document
+        .getElementById(
+            "remainingRefundText"
+        )
+        .innerHTML =
+        "Remaining refundable amount: " +
+        "<strong>₹" +
+        remaining.toFixed(2) +
+        "</strong>";
+
+
+    const refundInput =
+        document
+            .getElementById(
+                "refundAmount"
+            );
+
+
+    refundInput.max =
+        remaining.toFixed(2);
+
+
+    if (remaining <= 0) {
+
+        document
+            .getElementById(
+                "refundButton"
+            )
+            .disabled = true;
+
+    }
+
+}
+
+
+/************************************************************
+ * FORMAT MONEY
+ *
+ * Input is RUPEES.
+ ************************************************************/
+
+function formatMoney(
+    amount
+) {
+
+    const value =
+        Number(amount || 0);
+
+
+    return value.toFixed(2);
+
+}
+
+
+/************************************************************
+ * FORMAT PAISE
+ *
+ * Input is PAISE.
+ *
+ * Example:
+ *
+ * 299 → ₹2.99
+ * 29900 → ₹299.00
+ ************************************************************/
+
+function formatPaise(
+    amountPaise
+) {
+
+    const value =
+        Number(
+            amountPaise || 0
+        ) / 100;
+
+
+    return value.toFixed(2);
+
+}
+
+
+/************************************************************
+ * FORMAT UNIX TIME
+ ************************************************************/
+
+function formatUnixTime(
+    timestamp
+) {
+
+    const value =
+        Number(
+            timestamp || 0
+        );
+
+
+    if (!value) {
+        return "N/A";
+    }
+
+
+    const date =
+        new Date(
+            value * 1000
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "N/A";
+
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+/************************************************************
+ * STATUS CLASS
+ ************************************************************/
+
+function getStatusClass(
+    status
+) {
+
+    status =
+        String(
+            status || ""
+        ).toLowerCase();
+
+
+    if (
+        status === "authorized"
+    ) {
+
+        return "status-authorized";
+
+    }
+
+
+    if (
+        status === "captured"
+    ) {
+
+        return "status-captured";
+
+    }
+
+
+    if (
+        status === "refunded"
+    ) {
+
+        return "status-refunded";
+
+    }
+
+
+    if (
+        status === "failed"
+    ) {
+
+        return "status-failed";
+
+    }
+
+
+    return "status-unknown";
+
+}
+
+
+/************************************************************
+ * SHOW LOADING
+ ************************************************************/
+
+function showLoading(
+    text
+) {
+
+    document
+        .getElementById(
+            "loadingText"
+        )
+        .textContent =
+        text || "Processing...";
+
+
+    document
+        .getElementById(
+            "loadingOverlay"
+        )
+        .style.display = "flex";
+
+}
+
+
+/************************************************************
+ * HIDE LOADING
+ ************************************************************/
+
+function hideLoading() {
+
+    document
+        .getElementById(
+            "loadingOverlay"
+        )
+        .style.display = "none";
+
+}
+
+
+/************************************************************
+ * SHOW MESSAGE
+ ************************************************************/
+
+function showMessage(
+    text,
+    type
+) {
+
+    const element =
+        document
+            .getElementById(
+                "message"
+            );
+
+
+    element.textContent =
+        text || "";
+
+
+    element.className =
+        "message " +
+        (
+            type === "success"
+                ? "success"
+                : type === "warning"
+                    ? "warning"
+                    : "error"
+        );
+
+
+    element.style.display =
+        "block";
+
+}
+
+
+/************************************************************
+ * HIDE MESSAGE
+ ************************************************************/
+
+function hideMessage() {
+
+    const element =
+        document
+            .getElementById(
+                "message"
+            );
+
+
+    element.textContent = "";
+
+    element.className =
+        "message";
+
+    element.style.display =
+        "none";
+
+}
+
+
+/************************************************************
+ * HIDE ELEMENT
+ ************************************************************/
+
+function hideElement(
+    id
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.style.display =
+            "none";
+
+    }
+
+}
+
+
+/************************************************************
+ * HIDE ALL SECTIONS
+ ************************************************************/
+
+function hideSections() {
+
+    hideElement(
+        "orderSection"
+    );
+
+    hideElement(
+        "paymentSection"
+    );
+
+    hideElement(
+        "captureSection"
+    );
+
+    hideElement(
+        "refundSection"
+    );
+
+    hideElement(
+        "refundResultSection"
+    );
+
+    hideElement(
+        "refundStatusSection"
+    );
+
+
+    document
+        .getElementById(
+            "orderDetails"
+        )
+        .innerHTML = "";
+
+
+    document
+        .getElementById(
+            "paymentDetails"
+        )
+        .innerHTML = "";
+
+
+    document
+        .getElementById(
+            "amountComparison"
+        )
+        .innerHTML = "";
+
+
+    document
+        .getElementById(
+            "refundResult"
+        )
+        .innerHTML = "";
+
+
+    document
+        .getElementById(
+            "refundStatusDetails"
+        )
+        .innerHTML = "";
+
+}
+
+
+/************************************************************
+ * ESCAPE HTML
+ ************************************************************/
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+</script>
+
+</body>
+</html>
