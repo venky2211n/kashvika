@@ -1,0 +1,3906 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+
+<title>Razorpay Refund System</title>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        #f4f6f9;
+
+    color:
+        #222;
+}
+
+
+.container {
+
+    max-width:
+        1100px;
+
+    margin:
+        30px auto;
+
+    padding:
+        20px;
+}
+
+
+.card {
+
+    background:
+        #ffffff;
+
+    border-radius:
+        12px;
+
+    padding:
+        25px;
+
+    margin-bottom:
+        20px;
+
+    box-shadow:
+        0 4px 18px
+        rgba(0,0,0,0.08);
+}
+
+
+h1 {
+
+    margin-top:
+        0;
+
+    font-size:
+        28px;
+}
+
+
+h2 {
+
+    margin-top:
+        0;
+
+    font-size:
+        21px;
+}
+
+
+h3 {
+
+    margin-top:
+        0;
+
+    font-size:
+        19px;
+}
+
+
+label {
+
+    display:
+        block;
+
+    margin-bottom:
+        7px;
+
+    font-weight:
+        600;
+}
+
+
+input,
+textarea {
+
+    width:
+        100%;
+
+    padding:
+        12px;
+
+    border:
+        1px solid #ccc;
+
+    border-radius:
+        7px;
+
+    font-size:
+        15px;
+
+    margin-bottom:
+        15px;
+}
+
+
+textarea {
+
+    min-height:
+        90px;
+
+    resize:
+        vertical;
+}
+
+
+button {
+
+    border:
+        none;
+
+    border-radius:
+        7px;
+
+    padding:
+        12px 20px;
+
+    font-size:
+        15px;
+
+    cursor:
+        pointer;
+
+    background:
+        #222;
+
+    color:
+        #fff;
+
+    margin-right:
+        8px;
+
+    margin-bottom:
+        8px;
+}
+
+
+button:hover {
+
+    opacity:
+        0.9;
+}
+
+
+button:disabled {
+
+    opacity:
+        0.5;
+
+    cursor:
+        not-allowed;
+}
+
+
+.btn-primary {
+
+    background:
+        #2563eb;
+}
+
+
+.btn-success {
+
+    background:
+        #15803d;
+}
+
+
+.btn-danger {
+
+    background:
+        #dc2626;
+}
+
+
+.btn-secondary {
+
+    background:
+        #555;
+}
+
+
+.search-row {
+
+    display:
+        flex;
+
+    gap:
+        10px;
+
+    align-items:
+        flex-end;
+}
+
+
+.search-row > div:first-child {
+
+    flex:
+        1;
+}
+
+
+.details {
+
+    width:
+        100%;
+
+    border-collapse:
+        collapse;
+}
+
+
+.details td {
+
+    padding:
+        11px;
+
+    border-bottom:
+        1px solid #eee;
+
+    vertical-align:
+        top;
+}
+
+
+.details td:first-child {
+
+    width:
+        230px;
+
+    font-weight:
+        600;
+}
+
+
+.status {
+
+    display:
+        inline-block;
+
+    padding:
+        5px 10px;
+
+    border-radius:
+        20px;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    text-transform:
+        uppercase;
+}
+
+
+.status.success {
+
+    background:
+        #dcfce7;
+
+    color:
+        #166534;
+}
+
+
+.status.warning {
+
+    background:
+        #fef3c7;
+
+    color:
+        #92400e;
+}
+
+
+.status.error {
+
+    background:
+        #fee2e2;
+
+    color:
+        #991b1b;
+}
+
+
+.status.info {
+
+    background:
+        #dbeafe;
+
+    color:
+        #1e40af;
+}
+
+
+.message {
+
+    padding:
+        13px;
+
+    border-radius:
+        7px;
+
+    margin-bottom:
+        15px;
+
+    display:
+        none;
+}
+
+
+.message.success {
+
+    display:
+        block;
+
+    background:
+        #dcfce7;
+
+    color:
+        #166534;
+}
+
+
+.message.error {
+
+    display:
+        block;
+
+    background:
+        #fee2e2;
+
+    color:
+        #991b1b;
+}
+
+
+.message.info {
+
+    display:
+        block;
+
+    background:
+        #dbeafe;
+
+    color:
+        #1e40af;
+}
+
+
+.warning-box {
+
+    padding:
+        15px;
+
+    background:
+        #fff7ed;
+
+    border:
+        1px solid #fed7aa;
+
+    color:
+        #9a3412;
+
+    border-radius:
+        8px;
+
+    margin:
+        15px 0;
+
+    display:
+        none;
+}
+
+
+.amount-box {
+
+    font-size:
+        18px;
+
+    font-weight:
+        700;
+}
+
+
+#mainPanel {
+
+    display:
+        none;
+}
+
+
+#orderSection,
+#paymentSection,
+#captureSection,
+#refundSection,
+#refundResult {
+
+    display:
+        none;
+}
+
+
+.header-row {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+}
+
+
+.logout {
+
+    background:
+        #dc2626;
+}
+
+
+.loading-overlay {
+
+    position:
+        fixed;
+
+    left:
+        0;
+
+    top:
+        0;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    background:
+        rgba(0,0,0,0.55);
+
+    z-index:
+        9999;
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+}
+
+
+.loading-box {
+
+    background:
+        #fff;
+
+    padding:
+        25px 35px;
+
+    border-radius:
+        10px;
+
+    text-align:
+        center;
+
+    box-shadow:
+        0 5px 30px
+        rgba(0,0,0,0.25);
+}
+
+
+.spinner {
+
+    width:
+        40px;
+
+    height:
+        40px;
+
+    border:
+        4px solid #ddd;
+
+    border-top:
+        4px solid #222;
+
+    border-radius:
+        50%;
+
+    animation:
+        spin 0.8s linear infinite;
+
+    margin:
+        0 auto 15px;
+}
+
+
+@keyframes spin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+
+.small {
+
+    color:
+        #666;
+
+    font-size:
+        13px;
+}
+
+
+.success-text {
+
+    color:
+        #15803d;
+
+    font-weight:
+        700;
+}
+
+
+.error-text {
+
+    color:
+        #dc2626;
+
+    font-weight:
+        700;
+}
+
+
+@media (max-width: 700px) {
+
+    .container {
+
+        margin:
+            10px auto;
+
+        padding:
+            10px;
+    }
+
+
+    .card {
+
+        padding:
+            17px;
+    }
+
+
+    .search-row {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+    }
+
+
+    .details td:first-child {
+
+        width:
+            40%;
+    }
+
+
+    .header-row {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="loading-overlay"
+     id="loadingOverlay">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <div id="loadingText">
+            Processing...
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div class="container">
+
+
+<!-- ======================================================
+     LOGIN
+====================================================== -->
+
+<div class="card"
+     id="loginPanel">
+
+    <h1>
+        Razorpay Refund Admin
+    </h1>
+
+    <p class="small">
+        Authorized access only.
+    </p>
+
+
+    <div id="loginMessage"
+         class="message">
+    </div>
+
+
+    <label>
+        Username
+    </label>
+
+    <input
+        type="text"
+        id="username"
+        autocomplete="username"
+        placeholder="Username">
+
+
+    <label>
+        Password
+    </label>
+
+    <input
+        type="password"
+        id="password"
+        autocomplete="current-password"
+        placeholder="Password">
+
+
+    <button
+        type="button"
+        class="btn-primary"
+        onclick="login()">
+
+        Login
+
+    </button>
+
+</div>
+
+
+
+<!-- ======================================================
+     MAIN PANEL
+====================================================== -->
+
+<div id="mainPanel">
+
+
+<div class="card">
+
+    <div class="header-row">
+
+        <div>
+
+            <h1>
+                Razorpay Refund System
+            </h1>
+
+            <div class="small">
+                Search an order and manage capture/refunds.
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="logout"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================================
+     SEARCH
+====================================================== -->
+
+<div class="card">
+
+    <h2>
+        Search Order
+    </h2>
+
+
+    <div id="message"
+         class="message">
+    </div>
+
+
+    <div class="search-row">
+
+        <div>
+
+            <label>
+                TXNID or Razorpay Payment ID
+            </label>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="TXN1788192773429 or pay_xxxxx">
+
+        </div>
+
+
+        <div>
+
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="searchOrder()">
+
+                Search
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================================
+     ORDER
+====================================================== -->
+
+<div class="card"
+     id="orderSection">
+
+    <h2>
+        Order Details
+    </h2>
+
+    <div id="orderDetails"></div>
+
+</div>
+
+
+
+<!-- ======================================================
+     PAYMENT
+====================================================== -->
+
+<div class="card"
+     id="paymentSection">
+
+    <h2>
+        Razorpay Payment
+    </h2>
+
+
+    <div id="paymentDetails"></div>
+
+
+    <div
+        id="amountMismatch"
+        class="warning-box">
+    </div>
+
+</div>
+
+
+
+<!-- ======================================================
+     CAPTURE
+====================================================== -->
+
+<div class="card"
+     id="captureSection">
+
+    <h2>
+        Capture Payment
+    </h2>
+
+
+    <p>
+        This payment is currently
+        <strong>AUTHORIZED</strong>
+        and has not yet been captured.
+    </p>
+
+
+    <p class="small">
+        The Razorpay authorized amount must match
+        the Orders sheet amount before capture.
+    </p>
+
+
+    <button
+        type="button"
+        id="captureButton"
+        class="btn-success"
+        onclick="capturePayment()">
+
+        Capture Payment
+
+    </button>
+
+</div>
+
+
+
+<!-- ======================================================
+     REFUND
+====================================================== -->
+
+<div class="card"
+     id="refundSection">
+
+    <h2>
+        Create Refund
+    </h2>
+
+
+    <div id="remainingRefundBox"></div>
+
+
+    <label>
+        Refund Amount (₹)
+    </label>
+
+
+    <input
+        type="number"
+        id="refundAmount"
+        min="0.01"
+        step="0.01"
+        placeholder="Enter amount in rupees">
+
+
+    <label>
+        Reason
+    </label>
+
+
+    <textarea
+        id="refundReason"
+        placeholder="Customer refund"></textarea>
+
+
+    <button
+        type="button"
+        class="btn-danger"
+        onclick="createRefund()">
+
+        Process Refund
+
+    </button>
+
+</div>
+
+
+
+<!-- ======================================================
+     REFUND RESULT
+====================================================== -->
+
+<div class="card"
+     id="refundResult">
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+/************************************************************
+ * ==========================================================
+ * APPS SCRIPT URL
+ * ==========================================================
+ *
+ * IMPORTANT:
+ * Replace this with your deployed Apps Script /exec URL.
+ *
+ ************************************************************/
+
+const APPS_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbwdHZr_ZlEyAE4xeWX68ahcUgTCL-ynCxjbD0G8KY0I6kDdmJZCZ4gro5sWQb6OMHfLUg/exec";
+
+
+
+/************************************************************
+ * ==========================================================
+ * GLOBAL VARIABLES
+ * ==========================================================
+ ************************************************************/
+
+let adminToken =
+    localStorage.getItem(
+        "refundAdminToken"
+    ) || "";
+
+
+let currentOrder =
+    null;
+
+
+let currentPayment =
+    null;
+
+
+let currentRefundId =
+    "";
+
+
+let refundPollingTimer =
+    null;
+
+
+let refundPollingCount =
+    0;
+
+
+
+/************************************************************
+ * ==========================================================
+ * PAGE LOAD
+ * ==========================================================
+ ************************************************************/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        if (adminToken) {
+
+            showMainPanel();
+
+        } else {
+
+            showLoginPanel();
+
+        }
+
+    }
+);
+
+
+
+/************************************************************
+ * ==========================================================
+ * LOGIN
+ * ==========================================================
+ ************************************************************/
+
+function login() {
+
+    const username =
+        document
+            .getElementById(
+                "username"
+            )
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById(
+                "password"
+            )
+            .value;
+
+
+    if (!username) {
+
+        showLoginMessage(
+            "Enter username.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!password) {
+
+        showLoginMessage(
+            "Enter password.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    showLoading(
+        "Logging in..."
+    );
+
+
+    jsonpRequest(
+
+        {
+
+            options:
+                "refund-login",
+
+            username:
+                username,
+
+            password:
+                password
+
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showLoginMessage(
+
+                    result &&
+                    result.message
+
+                        ? result.message
+
+                        : "Login failed.",
+
+                    "error"
+
+                );
+
+                return;
+            }
+
+
+            adminToken =
+                result.token;
+
+
+            localStorage.setItem(
+                "refundAdminToken",
+                adminToken
+            );
+
+
+            document
+                .getElementById(
+                    "password"
+                )
+                .value = "";
+
+
+            showMainPanel();
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+
+            showLoginMessage(
+                error ||
+                "Unable to login.",
+                "error"
+            );
+
+        }
+
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * SHOW LOGIN
+ * ==========================================================
+ ************************************************************/
+
+function showLoginPanel() {
+
+    document
+        .getElementById(
+            "loginPanel"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "mainPanel"
+        )
+        .style.display =
+            "none";
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * SHOW MAIN
+ * ==========================================================
+ ************************************************************/
+
+function showMainPanel() {
+
+    document
+        .getElementById(
+            "loginPanel"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "mainPanel"
+        )
+        .style.display =
+            "block";
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * LOGIN MESSAGE
+ * ==========================================================
+ ************************************************************/
+
+function showLoginMessage(
+    message,
+    type
+) {
+
+    const element =
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        "message " +
+        (
+            type ||
+            "error"
+        );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * SEARCH ORDER
+ * ==========================================================
+ ************************************************************/
+
+function searchOrder() {
+
+    const search =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .trim();
+
+
+    if (!search) {
+
+        showMessage(
+            "Enter TXNID or Razorpay Payment ID.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    clearRefundResult();
+
+
+    showLoading(
+        "Searching order..."
+    );
+
+
+    jsonpRequest(
+
+        {
+
+            options:
+                "refund-order",
+
+            token:
+                adminToken,
+
+            search:
+                search
+
+        },
+
+
+        function(result) {
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                hideLoading();
+
+
+                showMessage(
+
+                    result &&
+                    result.message
+
+                        ? result.message
+
+                        : "Order not found.",
+
+                    "error"
+
+                );
+
+                return;
+            }
+
+
+            currentOrder =
+                result.order;
+
+
+            displayOrder(
+                currentOrder
+            );
+
+
+            /*
+             * Payment ID must exist.
+             */
+
+            const paymentId =
+                String(
+                    currentOrder.paymentId ||
+                    ""
+                ).trim();
+
+
+            if (!paymentId) {
+
+                hideLoading();
+
+
+                showMessage(
+                    "Razorpay Payment ID is missing from Orders sheet.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Get live Razorpay payment.
+             */
+
+            getRazorpayPayment(
+                paymentId
+            );
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+
+            showMessage(
+                error ||
+                "Unable to search order.",
+                "error"
+            );
+
+        }
+
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * DISPLAY ORDER
+ * ==========================================================
+ ************************************************************/
+
+function displayOrder(
+    order
+) {
+
+    const html = `
+
+        <table class="details">
+
+            <tr>
+                <td>TXNID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            order.txnId || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Book ID</td>
+                <td>
+                    ${escapeHtml(
+                        String(
+                            order.bookId || ""
+                        )
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Product</td>
+                <td>
+                    ${escapeHtml(
+                        order.product || ""
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Order Amount</td>
+                <td>
+                    <strong>
+                        ₹${formatMoney(
+                            order.amount
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Customer Name</td>
+                <td>
+                    ${escapeHtml(
+                        order.name || ""
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Email</td>
+                <td>
+                    ${escapeHtml(
+                        order.email || ""
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Phone</td>
+                <td>
+                    ${escapeHtml(
+                        order.phone || ""
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Orders Status</td>
+                <td>
+                    ${escapeHtml(
+                        String(
+                            order.status || ""
+                        ).toUpperCase()
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Razorpay Payment ID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            order.paymentId || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+        </table>
+
+    `;
+
+
+    document
+        .getElementById(
+            "orderDetails"
+        )
+        .innerHTML =
+            html;
+
+
+    document
+        .getElementById(
+            "orderSection"
+        )
+        .style.display =
+            "block";
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * GET RAZORPAY PAYMENT
+ * ==========================================================
+ ************************************************************/
+
+function getRazorpayPayment(
+    paymentId
+) {
+
+    paymentId =
+        String(
+            paymentId || ""
+        ).trim();
+
+
+    if (!paymentId) {
+
+        hideLoading();
+
+
+        showMessage(
+            "Razorpay Payment ID is missing.",
+            "error"
+        );
+
+
+        return;
+    }
+
+
+    jsonpRequest(
+
+        {
+
+            options:
+                "refund-payment",
+
+            token:
+                adminToken,
+
+            paymentId:
+                paymentId
+
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showMessage(
+
+                    result &&
+                    result.message
+
+                        ? result.message
+
+                        : "Unable to get payment details.",
+
+                    "error"
+
+                );
+
+                return;
+            }
+
+
+            let payment =
+                result.payment ||
+                result;
+
+
+            /*
+             * Recover Payment ID.
+             */
+
+            payment.id =
+                payment.id ||
+                payment.paymentId ||
+                paymentId;
+
+
+            currentPayment =
+                payment;
+
+
+            if (!currentOrder) {
+
+                currentOrder =
+                    {};
+            }
+
+
+            currentOrder.paymentId =
+                payment.id;
+
+
+            document
+                .getElementById(
+                    "searchInput"
+                );
+
+
+            displayPayment(
+                currentPayment
+            );
+
+
+            updatePaymentActions(
+                currentPayment
+            );
+
+
+            compareAmounts();
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+
+            showMessage(
+                error ||
+                "Unable to check Razorpay payment.",
+                "error"
+            );
+
+        }
+
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * DISPLAY PAYMENT
+ * ==========================================================
+ ************************************************************/
+
+function displayPayment(
+    payment
+) {
+
+    const paymentId =
+
+        payment.id ||
+
+        payment.paymentId ||
+
+        (
+
+            currentOrder &&
+            currentOrder.paymentId
+
+                ? currentOrder.paymentId
+
+                : ""
+
+        );
+
+
+    payment.id =
+        paymentId;
+
+
+    currentPayment =
+        payment;
+
+
+    const status =
+        String(
+            payment.status || ""
+        ).toLowerCase();
+
+
+    const statusClass =
+        getStatusClass(
+            status
+        );
+
+
+    const html = `
+
+        <table class="details">
+
+            <tr>
+                <td>Payment ID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            paymentId
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Status</td>
+                <td>
+                    <span class="status ${statusClass}">
+                        ${escapeHtml(
+                            status.toUpperCase()
+                        )}
+                    </span>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Amount</td>
+                <td>
+                    <strong>
+                        ₹${formatPaise(
+                            payment.amount
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Amount Refunded</td>
+                <td>
+                    ₹${formatPaise(
+                        payment.amount_refunded
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Remaining Refundable</td>
+                <td>
+                    <strong>
+                        ₹${calculateRemainingRefundable(
+                            payment
+                        ).toFixed(2)}
+                    </strong>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Refund Status</td>
+                <td>
+                    ${escapeHtml(
+                        payment.refund_status ||
+                        "Not refunded"
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Method</td>
+                <td>
+                    ${escapeHtml(
+                        payment.method ||
+                        "N/A"
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Created</td>
+                <td>
+                    ${formatUnixTime(
+                        payment.created_at
+                    )}
+                </td>
+            </tr>
+
+        </table>
+
+    `;
+
+
+    document
+        .getElementById(
+            "paymentDetails"
+        )
+        .innerHTML =
+            html;
+
+
+    document
+        .getElementById(
+            "paymentSection"
+        )
+        .style.display =
+            "block";
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * PAYMENT ACTIONS
+ * ==========================================================
+ ************************************************************/
+
+function updatePaymentActions(
+    payment
+) {
+
+    hideElement(
+        "captureSection"
+    );
+
+
+    hideElement(
+        "refundSection"
+    );
+
+
+    const status =
+        String(
+            payment.status || ""
+        ).toLowerCase();
+
+
+    const remaining =
+        calculateRemainingRefundable(
+            payment
+        );
+
+
+    /*
+     * ==========================================
+     * AUTHORIZED
+     * ==========================================
+     */
+
+    if (
+        status ===
+        "authorized"
+    ) {
+
+        document
+            .getElementById(
+                "captureSection"
+            )
+            .style.display =
+                "block";
+
+
+        document
+            .getElementById(
+                "captureButton"
+            )
+            .disabled =
+                !amountsMatchExactly();
+
+
+        return;
+    }
+
+
+    /*
+     * ==========================================
+     * CAPTURED + REFUND AVAILABLE
+     * ==========================================
+     */
+
+    if (
+
+        status ===
+        "captured"
+
+        &&
+
+        remaining >
+        0
+
+    ) {
+
+        document
+            .getElementById(
+                "refundSection"
+            )
+            .style.display =
+                "block";
+
+
+        updateRemainingRefundAmount();
+
+
+        return;
+    }
+
+
+    /*
+     * ==========================================
+     * CAPTURED + FULLY REFUNDED
+     * ==========================================
+     */
+
+    if (
+
+        status ===
+        "captured"
+
+        &&
+
+        remaining <=
+        0
+
+    ) {
+
+        showMessage(
+
+            "This payment has been fully refunded. No refundable amount remains.",
+
+            "success"
+
+        );
+
+
+        return;
+    }
+
+
+    /*
+     * ==========================================
+     * REFUNDED
+     * ==========================================
+     */
+
+    if (
+        status ===
+        "refunded"
+    ) {
+
+        showMessage(
+
+            "This payment has been fully refunded. No refundable amount remains.",
+
+            "success"
+
+        );
+
+
+        return;
+    }
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * CAPTURE PAYMENT
+ * ==========================================================
+ ************************************************************/
+
+function capturePayment() {
+
+    if (!currentPayment) {
+
+        showMessage(
+            "Payment details are not loaded.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const paymentId =
+        String(
+
+            currentPayment.id ||
+
+            currentPayment.paymentId ||
+
+            (
+                currentOrder &&
+                currentOrder.paymentId
+
+                    ? currentOrder.paymentId
+
+                    : ""
+            ) ||
+
+            ""
+
+        ).trim();
+
+
+    if (!paymentId) {
+
+        showMessage(
+            "Payment ID is missing.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        !amountsMatchExactly()
+    ) {
+
+        showMessage(
+            "Orders amount and Razorpay payment amount do not match. Capture is disabled.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        !confirm(
+            "Capture this Razorpay payment?"
+        )
+    ) {
+
+        return;
+    }
+
+
+    showLoading(
+        "Capturing payment..."
+    );
+
+
+    jsonpRequest(
+
+        {
+
+            options:
+                "capture-payment",
+
+            token:
+                adminToken,
+
+            paymentId:
+                paymentId
+
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showMessage(
+
+                    result &&
+                    result.message
+
+                        ? result.message
+
+                        : "Payment capture failed.",
+
+                    "error"
+
+                );
+
+                return;
+            }
+
+
+            showMessage(
+
+                result.alreadyCaptured
+
+                    ? "Payment was already captured."
+
+                    : "Payment captured successfully.",
+
+                "success"
+
+            );
+
+
+            /*
+             * Refresh payment from Razorpay.
+             */
+
+            setTimeout(
+
+                function() {
+
+                    showLoading(
+                        "Refreshing payment..."
+                    );
+
+
+                    getRazorpayPayment(
+                        paymentId
+                    );
+
+                },
+
+                700
+
+            );
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+
+            showMessage(
+                error ||
+                "Unable to capture payment.",
+                "error"
+            );
+
+        }
+
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * CREATE REFUND
+ * ==========================================================
+ ************************************************************/
+
+function createRefund() {
+
+    if (!currentPayment) {
+
+        showMessage(
+            "Payment details are not loaded.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const paymentId =
+        String(
+
+            currentPayment.id ||
+
+            currentPayment.paymentId ||
+
+            (
+                currentOrder &&
+                currentOrder.paymentId
+
+                    ? currentOrder.paymentId
+
+                    : ""
+            ) ||
+
+            ""
+
+        ).trim();
+
+
+    if (!paymentId) {
+
+        showMessage(
+            "Razorpay Payment ID is missing.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const amount =
+        Number(
+
+            document
+                .getElementById(
+                    "refundAmount"
+                )
+                .value
+
+        );
+
+
+    const reason =
+        document
+            .getElementById(
+                "refundReason"
+            )
+            .value
+            .trim();
+
+
+    if (
+        !Number.isFinite(
+            amount
+        ) ||
+        amount <= 0
+    ) {
+
+        showMessage(
+            "Enter a valid refund amount.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const remaining =
+        calculateRemainingRefundable(
+            currentPayment
+        );
+
+
+    if (
+        amount >
+        remaining
+    ) {
+
+        showMessage(
+
+            "Refund amount cannot exceed remaining refundable amount ₹" +
+            remaining.toFixed(2),
+
+            "error"
+
+        );
+
+        return;
+    }
+
+
+    if (
+        !reason
+    ) {
+
+        showMessage(
+            "Enter a refund reason.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const confirmText =
+        "Process refund of ₹" +
+        amount.toFixed(2) +
+        "?\n\n" +
+        "Payment ID: " +
+        paymentId;
+
+
+    if (
+        !confirm(
+            confirmText
+        )
+    ) {
+
+        return;
+    }
+
+
+    showLoading(
+        "Processing refund..."
+    );
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Send RUPEES.
+     *
+     * Backend converts:
+     *
+     * ₹296.01 → 29601 paise
+     */
+
+    jsonpRequest(
+
+        {
+
+            options:
+                "refund-create",
+
+            token:
+                adminToken,
+
+            paymentId:
+                paymentId,
+
+            amount:
+                amount,
+
+            reason:
+                reason
+
+        },
+
+
+        function(result) {
+
+            hideLoading();
+
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                showMessage(
+
+                    result &&
+                    result.message
+
+                        ? result.message
+
+                        : "Refund failed.",
+
+                    "error"
+
+                );
+
+                return;
+            }
+
+
+            displayRefundResult(
+                result
+            );
+
+
+            /*
+             * Begin refund status polling.
+             */
+
+            if (
+                result.refundId
+            ) {
+
+                startRefundStatusPolling(
+                    result.refundId
+                );
+
+            }
+
+
+            /*
+             * Refresh Razorpay payment.
+             */
+
+            if (
+                result.paymentId
+            ) {
+
+                setTimeout(
+
+                    function() {
+
+                        showLoading(
+                            "Refreshing payment..."
+                        );
+
+
+                        getRazorpayPayment(
+                            result.paymentId
+                        );
+
+                    },
+
+                    1000
+
+                );
+
+            }
+
+        },
+
+
+        function(error) {
+
+            hideLoading();
+
+
+            showMessage(
+                error ||
+                "Unable to process refund.",
+                "error"
+            );
+
+        }
+
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * DISPLAY REFUND RESULT
+ * ==========================================================
+ ************************************************************/
+
+function displayRefundResult(
+    result
+) {
+
+    if (
+        !result ||
+        !result.success
+    ) {
+
+        showMessage(
+            "Refund failed.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const savedText =
+        result.savedToSheet
+            ? "YES"
+            : "NO";
+
+
+    const savedClass =
+        result.savedToSheet
+            ? "success"
+            : "error";
+
+
+    const html = `
+
+        <h2>
+            Refund Result
+        </h2>
+
+
+        <table class="details">
+
+            <tr>
+                <td>Refund ID</td>
+                <td>
+                    <strong>
+                        ${escapeHtml(
+                            result.refundId || ""
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Payment ID</td>
+                <td>
+                    ${escapeHtml(
+                        result.paymentId || ""
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>TXNID</td>
+                <td>
+                    ${escapeHtml(
+                        result.txnId || ""
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Refund Amount</td>
+                <td>
+                    <strong>
+                        ₹${formatMoney(
+                            result.amount
+                        )}
+                    </strong>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Status</td>
+                <td>
+                    <span
+                        id="refundStatusBadge"
+                        class="status ${getStatusClass(
+                            String(
+                                result.status || ""
+                            ).toLowerCase()
+                        )}">
+                        ${escapeHtml(
+                            String(
+                                result.status || ""
+                            ).toUpperCase()
+                        )}
+                    </span>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>ARN</td>
+                <td id="refundArn">
+                    ${escapeHtml(
+                        result.arn ||
+                        "Pending"
+                    )}
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Saved to Refunds Sheet</td>
+                <td>
+                    <span
+                        class="status ${savedClass}">
+                        ${savedText}
+                    </span>
+                </td>
+            </tr>
+
+
+            <tr id="sheetUpdateRow"
+                style="display:none;">
+
+                <td>
+                    Sheet Status Update
+                </td>
+
+                <td
+                    id="sheetUpdateValue">
+                </td>
+
+            </tr>
+
+        </table>
+
+    `;
+
+
+    document
+        .getElementById(
+            "refundResult"
+        )
+        .innerHTML =
+            html;
+
+
+    document
+        .getElementById(
+            "refundResult"
+        )
+        .style.display =
+            "block";
+
+
+    if (
+        result.savedToSheet
+    ) {
+
+        showMessage(
+
+            "Refund processed and saved to Refunds Sheet.",
+
+            "success"
+
+        );
+
+    } else {
+
+        showMessage(
+
+            "Refund was created, but saving to Refunds Sheet failed: " +
+            (
+                result.saveError ||
+                "Unknown error"
+            ),
+
+            "error"
+
+        );
+    }
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * REFUND STATUS POLLING
+ * ==========================================================
+ ************************************************************/
+
+function startRefundStatusPolling(
+    refundId
+) {
+
+    stopRefundStatusPolling();
+
+
+    currentRefundId =
+        String(
+            refundId || ""
+        ).trim();
+
+
+    if (!currentRefundId) {
+
+        return;
+    }
+
+
+    refundPollingCount =
+        0;
+
+
+    pollRefundStatus();
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * POLL REFUND STATUS
+ * ==========================================================
+ ************************************************************/
+
+function pollRefundStatus() {
+
+    if (!currentRefundId) {
+
+        return;
+    }
+
+
+    /*
+     * Stop after approximately
+     * 5 minutes.
+     *
+     * 60 polls × 5 seconds.
+     */
+
+    if (
+        refundPollingCount >=
+        60
+    ) {
+
+        stopRefundStatusPolling();
+
+        return;
+    }
+
+
+    refundPollingCount++;
+
+
+    jsonpRequest(
+
+        {
+
+            options:
+                "refund-status",
+
+            token:
+                adminToken,
+
+            refundId:
+                currentRefundId
+
+        },
+
+
+        function(result) {
+
+            if (
+                !result ||
+                !result.success
+            ) {
+
+                /*
+                 * Do not immediately destroy
+                 * the refund result if one
+                 * status request fails.
+                 */
+
+                scheduleNextRefundPoll();
+
+                return;
+            }
+
+
+            const refund =
+                result.refund ||
+                {};
+
+
+            updateRefundResultStatus(
+                refund,
+                result
+            );
+
+
+            const status =
+                String(
+                    refund.status || ""
+                ).toLowerCase();
+
+
+            /*
+             * Final states.
+             */
+
+            if (
+
+                status ===
+                "processed"
+
+                ||
+
+                status ===
+                "failed"
+
+                ||
+
+                status ===
+                "reversed"
+
+            ) {
+
+                stopRefundStatusPolling();
+
+
+                /*
+                 * Refresh payment one final time.
+                 */
+
+                if (
+                    refund.payment_id
+                ) {
+
+                    setTimeout(
+
+                        function() {
+
+                            getRazorpayPayment(
+                                refund.payment_id
+                            );
+
+                        },
+
+                        700
+
+                    );
+
+                }
+
+
+                return;
+            }
+
+
+            scheduleNextRefundPoll();
+
+        },
+
+
+        function(error) {
+
+            scheduleNextRefundPoll();
+
+        }
+
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * SCHEDULE NEXT REFUND POLL
+ * ==========================================================
+ ************************************************************/
+
+function scheduleNextRefundPoll() {
+
+    if (
+        refundPollingTimer
+    ) {
+
+        clearTimeout(
+            refundPollingTimer
+        );
+    }
+
+
+    refundPollingTimer =
+        setTimeout(
+
+            function() {
+
+                pollRefundStatus();
+
+            },
+
+            5000
+
+        );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * STOP POLLING
+ * ==========================================================
+ ************************************************************/
+
+function stopRefundStatusPolling() {
+
+    if (
+        refundPollingTimer
+    ) {
+
+        clearTimeout(
+            refundPollingTimer
+        );
+    }
+
+
+    refundPollingTimer =
+        null;
+
+
+    currentRefundId =
+        "";
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * UPDATE REFUND RESULT
+ * ==========================================================
+ ************************************************************/
+
+function updateRefundResultStatus(
+    refund,
+    result
+) {
+
+    const badge =
+        document.getElementById(
+            "refundStatusBadge"
+        );
+
+
+    const arnElement =
+        document.getElementById(
+            "refundArn"
+        );
+
+
+    if (badge) {
+
+        const status =
+            String(
+                refund.status || ""
+            ).toLowerCase();
+
+
+        badge.className =
+            "status " +
+            getStatusClass(
+                status
+            );
+
+
+        badge.textContent =
+            status.toUpperCase();
+    }
+
+
+    if (arnElement) {
+
+        arnElement.textContent =
+            refund.arn ||
+            "Pending";
+    }
+
+
+    /*
+     * Show sheet update information.
+     */
+
+    const row =
+        document.getElementById(
+            "sheetUpdateRow"
+        );
+
+
+    const value =
+        document.getElementById(
+            "sheetUpdateValue"
+        );
+
+
+    if (
+        row &&
+        value &&
+        result.sheetUpdated !== undefined
+    ) {
+
+        row.style.display =
+            "table-row";
+
+
+        if (
+            result.sheetUpdated
+        ) {
+
+            value.innerHTML =
+                '<span class="success-text">' +
+                'Updated successfully' +
+                '</span>';
+
+        } else {
+
+            value.innerHTML =
+                '<span class="error-text">' +
+                'Refund row was not found' +
+                '</span>';
+        }
+
+    }
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * UPDATE REMAINING REFUND
+ * ==========================================================
+ ************************************************************/
+
+function updateRemainingRefundAmount() {
+
+    if (
+        !currentPayment
+    ) {
+
+        return;
+    }
+
+
+    const remaining =
+        calculateRemainingRefundable(
+            currentPayment
+        );
+
+
+    const element =
+        document.getElementById(
+            "remainingRefundBox"
+        );
+
+
+    element.innerHTML = `
+
+        <div class="amount-box">
+
+            Remaining Refundable:
+            ₹${remaining.toFixed(2)}
+
+        </div>
+
+        <p class="small">
+
+            You can refund any amount up to
+            ₹${remaining.toFixed(2)}.
+
+        </p>
+
+    `;
+
+
+    const input =
+        document.getElementById(
+            "refundAmount"
+        );
+
+
+    input.max =
+        remaining.toFixed(2);
+
+
+    if (
+        remaining <= 0
+    ) {
+
+        input.value =
+            "";
+
+    }
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * CALCULATE REMAINING REFUNDABLE
+ * ==========================================================
+ ************************************************************/
+
+function calculateRemainingRefundable(
+    payment
+) {
+
+    if (!payment) {
+
+        return 0;
+    }
+
+
+    /*
+     * Razorpay amounts are PAISA.
+     */
+
+    const amountPaise =
+        Number(
+            payment.amount || 0
+        );
+
+
+    const refundedPaise =
+        Number(
+            payment.amount_refunded || 0
+        );
+
+
+    const remainingPaise =
+        Math.max(
+
+            0,
+
+            amountPaise -
+            refundedPaise
+
+        );
+
+
+    /*
+     * Convert paise → rupees.
+     */
+
+    return (
+        remainingPaise /
+        100
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * COMPARE ORDER / RAZORPAY AMOUNT
+ * ==========================================================
+ ************************************************************/
+
+function compareAmounts() {
+
+    const warning =
+        document.getElementById(
+            "amountMismatch"
+        );
+
+
+    if (
+        !currentOrder ||
+        !currentPayment
+    ) {
+
+        warning.style.display =
+            "none";
+
+        return false;
+    }
+
+
+    const orderAmount =
+        Number(
+            currentOrder.amount || 0
+        );
+
+
+    const razorpayAmount =
+        Number(
+            currentPayment.amount || 0
+        ) / 100;
+
+
+    const difference =
+        Math.abs(
+
+            orderAmount -
+            razorpayAmount
+
+        );
+
+
+    if (
+        difference >
+        0.01
+    ) {
+
+        warning.style.display =
+            "block";
+
+
+        warning.innerHTML =
+
+            "<strong>Amount mismatch.</strong><br>" +
+
+            "Orders Sheet Amount: ₹" +
+            orderAmount.toFixed(2) +
+
+            "<br>" +
+
+            "Razorpay Payment Amount: ₹" +
+            razorpayAmount.toFixed(2) +
+
+            "<br><br>" +
+
+            "Capture is disabled until the amounts match.";
+
+
+        return false;
+    }
+
+
+    warning.style.display =
+        "block";
+
+
+    warning.innerHTML =
+
+        "<strong>✓ Amounts match.</strong><br>" +
+
+        "Orders Sheet Amount: ₹" +
+        orderAmount.toFixed(2) +
+
+        "<br>" +
+
+        "Razorpay Payment Amount: ₹" +
+        razorpayAmount.toFixed(2);
+
+
+    return true;
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * EXACT AMOUNT MATCH
+ * ==========================================================
+ ************************************************************/
+
+function amountsMatchExactly() {
+
+    if (
+        !currentOrder ||
+        !currentPayment
+    ) {
+
+        return false;
+    }
+
+
+    const orderPaise =
+        Math.round(
+            Number(
+                currentOrder.amount || 0
+            ) * 100
+        );
+
+
+    const razorpayPaise =
+        Number(
+            currentPayment.amount || 0
+        );
+
+
+    return (
+        orderPaise ===
+        razorpayPaise
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * LOGOUT
+ * ==========================================================
+ ************************************************************/
+
+function logout() {
+
+    const token =
+        adminToken;
+
+
+    adminToken =
+        "";
+
+
+    localStorage.removeItem(
+        "refundAdminToken"
+    );
+
+
+    stopRefundStatusPolling();
+
+
+    if (token) {
+
+        jsonpRequest(
+
+            {
+
+                options:
+                    "refund-logout",
+
+                token:
+                    token
+
+            },
+
+
+            function(result) {},
+
+            function(error) {}
+
+        );
+    }
+
+
+    currentOrder =
+        null;
+
+
+    currentPayment =
+        null;
+
+
+    showLoginPanel();
+
+
+    showLoginMessage(
+        "Logged out.",
+        "success"
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * MESSAGE
+ * ==========================================================
+ ************************************************************/
+
+function showMessage(
+    message,
+    type
+) {
+
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        "message " +
+        (
+            type ||
+            "error"
+        );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * CLEAR REFUND RESULT
+ * ==========================================================
+ ************************************************************/
+
+function clearRefundResult() {
+
+    const element =
+        document.getElementById(
+            "refundResult"
+        );
+
+
+    element.innerHTML =
+        "";
+
+
+    element.style.display =
+        "none";
+
+
+    stopRefundStatusPolling();
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * LOADING
+ * ==========================================================
+ ************************************************************/
+
+function showLoading(
+    text
+) {
+
+    document
+        .getElementById(
+            "loadingText"
+        )
+        .textContent =
+            text ||
+            "Processing...";
+
+
+    document
+        .getElementById(
+            "loadingOverlay"
+        )
+        .style.display =
+            "flex";
+
+}
+
+
+
+function hideLoading() {
+
+    document
+        .getElementById(
+            "loadingOverlay"
+        )
+        .style.display =
+            "none";
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * HIDE ELEMENT
+ * ==========================================================
+ ************************************************************/
+
+function hideElement(
+    id
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (element) {
+
+        element.style.display =
+            "none";
+    }
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * FORMAT RUPEES
+ * ==========================================================
+ ************************************************************/
+
+function formatMoney(
+    amount
+) {
+
+    const value =
+        Number(
+            amount || 0
+        );
+
+
+    return value.toFixed(
+        2
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * FORMAT PAISE → RUPEES
+ * ==========================================================
+ ************************************************************/
+
+function formatPaise(
+    amountPaise
+) {
+
+    const value =
+        Number(
+            amountPaise || 0
+        ) / 100;
+
+
+    return value.toFixed(
+        2
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * STATUS CLASS
+ * ==========================================================
+ ************************************************************/
+
+function getStatusClass(
+    status
+) {
+
+    status =
+        String(
+            status || ''
+        ).toLowerCase();
+
+
+    if (
+
+        status ===
+        "captured"
+
+        ||
+
+        status ===
+        "processed"
+
+        ||
+
+        status ===
+        "success"
+
+    ) {
+
+        return "success";
+    }
+
+
+    if (
+
+        status ===
+        "authorized"
+
+        ||
+
+        status ===
+        "pending"
+
+    ) {
+
+        return "warning";
+    }
+
+
+    if (
+
+        status ===
+        "failed"
+
+        ||
+
+        status ===
+        "reversed"
+
+    ) {
+
+        return "error";
+    }
+
+
+    if (
+        status ===
+        "refunded"
+    ) {
+
+        return "success";
+    }
+
+
+    return "info";
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * UNIX TIME
+ * ==========================================================
+ ************************************************************/
+
+function formatUnixTime(
+    timestamp
+) {
+
+    if (!timestamp) {
+
+        return "N/A";
+    }
+
+
+    const date =
+        new Date(
+            Number(
+                timestamp
+            ) * 1000
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "N/A";
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * ESCAPE HTML
+ * ==========================================================
+ ************************************************************/
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value === undefined ||
+        value === null
+            ? ""
+            : value
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+
+/************************************************************
+ * ==========================================================
+ * JSONP REQUEST
+ * ==========================================================
+ ************************************************************/
+
+function jsonpRequest(
+    params,
+    successCallback,
+    errorCallback
+) {
+
+    const callbackName =
+        "jsonpCallback_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+            Math.random() *
+            100000
+        );
+
+
+    let finished =
+        false;
+
+
+    let script =
+        null;
+
+
+    function cleanup() {
+
+        try {
+
+            delete window[
+                callbackName
+            ];
+
+        } catch (e) {}
+
+
+        if (
+            script &&
+            script.parentNode
+        ) {
+
+            script.parentNode
+                .removeChild(
+                    script
+                );
+        }
+
+    }
+
+
+    function fail(
+        message
+    ) {
+
+        if (
+            finished
+        ) {
+
+            return;
+        }
+
+
+        finished =
+            true;
+
+
+        cleanup();
+
+
+        if (
+            errorCallback
+        ) {
+
+            errorCallback(
+                message
+            );
+        }
+
+    }
+
+
+    window[
+        callbackName
+    ] = function(
+        result
+    ) {
+
+        if (
+            finished
+        ) {
+
+            return;
+        }
+
+
+        finished =
+            true;
+
+
+        cleanup();
+
+
+        if (
+            successCallback
+        ) {
+
+            successCallback(
+                result
+            );
+        }
+
+    };
+
+
+    const query =
+        new URLSearchParams();
+
+
+    Object.keys(
+        params || {}
+    ).forEach(
+        function(key) {
+
+            const value =
+                params[key];
+
+
+            if (
+                value !==
+                undefined &&
+
+                value !==
+                null
+            ) {
+
+                query.append(
+                    key,
+                    String(
+                        value
+                    )
+                );
+            }
+
+        }
+    );
+
+
+    query.append(
+        "callback",
+        callbackName
+    );
+
+
+    script =
+        document.createElement(
+            "script"
+        );
+
+
+    script.src =
+        APPS_SCRIPT_URL +
+        "?" +
+        query.toString();
+
+
+    script.async =
+        true;
+
+
+    script.onerror =
+        function() {
+
+            fail(
+                "Unable to connect to Apps Script."
+            );
+
+        };
+
+
+    document.body.appendChild(
+        script
+    );
+
+
+    setTimeout(
+
+        function() {
+
+            if (
+                !finished
+            ) {
+
+                fail(
+                    "Request timed out. Please try again."
+                );
+
+            }
+
+        },
+
+        30000
+
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>
